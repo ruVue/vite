@@ -124,7 +124,7 @@ module.exports = {
               link: '/guide/build'
             },
             {
-              text: 'Deploying a Static Site',
+              text: 'Развертывание статического сайта',
               link: '/guide/static-deploy'
             },
             {

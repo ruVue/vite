@@ -1,10 +1,10 @@
-# Deploying a Static Site
+# Развертывание статического сайта
 
-The following guides are based on some shared assumptions:
+Следующие руководства основаны на некоторых общих предположениях:
 
-- You are using the default build output location (`dist`). This location [can be changed using `build.outDir`](https://vitejs.dev/config/#build-outdir), and you can extrapolate instructions from these guides in that case.
-- You are using npm. You can use equivalent commands to run the scripts if you are using Yarn or other package managers.
-- Vite is installed as a local dev dependency in your project, and you have setup the following npm scripts:
+- Вы используете расположение вывода сборки по умолчанию (`dist`). Это местоположение [можно изменить с помощью `build.outDir`](https://vitejs.dev/config/#build-outdir), и в этом случае вы можете экстраполировать инструкции из этих руководств.
+- Вы используете npm. Вы можете использовать эквивалентные команды для запуска скриптов, если используете Yarn или другие менеджеры пакетов.
+- Vite установлен как локальная зависимость разработчика в вашем проекте, и вы настроили следующие сценарии npm:
 
 ```json
 {
@@ -15,34 +15,34 @@ The following guides are based on some shared assumptions:
 }
 ```
 
-It is important to note that `vite preview` is intended for previewing the build locally and not meant as a production server.
+Важно отметить, что `vite preview` предназначен для локального предварительного просмотра сборки, а не для рабочего сервера.
 
-::: tip NOTE
-These guides provide instructions for performing a static deployment of your Vite site. Vite also has experimental support for Server Side Rendering. SSR refers to front-end frameworks that support running the same application in Node.js, pre-rendering it to HTML, and finally hydrating it on the client. Check out the [SSR Guide](./ssr) to learn about this feature. On the other hand, if you are looking for integration with traditional server-side frameworks, check out the [Backend Integration guide](./backend-integration) instead.
+::: tip ПРИМЕЧАНИЕ
+Эти руководства содержат инструкции по выполнению статического развертывания вашего сайта Vite. Vite также имеет экспериментальную поддержку рендеринга на стороне сервера. SSR относится к интерфейсным платформам, которые поддерживают запуск одного и того же приложения в Node.js, предварительный рендеринг его в HTML и, наконец, его гидратацию на клиенте. Ознакомьтесь с [Руководством по SSR](./ssr), чтобы узнать об этой функции. С другой стороны, если вам нужна интеграция с традиционными серверными фреймворками, ознакомьтесь с [Руководством по интеграции серверной части](./backend-integration).
 :::
 
-## Building The App
+## Создание приложения
 
-You may run `npm run build` command to build the app.
+Вы можете запустить команду `npm run build`, чтобы собрать приложение.
 
 ```bash
 $ npm run build
 ```
 
-By default, the build output will be placed at `dist`. You may deploy this `dist` folder to any of your preferred platforms.
+По умолчанию вывод сборки будет помещен в `dist`. Вы можете развернуть эту папку `dist` на любой из предпочитаемых вами платформ.
 
-### Testing The App Locally
+### Локальное тестирование приложения
 
-Once you've built the app, you may test it locally by running `npm run preview` command.
+После того, как вы создали приложение, вы можете протестировать его локально, выполнив команду `npm run preview`.
 
 ```bash
 $ npm run build
 $ npm run preview
 ```
 
-The `vite preview` command will boot up local static web server that serves the files from `dist` at `http://localhost:4173`. It's an easy way to check if the production build looks OK in your local environment.
+Команда `vite preview` загрузит локальный статический веб-сервер, который обслуживает файлы из `dist` по адресу `http://localhost:4173`. Это простой способ проверить, нормально ли выглядит производственная сборка в вашей локальной среде.
 
-You may configure the port of the server py passing `--port` flag as an argument.
+Вы можете настроить порт сервера py, передав флаг `--port` в качестве аргумента.
 
 ```json
 {
@@ -52,17 +52,17 @@ You may configure the port of the server py passing `--port` flag as an argument
 }
 ```
 
-Now the `preview` method will launch the server at `http://localhost:8080`.
+Теперь метод `preview` запустит сервер по адресу `http://localhost:8080`.
 
 ## GitHub Pages
 
-1. Set the correct `base` in `vite.config.js`.
+1. Установите правильный `base` в `vite.config.js`.
 
-   If you are deploying to `https://<USERNAME>.github.io/`, you can omit `base` as it defaults to `'/'`.
+   Если вы выполняете развертывание на `https://<USERNAME>.github.io/`, вы можете опустить `base`, так как по умолчанию это `'/'`.
 
-   If you are deploying to `https://<USERNAME>.github.io/<REPO>/`, for example your repository is at `https://github.com/<USERNAME>/<REPO>`, then set `base` to `'/<REPO>/'`.
+   Если вы выполняете развертывание на `https://<USERNAME>.github.io/<REPO>/`, например, ваш репозиторий находится в `https://github.com/<USERNAME>/<REPO>`, установите `base` в `'/<REPO>/'`.
 
-2. Inside your project, create `deploy.sh` with the following content (with highlighted lines uncommented appropriately), and run it to deploy:
+2. Внутри вашего проекта создайте `deploy.sh` со следующим содержимым (с выделенными строками, раскомментированными соответствующим образом) и запустите его для развертывания:
 
    ```bash{13,20,23}
    #!/usr/bin/env sh
@@ -93,22 +93,22 @@ Now the `preview` method will launch the server at `http://localhost:8080`.
    ```
 
 ::: tip
-You can also run the above script in your CI setup to enable automatic deployment on each push.
+Вы также можете запустить приведенный выше сценарий в настройках CI, чтобы включить автоматическое развертывание при каждом нажатии.
 :::
 
-### GitHub Pages and Travis CI
+### GitHub Pages и Travis CI
 
-1. Set the correct `base` in `vite.config.js`.
+1. Установите правильный `base` в `vite.config.js`.
 
-   If you are deploying to `https://<USERNAME or GROUP>.github.io/`, you can omit `base` as it defaults to `'/'`.
+   Если вы выполняете развертывание на `https://<USERNAME or GROUP>.github.io/`, вы можете опустить `base`, так как по умолчанию это `'/'`.
 
-   If you are deploying to `https://<USERNAME or GROUP>.github.io/<REPO>/`, for example your repository is at `https://github.com/<USERNAME>/<REPO>`, then set `base` to `'/<REPO>/'`.
+   Если вы выполняете развертывание на `https://<USERNAME or GROUP>.github.io/<REPO>/`, например, ваш репозиторий находится в `https://github.com/<USERNAME>/<REPO>`, установите `base` в `'/<REPO>/'`.
 
-2. Create a file named `.travis.yml` in the root of your project.
+2. Создайте файл с именем `.travis.yml` в корне вашего проекта.
 
-3. Run `npm install` locally and commit the generated lockfile (`package-lock.json`).
+3. Запустите `npm install` локально и зафиксируйте сгенерированный файл блокировки (`package-lock.json`).
 
-4. Use the GitHub Pages deploy provider template, and follow the [Travis CI documentation](https://docs.travis-ci.com/user/deployment/pages/).
+4. Используйте шаблон поставщика развертывания GitHub Pages и следуйте [документации Travis CI](https://docs.travis-ci.com/user/deployment/pages/).
 
    ```yaml
    language: node_js
@@ -130,15 +130,15 @@ You can also run the above script in your CI setup to enable automatic deploymen
        branch: main
    ```
 
-## GitLab Pages and GitLab CI
+## GitLab Pages и GitLab CI
 
-1. Set the correct `base` in `vite.config.js`.
+1. Установите правильный `base` в `vite.config.js`.
 
-   If you are deploying to `https://<USERNAME or GROUP>.gitlab.io/`, you can omit `base` as it defaults to `'/'`.
+   Если вы выполняете развертывание на `https://<USERNAME or GROUP>.gitlab.io/`, вы можете опустить `base`, так как по умолчанию это `'/'`.
 
-   If you are deploying to `https://<USERNAME or GROUP>.gitlab.io/<REPO>/`, for example your repository is at `https://gitlab.com/<USERNAME>/<REPO>`, then set `base` to `'/<REPO>/'`.
+   Если вы выполняете развертывание на `https://<USERNAME or GROUP>.gitlab.io/<REPO>/`, например, ваш репозиторий находится в `https://gitlab.com/<USERNAME>/<REPO>`, установите `base` в `'/<REPO>/'`.
 
-2. Create a file called `.gitlab-ci.yml` in the root of your project with the content below. This will build and deploy your site whenever you make changes to your content:
+2. Создайте файл с именем `.gitlab-ci.yml` в корне вашего проекта с содержимым, указанным ниже. Это будет создавать и развертывать ваш сайт всякий раз, когда вы вносите изменения в свой контент:
 
    ```yaml
    image: node:16.5.0
@@ -164,9 +164,9 @@ You can also run the above script in your CI setup to enable automatic deploymen
 
 ## Netlify
 
-1. Install the [Netlify CLI](https://cli.netlify.com/).
-2. Create a new site using `ntl init`.
-3. Deploy using `ntl deploy`.
+1. Установите [Netlify CLI](https://cli.netlify.com/).
+2. Создайте новый сайт с помощью `ntl init`.
+3. Разверните с помощью `ntl deploy`.
 
 ```bash
 # Install the Netlify CLI
@@ -179,7 +179,7 @@ $ ntl init
 $ ntl deploy
 ```
 
-The Netlify CLI will share with you a preview URL to inspect. When you are ready to go into production, use the `prod` flag:
+Netlify CLI предоставит вам URL-адрес предварительного просмотра для проверки. Когда вы будете готовы приступить к работе, используйте флаг `prod`:
 
 ```bash
 # Deploy the site into production
@@ -188,9 +188,9 @@ $ ntl deploy --prod
 
 ## Google Firebase
 
-1. Make sure you have [firebase-tools](https://www.npmjs.com/package/firebase-tools) installed.
+1. Убедитесь, что у вас установлены [firebase-tools](https://www.npmjs.com/package/firebase-tools).
 
-2. Create `firebase.json` and `.firebaserc` at the root of your project with the following content:
+2. Создайте `firebase.json` и `.firebaserc` в корне вашего проекта со следующим содержимым:
 
    `firebase.json`:
 
@@ -219,31 +219,31 @@ $ ntl deploy --prod
    }
    ```
 
-3. After running `npm run build`, deploy using the command `firebase deploy`.
+3. После запуска `npm run build` выполните развертывание с помощью команды `firebase deploy`.
 
 ## Surge
 
-1. First install [surge](https://www.npmjs.com/package/surge), if you haven’t already.
+1. Сначала установите [surge](https://www.npmjs.com/package/surge), если вы еще этого не сделали.
 
-2. Run `npm run build`.
+2. Запустите `npm run build`.
 
-3. Deploy to surge by typing `surge dist`.
+3. Выполните развертывание для surge, набрав `surge dist`.
 
-You can also deploy to a [custom domain](http://surge.sh/help/adding-a-custom-domain) by adding `surge dist yourdomain.com`.
+Вы также можете выполнить развертывание в [пользовательском домене](http://surge.sh/help/adding-a-custom-domain), добавив `surge dist yourdomain.com`.
 
 ## Heroku
 
-1. Install [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli).
+1. Установите [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli).
 
-2. Create a Heroku account by [signing up](https://signup.heroku.com).
+2. Создайте учетную запись Heroku, [зарегистрировавшись](https://signup.heroku.com).
 
-3. Run `heroku login` and fill in your Heroku credentials:
+3. Запустите `heroku login` и введите свои учетные данные Heroku:
 
    ```bash
    $ heroku login
    ```
 
-4. Create a file called `static.json` in the root of your project with the below content:
+4. Создайте файл с именем `static.json` в корне вашего проекта со следующим содержимым:
 
    `static.json`:
 
@@ -253,9 +253,9 @@ You can also deploy to a [custom domain](http://surge.sh/help/adding-a-custom-do
    }
    ```
 
-   This is the configuration of your site; read more at [heroku-buildpack-static](https://github.com/heroku/heroku-buildpack-static).
+   Это конфигурация вашего сайта; читайте больше на [heroku-buildpack-static](https://github.com/heroku/heroku-buildpack-static).
 
-5. Set up your Heroku git remote:
+5. Настройте свой Heroku git remote:
 
    ```bash
    # version change
@@ -270,7 +270,7 @@ You can also deploy to a [custom domain](http://surge.sh/help/adding-a-custom-do
    $ heroku buildpacks:set https://github.com/heroku/heroku-buildpack-static.git
    ```
 
-6. Deploy your site:
+6. Разверните свой сайт:
 
    ```bash
    # publish site
@@ -284,9 +284,9 @@ You can also deploy to a [custom domain](http://surge.sh/help/adding-a-custom-do
 
 ### Vercel CLI
 
-1. Install the [Vercel CLI](https://vercel.com/cli) and run `vercel` to deploy.
-2. Vercel will detect that you are using Vite and will enable the correct settings for your deployment.
-3. Your application is deployed! (e.g. [vite-vue-template.vercel.app](https://vite-vue-template.vercel.app/))
+1. Установите [Vercel CLI](https://vercel.com/cli) и запустите `vercel` для развертывания.
+2. Vercel обнаружит, что вы используете Vite, и активирует правильные настройки для вашего развертывания.
+3. Ваше приложение развернуто! (например, [vite-vue-template.vercel.app](https://vite-vue-template.vercel.app/))
 
 ```bash
 $ npm i -g vercel
@@ -296,27 +296,27 @@ Vercel CLI
 - To deploy, `cd vite` and run `vercel`.
 ```
 
-### Vercel for Git
+### Vercel для Git
 
-1. Push your code to your git repository (GitHub, GitLab, BitBucket).
-2. [Import your Vite project](https://vercel.com/new) into Vercel.
-3. Vercel will detect that you are using Vite and will enable the correct settings for your deployment.
-4. Your application is deployed! (e.g. [vite-vue-template.vercel.app](https://vite-vue-template.vercel.app/))
+1. Отправьте свой код в свой репозиторий git (GitHub, GitLab, BitBucket).
+2. [Импортируйте свой проект Vite](https://vercel.com/new) в Vercel.
+3. Vercel обнаружит, что вы используете Vite, и активирует правильные настройки для вашего развертывания.
+4. Ваше приложение развернуто! (например, [vite-vue-template.vercel.app](https://vite-vue-template.vercel.app/))
 
-After your project has been imported and deployed, all subsequent pushes to branches will generate [Preview Deployments](https://vercel.com/docs/concepts/deployments/environments#preview), and all changes made to the Production Branch (commonly “main”) will result in a [Production Deployment](https://vercel.com/docs/concepts/deployments/environments#production).
+После того, как ваш проект будет импортирован и развернут, все последующие отправки в ветки будут генерировать [предварительные развертывания](https://vercel.com/docs/concepts/deployments/environments#preview), а все изменения, внесенные в производственную ветку (обычно “main”) приведет к [Производственному развертыванию](https://vercel.com/docs/concepts/deployments/environments#production).
 
-Learn more about Vercel’s [Git Integration](https://vercel.com/docs/concepts/git).
+Узнайте больше об Vercel [интеграции Git](https://vercel.com/docs/concepts/git).
 
-## Azure Static Web Apps
+## Статические веб-приложения Azure
 
-You can quickly deploy your Vite app with Microsoft Azure [Static Web Apps](https://aka.ms/staticwebapps) service. You need:
+Вы можете быстро развернуть свое приложение Vite с помощью службы Microsoft Azure [статические веб-приложения](https://aka.ms/staticwebapps). Тебе нужно:
 
-- An Azure account and a subscription key. You can create a [free Azure account here](https://azure.microsoft.com/free).
-- Your app code pushed to [GitHub](https://github.com).
-- The [SWA Extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurestaticwebapps) in [Visual Studio Code](https://code.visualstudio.com).
+- Учетная запись Azure и ключ подписки. Вы можете создать [бесплатную учетную запись Azure здесь](https://azure.microsoft.com/free).
+- Код вашего приложения отправлен на [GitHub](https://github.com).
+- [Расширение SWA](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurestaticwebapps) в [Visual Studio Code](https://code.visualstudio.com).
 
-Install the extension in VS Code and navigate to your app root. Open the Static Web Apps extension, sign in to Azure, and click the '+' sign to create a new Static Web App. You will be prompted to designate which subscription key to use.
+Установите расширение в VS Code и перейдите в корень приложения. Откройте расширение «Статические веб-приложения», войдите в Azure и щелкните значок «+», чтобы создать новое статическое веб-приложение. Вам будет предложено указать, какой ключ подписки использовать.
 
-Follow the wizard started by the extension to give your app a name, choose a framework preset, and designate the app root (usually `/`) and built file location `/dist`. The wizard will run and will create a GitHub action in your repo in a `.github` folder.
+Следуйте указаниям мастера, запущенного расширением, чтобы дать вашему приложению имя, выбрать предустановку фреймворка и указать корень приложения (обычно `/`) и местоположение созданного файла `/dist`. Мастер запустится и создаст действие GitHub в вашем репозитории в папке `.github`.
 
-The action will work to deploy your app (watch its progress in your repo's Actions tab) and, when successfully completed, you can view your app in the address provided in the extension's progress window by clicking the 'Browse Website' button that appears when the GitHub action has run.
+Действие будет работать для развертывания вашего приложения (следите за его ходом на вкладке «Действия» вашего репозитория), и после успешного завершения вы сможете просмотреть свое приложение по адресу, указанному в окне хода выполнения расширения, нажав кнопку «Обзор веб-сайта», которая появляется, когда Действие GitHub запущено.
