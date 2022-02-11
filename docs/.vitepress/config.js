@@ -112,7 +112,7 @@ module.exports = {
               link: '/guide/using-plugins'
             },
             {
-              text: 'Dependency Pre-Bundling',
+              text: 'Предварительное связывание зависимостей',
               link: '/guide/dep-pre-bundling'
             },
             {
