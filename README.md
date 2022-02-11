@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://vitejs.dev" target="_blank" rel="noopener noreferrer">
-    <img width="180" src="https://vitejs.dev/logo.svg" alt="Vite logo">
+    <img width="180" src="https://vitejs.dev/logo.svg" alt="Vite лого">
   </a>
 </p>
 <br/>
@@ -14,28 +14,28 @@
 
 # Vite ⚡
 
-> Next Generation Frontend Tooling
+> Интерфейсные инструменты нового поколения
 
-- 💡 Instant Server Start
-- ⚡️ Lightning Fast HMR
-- 🛠️ Rich Features
-- 📦 Optimized Build
-- 🔩 Universal Plugin Interface
-- 🔑 Fully Typed APIs
+- 💡 Мгновенный запуск сервера
+- ⚡️ Молниеносный HMR
+- 🛠️ Богатые возможности
+- 📦 Оптимизированная сборка
+- 🔩 Универсальный интерфейс плагинов
+- 🔑 Полностью типизированные API
 
-Vite (French word for "quick", pronounced [`/vit/`](https://cdn.jsdelivr.net/gh/vitejs/vite@main/docs/public/vite.mp3), like "veet") is a new breed of frontend build tool that significantly improves the frontend development experience. It consists of two major parts:
+Vite (французское слово, означающее «быстрый», произносится как [`/vit/`](https://cdn.jsdelivr.net/gh/vitejs/vite@main/docs/public/vite.mp3), например, "veet") – это инструмент для сборки, целью которого является обеспечение более быстрого и более компактный опыт разработки современных веб-проектов. Он состоит из двух основных частей:
 
-- A dev server that serves your source files over [native ES modules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules), with [rich built-in features](https://vitejs.dev/guide/features.html) and astonishingly fast [Hot Module Replacement (HMR)](https://vitejs.dev/guide/features.html#hot-module-replacement).
+- Сервер разработки, который обслуживает ваши исходные файлы через [нативные модули ES](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules), с [богатыми встроенными функциями](https://vitejs.dev/guide/features.html) и удивительно быстро [замена горячего модуля (HMR)](https://vitejs.dev/guide/features.html#hot-module-replacement).
 
-- A [build command](https://vitejs.dev/guide/build.html) that bundles your code with [Rollup](https://rollupjs.org), pre-configured to output highly optimized static assets for production.
+- [Команда сборки](https://vitejs.dev/guide/build.html), которая связывает ваш код с [Rollup](https://rollupjs.org), предварительно настроенным для вывода оптимизированных статических ресурсов для продакшена.
 
-In addition, Vite is highly extensible via its [Plugin API](https://vitejs.dev/guide/api-plugin.html) and [JavaScript API](https://vitejs.dev/guide/api-javascript.html) with full typing support.
+Кроме того, Vite обладает широкими возможностями расширения благодаря [Plugin API](https://vitejs.dev/guide/api-plugin.html) и [JavaScript API](https://vitejs.dev/guide/api-javascript.html) с полной поддержкой набора текста.
 
-[Read the Docs to Learn More](https://vitejs.dev).
+[Прочитайте документацию, чтобы узнать больше](https://vitejs.dev) или [перевод документации](https://vitejs.ru).
 
-## Packages
+## Пакеты
 
-| Package                                           | Version (click for changelogs)                                                                                                       |
+| Пакет                                             | Версия (нажмите для журналов изменений)                                                                                              |
 | ------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------- |
 | [vite](packages/vite)                             | [![vite version](https://img.shields.io/npm/v/vite.svg?label=%20)](packages/vite/CHANGELOG.md)                                       |
 | [@vitejs/plugin-vue](packages/plugin-vue)         | [![plugin-vue version](https://img.shields.io/npm/v/@vitejs/plugin-vue.svg?label=%20)](packages/plugin-vue/CHANGELOG.md)             |
@@ -44,15 +44,15 @@ In addition, Vite is highly extensible via its [Plugin API](https://vitejs.dev/g
 | [@vitejs/plugin-legacy](packages/plugin-legacy)   | [![plugin-legacy version](https://img.shields.io/npm/v/@vitejs/plugin-legacy.svg?label=%20)](packages/plugin-legacy/CHANGELOG.md)    |
 | [create-vite](packages/create-vite)               | [![create-vite version](https://img.shields.io/npm/v/create-vite.svg?label=%20)](packages/create-vite/CHANGELOG.md)                  |
 
-## Contribution
+## Сотрудничество
 
-See [Contributing Guide](https://github.com/vitejs/vite/blob/main/CONTRIBUTING.md).
+Смотрите [Руководство по сотрудничеству](https://github.com/vitejs/vite/blob/main/CONTRIBUTING.md).
 
-## License
+## Лицензия
 
 MIT
 
-## Sponsors
+## Спонсоры
 
 <p align="center">
   <a target="_blank" href="https://github.com/sponsors/yyx990803">
