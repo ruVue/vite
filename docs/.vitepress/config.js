@@ -108,7 +108,7 @@ module.exports = {
               link: '/guide/features'
             },
             {
-              text: 'Using Plugins',
+              text: 'Использование плагинов',
               link: '/guide/using-plugins'
             },
             {
