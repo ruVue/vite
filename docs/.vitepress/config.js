@@ -5,7 +5,7 @@
  */
 module.exports = {
   title: 'Vite',
-  description: 'Next Generation Frontend Tooling',
+  description: 'Интерфейсные инструменты нового поколения',
   head: [['link', { rel: 'icon', type: 'image/svg+xml', href: '/logo.svg' }]],
   vue: {
     reactivityTransform: true
@@ -16,7 +16,7 @@ module.exports = {
     docsDir: 'docs',
     docsBranch: 'main',
     editLinks: true,
-    editLinkText: 'Suggest changes to this page',
+    editLinkText: 'Предложить изменения на этой странице',
 
     algolia: {
       apiKey: 'b573aa848fd57fb47d693b531297403c',
@@ -26,17 +26,17 @@ module.exports = {
       }
     },
 
-    carbonAds: {
-      carbon: 'CEBIEK3N',
-      placement: 'vitejsdev'
-    },
+    // carbonAds: {
+    //   carbon: 'CEBIEK3N',
+    //   placement: 'vitejsdev'
+    // },
 
     nav: [
-      { text: 'Guide', link: '/guide/' },
-      { text: 'Config', link: '/config/' },
-      { text: 'Plugins', link: '/plugins/' },
+      { text: 'Руководство', link: '/guide/' },
+      { text: 'Конфигурация', link: '/config/' },
+      { text: 'Плагины', link: '/plugins/' },
       {
-        text: 'Links',
+        text: 'Ссылки',
         items: [
           {
             text: 'Twitter',
@@ -65,11 +65,15 @@ module.exports = {
         ]
       },
       {
-        text: 'Languages',
+        text: 'Языки',
         items: [
           {
             text: 'English',
             link: 'https://vitejs.dev'
+          },
+          {
+            text: 'Русский',
+            link: 'https://vitejs.ru'
           },
           {
             text: '简体中文',
@@ -89,18 +93,18 @@ module.exports = {
       // catch-all fallback
       '/': [
         {
-          text: 'Guide',
+          text: 'Руководство',
           children: [
             {
-              text: 'Why Vite',
+              text: 'Почему Vite',
               link: '/guide/why'
             },
             {
-              text: 'Getting Started',
+              text: 'Начало работы',
               link: '/guide/'
             },
             {
-              text: 'Features',
+              text: 'Возможности',
               link: '/guide/features'
             },
             {
