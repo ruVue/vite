@@ -120,7 +120,7 @@ module.exports = {
               link: '/guide/assets'
             },
             {
-              text: 'Building for Production',
+              text: 'Сборка для продакшена',
               link: '/guide/build'
             },
             {
