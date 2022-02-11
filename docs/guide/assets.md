@@ -1,51 +1,51 @@
-# Static Asset Handling
+# Обработка статических ресурсов
 
-- Related: [Public Base Path](./build#public-base-path)
-- Related: [`assetsInclude` config option](/config/#assetsinclude)
+- Похожие: [Базовый публичный путь](./build#public-base-path)
+- Похожие: [параметр конфигурации `assetsInclude`](/config/#assetsinclude)
 
-## Importing Asset as URL
+## Импорт объекта как URL
 
-Importing a static asset will return the resolved public URL when it is served:
+Импорт статического ресурса вернет разрешенный общедоступный URL-адрес при его обслуживании:
 
 ```js
 import imgUrl from './img.png'
 document.getElementById('hero-img').src = imgUrl
 ```
 
-For example, `imgUrl` will be `/img.png` during development, and become `/assets/img.2d8efhg.png` in the production build.
+Например, `imgUrl` будет `/img.png` во время разработки и станет `/assets/img.2d8efhg.png` в производственной сборке.
 
-The behavior is similar to webpack's `file-loader`. The difference is that the import can be either using absolute public paths (based on project root during dev) or relative paths.
+Поведение похоже на `file-loader` из webpack. Разница в том, что импорт может осуществляться как с использованием абсолютных общедоступных путей (на основе корня проекта во время разработки), так и относительных путей.
 
-- `url()` references in CSS are handled the same way.
+- Ссылки `url()` в CSS обрабатываются таким же образом.
 
-- If using the Vue plugin, asset references in Vue SFC templates are automatically converted into imports.
+- При использовании плагина Vue ссылки на ресурсы в шаблонах Vue SFC автоматически преобразуются в импорт.
 
-- Common image, media, and font filetypes are detected as assets automatically. You can extend the internal list using the [`assetsInclude` option](/config/#assetsinclude).
+- Общие типы файлов изображений, мультимедиа и шрифтов автоматически определяются как ресурсы. Вы можете расширить внутренний список, используя [параметр `assetsInclude`](/config/#assetsinclude).
 
-- Referenced assets are included as part of the build assets graph, will get hashed file names, and can be processed by plugins for optimization.
+- Ресурсы, на которые ссылаются, включаются как часть графа ресурсов сборки, получают хешированные имена файлов и могут обрабатываться плагинами для оптимизации.
 
-- Assets smaller in bytes than the [`assetsInlineLimit` option](/config/#build-assetsinlinelimit) will be inlined as base64 data URLs.
+- Ресурсы меньше в байтах, чем [параметр `assetsInlineLimit`](/config/#build-assetsinlinelimit), будут встроены как URL-адреса данных base64.
 
-### Explicit URL Imports
+### Явный импорт URL
 
-Assets that are not included in the internal list or in `assetsInclude`, can be explicitly imported as an URL using the `?url` suffix. This is useful, for example, to import [Houdini Paint Worklets](https://houdini.how/usage).
+Ресурсы, которые не включены во внутренний список или в `assetsInclude`, могут быть явно импортированы как URL-адрес с использованием суффикса `?url`. Это полезно, например, для импорта [Houdini Paint Worklets](https://houdini.how/usage).
 
 ```js
 import workletURL from 'extra-scalloped-border/worklet.js?url'
 CSS.paintWorklet.addModule(workletURL)
 ```
 
-### Importing Asset as String
+### Импорт ресурса в виде строки
 
-Assets can be imported as strings using the `?raw` suffix.
+Ресурсы можно импортировать в виде строк, используя суффикс `?raw`.
 
 ```js
 import shaderString from './shader.glsl?raw'
 ```
 
-### Importing Script as a Worker
+### Импорт скрипта в качестве рабочего
 
-Scripts can be imported as web workers with the `?worker` or `?sharedworker` suffix.
+Скрипты можно импортировать как веб-воркеры с суффиксом `?worker` или `?sharedworker`.
 
 ```js
 // Separate chunk in the production build
@@ -64,28 +64,28 @@ const sharedWorker = new SharedWorker()
 import InlineWorker from './shader.js?worker&inline'
 ```
 
-Check out the [Web Worker section](./features.md#web-workers) for more details.
+Подробнее смотрите в [разделе Web Worker](./features.md#web-workers).
 
-## The `public` Directory
+## Каталог `public`
 
-If you have assets that are:
+Если у вас есть ресурсы, которые:
 
-- Never referenced in source code (e.g. `robots.txt`)
-- Must retain the exact same file name (without hashing)
-- ...or you simply don't want to have to import an asset first just to get its URL
+- Никогда не упоминается в исходном коде (например, `robots.txt`)
+- Должно сохраняться точно такое же имя файла (без хеширования)
+- ...или вы просто не хотите сначала импортировать ресурс, чтобы получить его URL-адрес
 
-Then you can place the asset in a special `public` directory under your project root. Assets in this directory will be served at root path `/` during dev, and copied to the root of the dist directory as-is.
+Затем вы можете поместить ресурс в специальный каталог `public` в корне вашего проекта. Ресурсы в этом каталоге будут обслуживаться по корневому пути `/` во время разработки и скопированы в корень каталога dist как есть.
 
-The directory defaults to `<root>/public`, but can be configured via the [`publicDir` option](/config/#publicdir).
+Каталог по умолчанию `<root>/public`, но его можно настроить с помощью [параметра `publicDir`](/config/#publicdir).
 
-Note that:
+Обратите внимание, что:
 
-- You should always reference `public` assets using root absolute path - for example, `public/icon.png` should be referenced in source code as `/icon.png`.
-- Assets in `public` cannot be imported from JavaScript.
+- Вы всегда должны ссылаться на `public` ресурсы, используя абсолютный корневой путь – например, `public/icon.png` следует указывать в исходном коде как `/icon.png`.
+- Ресурсы в `public` нельзя импортировать из JavaScript.
 
-## new URL(url, import.meta.url)
+## новый URL(url, import.meta.url)
 
-[import.meta.url](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import.meta) is a native ESM feature that exposes the current module's URL. Combining it with the native [URL constructor](https://developer.mozilla.org/en-US/docs/Web/API/URL), we can obtain the full, resolved URL of a static asset using relative path from a JavaScript module:
+[import.meta.url](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import.meta) — это собственная функция ESM, которая предоставляет URL-адрес текущего модуля. Объединив его с собственным [конструктором URL](https://developer.mozilla.org/en-US/docs/Web/API/URL), мы можем получить полный разрешенный URL-адрес статического ресурса, используя относительный путь из модуля JavaScript:
 
 ```js
 const imgUrl = new URL('./img.png', import.meta.url).href
@@ -93,9 +93,9 @@ const imgUrl = new URL('./img.png', import.meta.url).href
 document.getElementById('hero-img').src = imgUrl
 ```
 
-This works natively in modern browsers - in fact, Vite doesn't need to process this code at all during development!
+Это изначально работает в современных браузерах — на самом деле, Vite вообще не нужно обрабатывать этот код во время разработки!
 
-This pattern also supports dynamic URLs via template literals:
+Этот шаблон также поддерживает динамические URL-адреса через литералы шаблонов:
 
 ```js
 function getImageUrl(name) {
@@ -103,8 +103,8 @@ function getImageUrl(name) {
 }
 ```
 
-During the production build, Vite will perform necessary transforms so that the URLs still point to the correct location even after bundling and asset hashing.
+Во время производственной сборки Vite выполнит необходимые преобразования, чтобы URL-адреса по-прежнему указывали на правильное местоположение даже после объединения и хеширования ресурсов.
 
-::: warning Note: Does not work with SSR
-This pattern does not work if you are using Vite for Server-Side Rendering, because `import.meta.url` have different semantics in browsers vs. Node.js. The server bundle also cannot determine the client host URL ahead of time.
+::: warning Примечание. Не работает с SSR
+Этот шаблон не работает, если вы используете Vite для рендеринга на стороне сервера, поскольку семантика `import.meta.url` в браузерах отличается от семантики Node.js. Комплект сервера также не может заранее определить URL-адрес хоста клиента.
 :::

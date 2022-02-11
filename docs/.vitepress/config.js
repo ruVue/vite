@@ -116,7 +116,7 @@ module.exports = {
               link: '/guide/dep-pre-bundling'
             },
             {
-              text: 'Static Asset Handling',
+              text: 'Обработка статических ресурсов',
               link: '/guide/assets'
             },
             {
