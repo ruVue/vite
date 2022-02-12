@@ -1,33 +1,33 @@
-# Server-Side Rendering
+# Рендеринг на стороне сервера
 
-:::warning Experimental
-SSR support is still experimental and you may encounter bugs and unsupported use cases. Proceed at your own risk.
+:::warning Экспериментально
+Поддержка SSR все еще является экспериментальной, и вы можете столкнуться с ошибками и неподдерживаемыми вариантами использования. Действуйте на свой страх и риск.
 :::
 
-:::tip Note
-SSR specifically refers to front-end frameworks (for example React, Preact, Vue, and Svelte) that support running the same application in Node.js, pre-rendering it to HTML, and finally hydrating it on the client. If you are looking for integration with traditional server-side frameworks, check out the [Backend Integration guide](./backend-integration) instead.
+:::tip Примечание
+SSR конкретно относится к интерфейсным платформам (например, React, Preact, Vue и Svelte), которые поддерживают запуск одного и того же приложения в Node.js, предварительный рендеринг его в HTML и, наконец, его гидратацию на клиенте. Если вам нужна интеграция с традиционными серверными фреймворками, ознакомьтесь с [Руководством по интеграции с серверной частью](./backend-integration).
 
-The following guide also assumes prior experience working with SSR in your framework of choice, and will only focus on Vite-specific integration details.
+В следующем руководстве также предполагается, что у вас есть опыт работы с SSR в выбранной вами среде, и оно будет сосредоточено только на деталях интеграции, специфичных для Vite.
 :::
 
-:::warning Low-level API
-This is a low-level API meant for library and framework authors. If your goal is to create an application, make sure to check out the higher-level SSR plugins and tools at [Awesome Vite SSR section](https://github.com/vitejs/awesome-vite#ssr) first. That said, many applications are successfully built directly on top of Vite's native low-level API.
+:::warning API низкого уровня
+Это низкоуровневый API, предназначенный для авторов библиотек и фреймворков. Если ваша цель — создать приложение, обязательно сначала ознакомьтесь с плагинами и инструментами SSR более высокого уровня в [разделе Awesome Vite SSR](https://github.com/vitejs/awesome-vite#ssr). Тем не менее, многие приложения успешно создаются непосредственно поверх собственного низкоуровневого API Vite.
 :::
 
-:::tip Help
-If you have questions, the community is usually helpful at [Vite Discord's #ssr channel](https://discord.gg/PkbxgzPhJv).
+:::tip Помощь
+Если у вас есть вопросы, сообщество обычно помогает на [канале Vite Discord #ssr](https://discord.gg/PkbxgzPhJv).
 :::
 
-## Example Projects
+## Примеры проектов
 
-Vite provides built-in support for server-side rendering (SSR). The Vite playground contains example SSR setups for Vue 3 and React, which can be used as references for this guide:
+Vite предоставляет встроенную поддержку рендеринга на стороне сервера (SSR). Игровая площадка Vite содержит примеры настроек SSR для Vue 3 и React, которые можно использовать в качестве справочных материалов для этого руководства:
 
 - [Vue 3](https://github.com/vitejs/vite/tree/main/packages/playground/ssr-vue)
 - [React](https://github.com/vitejs/vite/tree/main/packages/playground/ssr-react)
 
-## Source Structure
+## Исходная структура
 
-A typical SSR application will have the following source file structure:
+Типичное приложение SSR будет иметь следующую структуру исходного файла:
 
 ```
 - index.html
@@ -38,18 +38,18 @@ A typical SSR application will have the following source file structure:
   - entry-server.js  # renders the app using the framework's SSR API
 ```
 
-The `index.html` will need to reference `entry-client.js` and include a placeholder where the server-rendered markup should be injected:
+`index.html` должен будет ссылаться на `entry-client.js` и включать заполнитель, где должна быть введена разметка, отображаемая сервером:
 
 ```html
 <div id="app"><!--ssr-outlet--></div>
 <script type="module" src="/src/entry-client.js"></script>
 ```
 
-You can use any placeholder you prefer instead of `<!--ssr-outlet-->`, as long as it can be precisely replaced.
+Вы можете использовать любой заполнитель вместо `<!--ssr-outlet-->`, если его можно точно заменить.
 
-## Conditional Logic
+## Условная логика
 
-If you need to perform conditional logic based on SSR vs. client, you can use
+Если вам нужно выполнить условную логику на основе SSR и клиента, вы можете использовать
 
 ```js
 if (import.meta.env.SSR) {
@@ -57,11 +57,11 @@ if (import.meta.env.SSR) {
 }
 ```
 
-This is statically replaced during build so it will allow tree-shaking of unused branches.
+Это статически заменяется во время сборки, поэтому это позволяет tree-shaking неиспользуемых branches.
 
-## Setting Up the Dev Server
+## Настройка сервера разработки
 
-When building an SSR app, you likely want to have full control over your main server and decouple Vite from the production environment. It is therefore recommended to use Vite in middleware mode. Here is an example with [express](https://expressjs.com/):
+При создании приложения SSR вы, вероятно, захотите иметь полный контроль над своим основным сервером и отделить Vite от производственной среды. Поэтому рекомендуется использовать Vite в режиме мидлвара. Вот пример с [express](https://expressjs.com/):
 
 **server.js**
 
@@ -95,9 +95,9 @@ async function createServer() {
 createServer()
 ```
 
-Here `vite` is an instance of [ViteDevServer](./api-javascript#vitedevserver). `vite.middlewares` is a [Connect](https://github.com/senchalabs/connect) instance which can be used as a middleware in any connect-compatible Node.js framework.
+Здесь `vite` — это экземпляр [ViteDevServer](./api-javascript#vitedevserver). `vite.middlewares` — это экземпляр [Connect](https://github.com/senchalabs/connect), который можно использовать в качестве мидлвара в любой совместимой с Connect инфраструктуре Node.js.
 
-The next step is implementing the `*` handler to serve server-rendered HTML:
+Следующим шагом является реализация обработчика `*` для обслуживания отображаемого сервером HTML:
 
 ```js
 app.use('*', async (req, res, next) => {
@@ -139,7 +139,7 @@ app.use('*', async (req, res, next) => {
 })
 ```
 
-The `dev` script in `package.json` should also be changed to use the server script instead:
+Сценарий `dev` в `package.json` также следует изменить, чтобы вместо него использовался сценарий сервера:
 
 ```diff
   "scripts": {
@@ -148,14 +148,14 @@ The `dev` script in `package.json` should also be changed to use the server scri
   }
 ```
 
-## Building for Production
+## Сборка для продакшена
 
-To ship an SSR project for production, we need to:
+Чтобы отправить проект SSR в производство, нам необходимо:
 
-1. Produce a client build as normal;
-2. Produce an SSR build, which can be directly loaded via `require()` so that we don't have to go through Vite's `ssrLoadModule`;
+1. Произведите сборку клиента как обычно;
+2. Создайте сборку SSR, которую можно напрямую загрузить с помощью `require()`, чтобы нам не приходилось проходить через Vite `ssrLoadModule`;
 
-Our scripts in `package.json` will look like this:
+Наши скрипты в `package.json` будут выглядеть так:
 
 ```json
 {
@@ -167,32 +167,32 @@ Our scripts in `package.json` will look like this:
 }
 ```
 
-Note the `--ssr` flag which indicates this is an SSR build. It should also specify the SSR entry.
+Обратите внимание на флаг `--ssr`, который указывает, что это сборка SSR. Также следует указать запись SSR.
 
-Then, in `server.js` we need to add some production specific logic by checking `process.env.NODE_ENV`:
+Затем в `server.js` нам нужно добавить некоторую производственную логику, проверив `process.env.NODE_ENV`:
 
-- Instead of reading the root `index.html`, use the `dist/client/index.html` as the template instead, since it contains the correct asset links to the client build.
+- Вместо того, чтобы читать корень `index.html`, используйте `dist/client/index.html` в качестве шаблона, так как он содержит правильные ссылки ресурсов на сборку клиента.
 
-- Instead of `await vite.ssrLoadModule('/src/entry-server.js')`, use `require('./dist/server/entry-server.js')` instead (this file is the result of the SSR build).
+- Вместо `await vite.ssrLoadModule('/src/entry-server.js')`, используйте `require('./dist/server/entry-server.js')` (этот файл является результатом Сборка SSR).
 
-- Move the creation and all usage of the `vite` dev server behind dev-only conditional branches, then add static file serving middlewares to serve files from `dist/client`.
+- Переместите создание и все использование сервера разработки `vite` за условные ветки только для разработки, затем добавьте мидлвар для обслуживания статических файлов для обслуживания файлов из `dist/client`.
 
-Refer to the [Vue](https://github.com/vitejs/vite/tree/main/packages/playground/ssr-vue) and [React](https://github.com/vitejs/vite/tree/main/packages/playground/ssr-react) demos for working setup.
+Смотрите демо для рабочей установки [Vue](https://github.com/vitejs/vite/tree/main/packages/playground/ssr-vue) и [React](https://github.com/vitejs/vite/tree/main/packages/playground/ssr-react) demos for working setup.
 
-## Generating Preload Directives
+## Создание директив предварительной загрузки
 
-`vite build` supports the `--ssrManifest` flag which will generate `ssr-manifest.json` in build output directory:
+`vite build` поддерживает флаг `--ssrManifest`, который будет генерировать `ssr-manifest.json` в выходном каталоге сборки:
 
 ```diff
 - "build:client": "vite build --outDir dist/client",
 + "build:client": "vite build --outDir dist/client --ssrManifest",
 ```
 
-The above script will now generate `dist/client/ssr-manifest.json` for the client build (Yes, the SSR manifest is generated from the client build because we want to map module IDs to client files). The manifest contains mappings of module IDs to their associated chunks and asset files.
+Приведенный выше скрипт теперь сгенерирует `dist/client/ssr-manifest.json` для сборки клиента (да, манифест SSR создается из сборки клиента, потому что мы хотим сопоставить идентификаторы модулей с файлами клиента). Манифест содержит сопоставления идентификаторов модулей с соответствующими фрагментами и файлами активов.
 
-To leverage the manifest, frameworks need to provide a way to collect the module IDs of the components that were used during a server render call.
+Чтобы использовать манифест, фреймворки должны предоставить способ сбора идентификаторов модулей компонентов, которые использовались во время вызова рендеринга сервера.
 
-`@vitejs/plugin-vue` supports this out of the box and automatically registers used component module IDs on to the associated Vue SSR context:
+`@vitejs/plugin-vue` поддерживает это из коробки и автоматически регистрирует используемые идентификаторы модулей компонентов в связанном контексте Vue SSR:
 
 ```js
 // src/entry-server.js
@@ -201,33 +201,33 @@ const html = await vueServerRenderer.renderToString(app, ctx)
 // ctx.modules is now a Set of module IDs that were used during the render
 ```
 
-In the production branch of `server.js` we need to read and pass the manifest to the `render` function exported by `src/entry-server.js`. This would provide us with enough information to render preload directives for files used by async routes! See [demo source](https://github.com/vitejs/vite/blob/main/packages/playground/ssr-vue/src/entry-server.js) for full example.
+В продакшен ветке `server.js` нам нужно прочитать и передать манифест функции `render`, экспортируемой `src/entry-server.js`. Это даст нам достаточно информации для рендеринга директив предварительной загрузки для файлов, используемых асинхронными маршрутами! Полный пример смотрите в [источнике демо](https://github.com/vitejs/vite/blob/main/packages/playground/ssr-vue/src/entry-server.js).
 
-## Pre-Rendering / SSG
+## Предварительный рендеринг / SSG
 
-If the routes and the data needed for certain routes are known ahead of time, we can pre-render these routes into static HTML using the same logic as production SSR. This can also be considered a form of Static-Site Generation (SSG). See [demo pre-render script](https://github.com/vitejs/vite/blob/main/packages/playground/ssr-vue/prerender.js) for working example.
+Если маршруты и данные, необходимые для определенных маршрутов, известны заранее, мы можем предварительно преобразовать эти маршруты в статический HTML, используя ту же логику, что и производственная SSR. Это также можно рассматривать как форму создания статических сайтов (SSG). Смотрите [демонстрационный сценарий предварительного рендеринга](https://github.com/vitejs/vite/blob/main/packages/playground/ssr-vue/prerender.js) для рабочего примера.
 
-## SSR Externals
+## Внешний SSR
 
-Many dependencies ship both ESM and CommonJS files. When running SSR, a dependency that provides CommonJS builds can be "externalized" from Vite's SSR transform / module system to speed up both dev and build. For example, instead of pulling in the pre-bundled ESM version of React and then transforming it back to be Node.js-compatible, it is more efficient to simply `require('react')` instead. It also greatly improves the speed of the SSR bundle build.
+Многие зависимости содержат как файлы ESM, так и файлы CommonJS. При запуске SSR зависимость, которая обеспечивает сборки CommonJS, может быть «экстернализирована» из системы преобразования/модуля SSR Vite, чтобы ускорить как разработку, так и сборку. Например, вместо того, чтобы использовать предустановленную ESM-версию React, а затем преобразовывать ее обратно, чтобы она была совместима с Node.js, более эффективно вместо этого просто `require('react')`. Это также значительно повышает скорость сборки пакета SSR.
 
-Vite performs automated SSR externalization based on the following heuristics:
+Vite выполняет автоматическую экстернализацию SSR на основе следующих эвристик:
 
-- If a dependency's resolved ESM entry point and its default Node entry point are different, its default Node entry is probably a CommonJS build that can be externalized. For example, `vue` will be automatically externalized because it ships both ESM and CommonJS builds.
+- Если разрешенная точка входа ESM зависимости и ее точка входа Node по умолчанию отличаются, ее запись Node по умолчанию, вероятно, является сборкой CommonJS, которую можно экстернализовать. Например, `vue` будет автоматически экстернализирован, потому что он поставляется как с ESM, так и с CommonJS.
 
-- Otherwise, Vite will check whether the package's entry point contains valid ESM syntax - if not, the package is likely CommonJS and will be externalized. As an example, `react-dom` will be automatically externalized because it only specifies a single entry which is in CommonJS format.
+- В противном случае Vite проверит, содержит ли точка входа пакета действительный синтаксис ESM — если нет, пакет, скорее всего, является CommonJS и будет экстернализован. Например, `react-dom` будет автоматически экстернализован, потому что он указывает только одну запись в формате CommonJS.
 
-If this heuristics leads to errors, you can manually adjust SSR externals using `ssr.external` and `ssr.noExternal` config options.
+Если эта эвристика приводит к ошибкам, вы можете вручную настроить внешние SSR, используя параметры конфигурации `ssr.external` и `ssr.noExternal`.
 
-In the future, this heuristics will likely improve to detect if the project has `type: "module"` enabled, so that Vite can also externalize dependencies that ship Node-compatible ESM builds by importing them via dynamic `import()` during SSR.
+В будущем эта эвристика, вероятно, улучшится, чтобы определить, включен ли в проекте тип `type: "module"`, чтобы Vite также мог экстернализовать зависимости, которые доставляют Node-совместимые сборки ESM, импортируя их через динамический `import()` во время SSR.
 
-:::warning Working with Aliases
-If you have configured aliases that redirects one package to another, you may want to alias the actual `node_modules` packages instead to make it work for SSR externalized dependencies. Both [Yarn](https://classic.yarnpkg.com/en/docs/cli/add/#toc-yarn-add-alias) and [pnpm](https://pnpm.js.org/en/aliases) support aliasing via the `npm:` prefix.
+:::warning Работа с псевдонимами
+Если вы настроили псевдонимы, которые перенаправляют один пакет на другой, вы можете вместо этого использовать псевдонимы для фактических пакетов `node_modules`, чтобы он работал для внешних зависимостей SSR. И [Yarn](https://classic.yarnpkg.com/en/docs/cli/add/#toc-yarn-add-alias), и [pnpm](https://pnpm.js.org/en/aliases) поддерживают псевдонимы через префикс `npm:`.
 :::
 
-## SSR-specific Plugin Logic
+## Логика плагина, специфичная для SSR
 
-Some frameworks such as Vue or Svelte compiles components into different formats based on client vs. SSR. To support conditional transforms, Vite passes an additional `ssr` property in the `options` object of the following plugin hooks:
+Некоторые фреймворки, такие как Vue или Svelte, компилируют компоненты в разные форматы в зависимости от клиента и SSR. Для поддержки условных преобразований Vite передает дополнительное свойство `ssr` в объект `options` следующих хуков плагина:
 
 - `resolveId`
 - `load`
@@ -248,19 +248,19 @@ export function mySSRPlugin() {
 }
 ```
 
-The options object in `load` and `transform` is optional, rollup is not currently using this object but may extend these hooks with additional metadata in the future.
+Объект параметров в `load` и `transform` является необязательным, в настоящее время накопительный пакет не использует этот объект, но может расширить эти хуки дополнительными метаданными в будущем.
 
-:::tip Note
-Before Vite 2.7, this was informed to plugin hooks with a positional `ssr` param instead of using the `options` object. All major frameworks and plugins are updated but you may find outdated posts using the previous API.
+:::tip Примечание
+До Vite 2.7 об этом сообщалось обработчикам плагинов с позиционным параметром `ssr` вместо использования объекта `options`. Все основные фреймворки и плагины обновлены, но вы можете найти устаревшие сообщения, используя предыдущий API.
 :::
 
-## SSR Target
+## Цель SSR
 
-The default target for the SSR build is a node environment, but you can also run the server in a Web Worker. Packages entry resolution is different for each platform. You can configure the target to be Web Worker using the `ssr.target` set to `'webworker'`.
+Целью по умолчанию для сборки SSR является среда узла, но вы также можете запустить сервер в веб-воркере. Разрешение входа пакетов отличается для каждой платформы. Вы можете настроить цель как Web Worker, используя для `ssr.target` значение `'webworker'`.
 
-## SSR Bundle
+## SSR бандл
 
-In some cases like `webworker` runtimes, you might want to bundle your SSR build into a single JavaScript file. You can enable this behavior by setting `ssr.noExternal` to `true`. This will do two things:
+В некоторых случаях, таких как среды выполнения `webworker`, вы можете захотеть объединить сборку SSR в один файл JavaScript. Вы можете включить это поведение, установив для `ssr.noExternal` значение `true`. Это сделает две вещи:
 
-- Treat all dependencies as `noExternal`
-- Throw an error if any Node.js built-ins are imported
+- Рассматривать все зависимости как `noExternal`
+- Выдавать ошибку, если какие-либо встроенные модули Node.js импортированы
