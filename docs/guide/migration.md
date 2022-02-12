@@ -1,23 +1,23 @@
-# Migration from v1
+# Миграция с v1
 
-## Config Options Change
+## Изменение параметров конфигурации
 
-- The following options have been removed and should be implemented via [plugins](./api-plugin):
+- Следующие параметры были удалены и должны быть реализованы через [плагины](./api-plugin):
 
   - `resolvers`
   - `transforms`
   - `indexHtmlTransforms`
 
-- `jsx` and `enableEsbuild` have been removed; Use the new [`esbuild`](/config/#esbuild) option instead.
+- удалены `jsx` и `enableEsbuild` Вместо этого используйте новую опцию [`esbuild`](/config/#esbuild).
 
-- [CSS related options](/config/#css-modules) are now nested under `css`.
+- [Параметры, связанные с CSS](/config/#css-modules) теперь вложены в `css`.
 
-- All [build-specific options](/config/#build-options) are now nested under `build`.
+- Все [параметры сборки](/config/#build-options) теперь вложены в `build`.
 
-  - `rollupInputOptions` and `rollupOutputOptions` are replaced by [`build.rollupOptions`](/config/#build-rollupoptions).
-  - `esbuildTarget` is now [`build.target`](/config/#build-target).
-  - `emitManifest` is now [`build.manifest`](/config/#build-manifest).
-  - The following build options have been removed since they can be achieved via plugin hooks or other options:
+  - `rollupInputOptions` и `rollupOutputOptions` заменены на [`build.rollupOptions`](/config/#build-rollupoptions).
+  - `esbuildTarget` теперь [`build.target`](/config/#build-target).
+  - `emitManifest` теперь [`build.manifest`](/config/#build-manifest).
+  - Следующие параметры сборки были удалены, так как они могут быть достигнуты с помощью хуков плагинов или других параметров:
     - `entry`
     - `rollupDedupe`
     - `emitAssets`
@@ -25,31 +25,31 @@
     - `shouldPreload`
     - `configureBuild`
 
-- All [server-specific options](/config/#server-options) are now nested under
+- Все [специфичные для сервера параметры](/config/#server-options) теперь вложены в
   `server`.
 
-  - `hostname` is now [`server.host`](/config/#server-host).
-  - `httpsOptions` has been removed. [`server.https`](/config/#server-https) can directly accept the options object.
-  - `chokidarWatchOptions` is now [`server.watch`](/config/#server-watch).
+  - `hostname` теперь [`server.host`](/config/#server-host).
+  - `httpsOptions` был удален. [`server.https`](/config/#server-https) может напрямую принимать объект параметров.
+  - `chokidarWatchOptions` теперь [`server.watch`](/config/#server-watch).
 
-- [`assetsInclude`](/config/#assetsinclude) now expects `string | RegExp | (string | RegExp)[]` instead of a function.
+- [`assetsInclude`](/config/#assetsinclude) теперь ожидает `string | RegExp | (string | RegExp)[]` вместо функции.
 
-- All Vue specific options are removed; Pass options to the Vue plugin instead.
+- Все специфичные для Vue параметры удалены; Вместо этого передайте параметры плагину Vue.
 
-## Alias Behavior Change
+## Изменение поведения псевдонима
 
-[`alias`](/config/#resolve-alias) is now being passed to `@rollup/plugin-alias` and no longer require start/ending slashes. The behavior is now a direct replacement, so 1.0-style directory alias key should remove the ending slash:
+[`alias`](/config/#resolve-alias) теперь передается в `@rollup/plugin-alias` и больше не требует начальной/конечной косой черты. Поведение теперь является прямой заменой, поэтому ключ псевдонима каталога в стиле 1.0 должен удалить косую черту в конце:
 
 ```diff
 - alias: { '/@foo/': path.resolve(__dirname, 'some-special-dir') }
 + alias: { '/@foo': path.resolve(__dirname, 'some-special-dir') }
 ```
 
-Alternatively, you can use the `[{ find: RegExp, replacement: string }]` option format for more precise control.
+Кроме того, вы можете использовать формат опции `[{ find: RegExp, replacement: string }]` для более точного управления.
 
-## Vue Support
+## Поддержка Vue
 
-Vite 2.0 core is now framework agnostic. Vue support is now provided via [`@vitejs/plugin-vue`](https://github.com/vitejs/vite/tree/main/packages/plugin-vue). Simply install it and add it in the Vite config:
+Vite 2.0 core теперь не зависит от фреймворка. Поддержка Vue теперь предоставляется через [`@vitejs/plugin-vue`](https://github.com/vitejs/vite/tree/main/packages/plugin-vue). Просто установите его и добавьте в конфигурацию Vite:
 
 ```js
 import vue from '@vitejs/plugin-vue'
@@ -60,9 +60,9 @@ export default defineConfig({
 })
 ```
 
-### Custom Blocks Transforms
+### Преобразования пользовательских блоков
 
-A custom plugin can be used to transform Vue custom blocks like the one below:
+Пользовательский плагин можно использовать для преобразования пользовательских блоков Vue, как показано ниже:
 
 ```ts
 // vite.config.js
@@ -89,17 +89,17 @@ export default defineConfig({
 })
 ```
 
-## React Support
+## Поддержка React
 
-React Fast Refresh support is now provided via [`@vitejs/plugin-react`](https://github.com/vitejs/vite/tree/main/packages/plugin-react).
+Поддержка React Fast Refresh теперь предоставляется через [`@vitejs/plugin-react`](https://github.com/vitejs/vite/tree/main/packages/plugin-react).
 
-## HMR API Change
+## Изменение HMR API
 
-`import.meta.hot.acceptDeps()` have been deprecated. [`import.meta.hot.accept()`](./api-hmr#hot-accept-deps-cb) can now accept single or multiple deps.
+`import.meta.hot.acceptDeps()` устарело. [`import.meta.hot.accept()`](./api-hmr#hot-accept-deps-cb) теперь может принимать одно или несколько отложений.
 
-## Manifest Format Change
+## Изменение формата манифеста
 
-The build manifest now uses the following format:
+Манифест сборки теперь использует следующий формат:
 
 ```json
 {
@@ -116,18 +116,18 @@ The build manifest now uses the following format:
 }
 ```
 
-For entry JS chunks, it also lists its imported chunks which can be used to render preload directives.
+Для входных фрагментов JS также перечислены импортированные фрагменты, которые можно использовать для рендеринга директив предварительной загрузки.
 
-## For Plugin Authors
+## Для авторов плагинов
 
-Vite 2 uses a completely redesigned plugin interface which extends Rollup plugins. Please read the new [Plugin Development Guide](./api-plugin).
+Vite 2 использует полностью переработанный интерфейс плагинов, который расширяет плагины Rollup. Пожалуйста, прочтите новое [Руководство по разработке плагинов](./api-plugin).
 
-Some general pointers on migrating a v1 plugin to v2:
+Некоторые общие указания по переносу плагина версии 1 на версию 2:
 
-- `resolvers` -> use the [`resolveId`](https://rollupjs.org/guide/en/#resolveid) hook
-- `transforms` -> use the [`transform`](https://rollupjs.org/guide/en/#transform) hook
-- `indexHtmlTransforms` -> use the [`transformIndexHtml`](./api-plugin#transformindexhtml) hook
-- Serving virtual files -> use [`resolveId`](https://rollupjs.org/guide/en/#resolveid) + [`load`](https://rollupjs.org/guide/en/#load) hooks
-- Adding `alias`, `define` or other config options -> use the [`config`](./api-plugin#config) hook
+- `resolvers` -> используйте хук [`resolveId`](https://rollupjs.org/guide/en/#resolveid)
+- `transforms` -> используйте хук [`transform`](https://rollupjs.org/guide/en/#transform)
+- `indexHtmlTransforms` -> используйте хук [`transformIndexHtml`](./api-plugin#transformindexhtml)
+- Обслуживание виртуальных файлов -> используйте хуки [`resolveId`](https://rollupjs.org/guide/en/#resolveid) + [`load`](https://rollupjs.org/guide/en/#load)
+- Добавление `alias`, `define` или других параметров конфигурации -> используйте хук [`config`](./api-plugin#config)
 
-Since most of the logic should be done via plugin hooks instead of middlewares, the need for middlewares is greatly reduced. The internal server app is now a good old [connect](https://github.com/senchalabs/connect) instance instead of Koa.
+Поскольку большая часть логики должна выполняться с помощью подключаемых модулей, а не промежуточного программного обеспечения, потребность в промежуточном программном обеспечении значительно снижается. Внутреннее серверное приложение теперь представляет собой старый добрый экземпляр [connect](https://github.com/senchalabs/connect) вместо Koa.

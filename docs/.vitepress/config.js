@@ -144,7 +144,7 @@ module.exports = {
               link: '/guide/comparisons'
             },
             {
-              text: 'Migration from v1',
+              text: 'Миграция с v1',
               link: '/guide/migration'
             }
           ]
