@@ -136,7 +136,7 @@ module.exports = {
               link: '/guide/ssr'
             },
             {
-              text: 'Backend Integration',
+              text: 'Бэкэнд-интеграция',
               link: '/guide/backend-integration'
             },
             {

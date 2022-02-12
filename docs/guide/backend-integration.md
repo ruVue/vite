@@ -1,12 +1,12 @@
-# Backend Integration
+# Интеграция с бекендом
 
-:::tip Note
-If you want to serve the HTML using a traditional backend (e.g. Rails, Laravel) but use Vite for serving assets, check for existing integrations listed in [Awesome Vite](https://github.com/vitejs/awesome-vite#integrations-with-backends).
+:::tip Примечание
+Если вы хотите обслуживать HTML с помощью традиционного бэкенда (например, Rails, Laravel), но использовать Vite для обслуживания ресурсов, проверьте наличие существующих интеграций, перечисленных в [Awesome Vite](https://github.com/vitejs/awesome-vite#integrations-with-backends).
 
-If you need a custom integration, you can follow the steps in this guide to configure it manually
+Если вам нужна пользовательская интеграция, вы можете выполнить шаги, описанные в этом руководстве, чтобы настроить ее вручную.
 :::
 
-1. In your Vite config, configure the entry and enable build manifest:
+1. В конфигурации Vite настройте запись и включите манифест сборки:
 
    ```js
    // vite.config.js
@@ -22,14 +22,14 @@ If you need a custom integration, you can follow the steps in this guide to conf
    })
    ```
 
-   If you haven't disabled the [module preload polyfill](/config/#build-polyfillmodulepreload), you also need to import the polyfill in your entry
+   Если вы не отключили [модуль полифилл предварительной загрузки](/config/#build-polyfillmodulepreload), вам также необходимо импортировать polyfill в свою запись.
 
    ```js
    // add the beginning of your app entry
    import 'vite/modulepreload-polyfill'
    ```
 
-2. For development, inject the following in your server's HTML template (substitute `http://localhost:3000` with the local URL Vite is running at):
+2. Для разработки добавьте следующее в HTML-шаблон вашего сервера (замените `http://localhost:3000` на локальный URL-адрес, по которому работает Vite):
 
    ```html
    <!-- if development -->
@@ -37,9 +37,9 @@ If you need a custom integration, you can follow the steps in this guide to conf
    <script type="module" src="http://localhost:3000/main.js"></script>
    ```
 
-   Also make sure the server is configured to serve static assets in the Vite working directory, otherwise assets such as images won't be loaded properly.
+   Также убедитесь, что сервер настроен для обслуживания статических ресурсов в рабочем каталоге Vite, иначе ресурсы, такие как изображения, не будут загружаться должным образом.
 
-   Note if you are using React with `@vitejs/plugin-react`, you'll also need to add this before the above scripts, since the plugin is not able to modify the HTML you are serving:
+   Обратите внимание, если вы используете React с `@vitejs/plugin-react`, вам также необходимо добавить это перед приведенными выше сценариями, поскольку плагин не может изменять HTML, который вы обслуживаете:
 
    ```html
    <script type="module">
@@ -51,7 +51,7 @@ If you need a custom integration, you can follow the steps in this guide to conf
    </script>
    ```
 
-3. For production: after running `vite build`, a `manifest.json` file will be generated alongside other asset files. An example manifest file looks like this:
+3. Для производства: после запуска `vite build` будет создан файл `manifest.json` вместе с другими файлами активов. Пример файла манифеста выглядит так:
 
    ```json
    {
@@ -75,12 +75,12 @@ If you need a custom integration, you can follow the steps in this guide to conf
    }
    ```
 
-   - The manifest has a `Record<name, chunk>` structure
-   - For entry or dynamic entry chunks, the key is the relative src path from project root.
-   - For non entry chunks, the key is the base name of the generated file prefixed with `_`.
-   - Chunks will contain information on its static and dynamic imports (both are keys that maps to the corresponding chunk in the manifest), and also its corresponding CSS and asset files (if any).
+   - Манифест имеет структуру `Record<name, chunk>`.
+   - Для входных или динамических входных фрагментов ключом является относительный путь src от корня проекта.
+   - Для фрагментов, не являющихся входными, ключ представляет собой базовое имя сгенерированного файла с префиксом `_`.
+   - Чанки будут содержать информацию о его статическом и динамическом импорте (оба являются ключами, которые сопоставляются с соответствующим фрагментом в манифесте), а также соответствующие файлы CSS и ресурсов (если они есть).
 
-   You can use this file to render links or preload directives with hashed filenames (note: the syntax here is for explanation only, substitute with your server templating language):
+   Вы можете использовать этот файл для отображения ссылок или директив предварительной загрузки с хэшированными именами файлов (примечание: приведенный здесь синтаксис предназначен только для пояснения, замените его языком шаблонов вашего сервера):
 
    ```html
    <!-- if production -->
