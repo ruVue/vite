@@ -128,7 +128,7 @@ module.exports = {
               link: '/guide/static-deploy'
             },
             {
-              text: 'Env Variables and Modes',
+              text: 'Переменные окружения и режимы',
               link: '/guide/env-and-mode'
             },
             {
