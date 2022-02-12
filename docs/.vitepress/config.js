@@ -140,7 +140,7 @@ module.exports = {
               link: '/guide/backend-integration'
             },
             {
-              text: 'Comparisons',
+              text: 'Сравнения',
               link: '/guide/comparisons'
             },
             {
