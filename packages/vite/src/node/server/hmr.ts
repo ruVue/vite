@@ -1,15 +1,15 @@
 import fs from 'fs'
 import path from 'path'
+import type { Server } from 'http'
 import colors from 'picocolors'
-import type { ViteDevServer } from '..'
-import { createDebugger, normalizePath } from '../utils'
-import type { ModuleNode } from './moduleGraph'
 import type { Update } from 'types/hmrPayload'
-import { CLIENT_DIR } from '../constants'
 import type { RollupError } from 'rollup'
 import { isMatch } from 'micromatch'
-import type { Server } from 'http'
+import { CLIENT_DIR } from '../constants'
+import { createDebugger, normalizePath } from '../utils'
+import type { ViteDevServer } from '..'
 import { isCSSRequest } from '../plugins/css'
+import type { ModuleNode } from './moduleGraph'
 
 export const debugHmr = createDebugger('vite:hmr')
 
@@ -44,14 +44,15 @@ export async function handleHMRUpdate(
 ): Promise<any> {
   const { ws, config, moduleGraph } = server
   const shortFile = getShortName(file, config.root)
+  const fileName = path.basename(file)
 
   const isConfig = file === config.configFile
   const isConfigDependency = config.configFileDependencies.some(
-    (name) => file === path.resolve(name)
+    (name) => file === name
   )
   const isEnv =
     config.inlineConfig.envFile !== false &&
-    (file === '.env' || file.startsWith('.env.'))
+    (fileName === '.env' || fileName.startsWith('.env.'))
   if (isConfig || isConfigDependency || isEnv) {
     // auto restart server
     debugHmr(`[config change] ${colors.dim(shortFile)}`)
@@ -225,6 +226,13 @@ function propagateUpdate(
   }>,
   currentChain: ModuleNode[] = [node]
 ): boolean /* hasDeadEnd */ {
+  // #7561
+  // if the imports of `node` have not been analyzed, then `node` has not
+  // been loaded in the browser and we should stop propagation.
+  if (node.id && node.isSelfAccepting === undefined) {
+    return false
+  }
+
   if (node.isSelfAccepting) {
     boundaries.add({
       boundary: node,
@@ -286,6 +294,7 @@ function invalidate(mod: ModuleNode, timestamp: number, seen: Set<ModuleNode>) {
   mod.lastHMRTimestamp = timestamp
   mod.transformResult = null
   mod.ssrModule = null
+  mod.ssrError = null
   mod.ssrTransformResult = null
   mod.importers.forEach((importer) => {
     if (!importer.acceptedHmrDeps.has(mod)) {

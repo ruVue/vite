@@ -43,6 +43,20 @@ module.exports = defineConfig({
 
 Например, вы можете указать несколько выходных данных Rollup с подключаемыми модулями, которые применяются только во время сборки.
 
+## Стратегия разделения
+
+Вы можете настроить разделение фрагментов с помощью `build.rollupOptions.output.manualChunks` (смотрите [документацию по Rollup](https://rollupjs.org/guide/en/#outputmanualchunks)). До Vite 2.8, стратегия разделения по умолчанию разделяла куски на `index` и `vendor`. Это хорошая стратегия для некоторых SPA, но сложно найти общее решение для каждого целевого варианта использования Vite. Начиная с Vite 2.9, `manualChunks` больше не изменяется по умолчанию. Вы можете продолжать использовать стратегию Split Vendor Chunk, добавив `splitVendorChunkPlugin` в свой файл конфигурации:
+
+```js
+// vite.config.js
+import { splitVendorChunkPlugin } from 'vite'
+module.exports = defineConfig({
+  plugins: [splitVendorChunkPlugin()]
+})
+```
+
+Эта стратегия также предоставляется как фабрика `splitVendorChunk({ cache: SplitVendorChunkCache })`, если требуется композиция с пользовательской логикой. `cache.reset()` необходимо вызвать в `buildStart`, чтобы в этом случае режим наблюдения за сборкой работал правильно.
+
 ## Восстановить при изменении файлов
 
 Вы можете включить наблюдатель сводки с помощью `vite build --watch`. Или вы можете напрямую настроить базовые [`WatcherOptions`](https://rollupjs.org/guide/en/#watch-options) через `build.watch`:
@@ -59,6 +73,8 @@ module.exports = defineConfig({
 ```
 
 ## Многостраничное приложение
+
+При включенном флаге `--watch` изменения в `vite.config.js`, а также любые файлы, которые должны быть объединены, вызовут перестроение.
 
 Предположим, у вас есть следующая структура исходного кода:
 
@@ -127,6 +143,15 @@ module.exports = defineConfig({
     }
   }
 })
+```
+
+Файл входа будет содержать экспорты, которые могут быть импортированы пользователями вашего пакета:
+
+```js
+// lib/main.js
+import Foo from './Foo.vue'
+import Bar from './Bar.vue'
+export { Foo, Bar }
 ```
 
 Запуск `vite build` с этой конфигурацией использует предустановку Rollup, ориентированную на поставляемые библиотеки, и создает два формата пакетов: `es` и `umd` (настраивается через `build.lib`):

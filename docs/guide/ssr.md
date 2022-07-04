@@ -22,8 +22,8 @@ SSR конкретно относится к интерфейсным платф
 
 Vite предоставляет встроенную поддержку рендеринга на стороне сервера (SSR). Игровая площадка Vite содержит примеры настроек SSR для Vue 3 и React, которые можно использовать в качестве справочных материалов для этого руководства:
 
-- [Vue 3](https://github.com/vitejs/vite/tree/main/packages/playground/ssr-vue)
-- [React](https://github.com/vitejs/vite/tree/main/packages/playground/ssr-react)
+- [Vue 3](https://github.com/vitejs/vite/tree/v2/packages/playground/ssr-vue)
+- [React](https://github.com/vitejs/vite/tree/v2/packages/playground/ssr-react)
 
 ## Исходная структура
 
@@ -177,7 +177,7 @@ app.use('*', async (req, res, next) => {
 
 - Переместите создание и все использование сервера разработки `vite` за условные ветки только для разработки, затем добавьте мидлвар для обслуживания статических файлов для обслуживания файлов из `dist/client`.
 
-Смотрите демо для рабочей установки [Vue](https://github.com/vitejs/vite/tree/main/packages/playground/ssr-vue) и [React](https://github.com/vitejs/vite/tree/main/packages/playground/ssr-react) demos for working setup.
+Смотрите [Vue](https://github.com/vitejs/vite/tree/v2/packages/playground/ssr-vue) и [React](https://github.com/vitejs/vite/tree/v2/packages/playground/ssr-react) демонстрации для рабочей установки.
 
 ## Создание директив предварительной загрузки
 

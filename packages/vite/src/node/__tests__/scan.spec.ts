@@ -1,4 +1,4 @@
-import { scriptRE, commentRE, importsRE } from '../optimizer/scan'
+import { commentRE, importsRE, scriptRE } from '../optimizer/scan'
 import { multilineCommentsRE, singlelineCommentsRE } from '../utils'
 
 describe('optimizer-scan:script-test', () => {
@@ -30,7 +30,8 @@ describe('optimizer-scan:script-test', () => {
     scriptRE.lastIndex = 0
     const ret = scriptRE.exec(
       `<template>
-        <!--  <script >var test = null</script> -->
+        <!--  <script >var test1 = null</script> -->
+        <!--  <script >var test2 = null</script> -->
       </template>`.replace(commentRE, '')
     )
     expect(ret).toEqual(null)

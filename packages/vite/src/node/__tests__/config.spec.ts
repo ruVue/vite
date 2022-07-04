@@ -1,5 +1,5 @@
 import type { InlineConfig } from '..'
-import type { UserConfigExport, UserConfig } from '../config'
+import type { UserConfig, UserConfigExport } from '../config'
 import { mergeConfig, resolveConfig, resolveEnvPrefix } from '../config'
 
 describe('mergeConfig', () => {
@@ -156,6 +156,30 @@ describe('mergeConfig', () => {
     }
 
     expect(mergeConfig(baseConfig, newConfig)).toEqual(mergedConfig)
+  })
+
+  test('handles ssr.noExternal', () => {
+    const baseConfig = {
+      ssr: {
+        noExternal: true
+      }
+    }
+
+    const newConfig = {
+      ssr: {
+        noExternal: ['foo']
+      }
+    }
+
+    const mergedConfig = {
+      ssr: {
+        noExternal: true
+      }
+    }
+
+    // merging either ways, `ssr.noExternal: true` should take highest priority
+    expect(mergeConfig(baseConfig, newConfig)).toEqual(mergedConfig)
+    expect(mergeConfig(newConfig, baseConfig)).toEqual(mergedConfig)
   })
 })
 

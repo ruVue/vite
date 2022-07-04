@@ -53,6 +53,8 @@ export type { T }
 
 Вы должны установить `"isolatedModules": true` в вашем `tsconfig.json` в разделе `compilerOptions`, чтобы TS предупредил вас о функциях, которые не работают с изолированной транспиляцией.
 
+However, some libraries (e.g. [`vue`](https://github.com/vuejs/core/issues/1228)) don't work well with `"isolatedModules": true`. You can use `"skipLibCheck": true` to temporarily suppress the errors until it is fixed upstream.
+
 #### `useDefineForClassFields`
 
 Начиная с Vite 2.5.0, значением по умолчанию будет `true`, если целью TypeScript является `ESNext`. Это соответствует [поведению `tsc` 4.3.2 и более поздних версий](https://github.com/microsoft/TypeScript/pull/42663). Это также стандартное поведение среды выполнения ECMAScript.
@@ -185,7 +187,7 @@ document.getElementById('foo').className = applyColor
 
 ### Препроцессоры CSS
 
-Поскольку Vite предназначен только для современных браузеров, рекомендуется использовать собственные переменные CSS с плагинами PostCSS, которые реализуют черновики CSSWG (например, [postcss-nesting](https://github.com/jonathantneal/postcss-nesting)) и создают простые, будущие -совместимый со стандартами CSS.
+Поскольку Vite предназначен только для современных браузеров, рекомендуется использовать собственные переменные CSS с плагинами PostCSS, которые реализуют черновики CSSWG (например, [postcss-nesting](https://github.com/csstools/postcss-plugins/tree/main/plugins/postcss-nesting)) и создавать простой CSS, соответствующий будущим стандартам.
 
 Тем не менее, Vite обеспечивает встроенную поддержку файлов `.scss`, `.sass`, `.less`, `.styl` и `.stylus`. Для них не нужно устанавливать специфичные для Vite плагины, но сам соответствующий препроцессор должен быть установлен:
 
@@ -298,13 +300,29 @@ const modules = {
 }
 ```
 
+`import.meta.glob` и `import.meta.globEager` также поддерживают импорт файлов в виде строк (аналогично [Импорту ассета как строки](https://vitejs.dev/guide/assets.html#importing-asset-as-string)) с синтаксисом [Import Reflection](https://github.com/tc39/proposal-import-reflection):
+
+```js
+const modules = import.meta.glob('./dir/*.js', { as: 'raw' })
+```
+
+Вышеупомянутое будет преобразовано в следующее:
+
+```js
+// code produced by vite
+const modules = {
+  './dir/foo.js': '{\n  "msg": "foo"\n}\n',
+  './dir/bar.js': '{\n  "msg": "bar"\n}\n'
+}
+```
+
 Обратите внимание, что:
 
 - Это функция только для Vite и не является стандартом для Интернета или ES.
-- Шаблоны глобусов обрабатываются как спецификаторы импорта: они должны быть либо относительными (начинаться с `./`), либо абсолютными (начинаться с `/`, разрешаться относительно корня проекта).
-- Сопоставление glob выполняется с помощью `fast-glob` - ознакомьтесь с его документацией для [поддерживаемых шаблонов glob](https://github.com/mrmlnc/fast-glob#pattern-syntax).
-- Вы также должны знать, что импорт glob не принимает переменные, вам нужно напрямую передать шаблон строки.
-- Шаблоны glob не могут содержать ту же строку кавычек (например, `'`, `"`, `` ` ``), что и внешние кавычки, например, `'/Tom\'s files/**'`, используйте `"/Tom's files/**"` вместо этого.
+- Шаблоны glob обрабатываются как спецификаторы импорта: они должны быть либо относительными (начинаться с `./`), либо абсолютными (начинаться с `/`, разрешаться относительно корня проекта), либо псевдонимом пути (смотрите [`resolve.alias` option](/config/#resolve-alias)).
+- Сопоставление glob выполняется с помощью `fast-glob` - ознакомьтесь с его документацией для [поддерживаемых глобальных шаблонов](https://github.com/mrmlnc/fast-glob#pattern-syntax).
+- Вы также должны знать, что глобальный импорт не принимает переменные, вам нужно напрямую передать шаблон строки.
+- Шаблоны glob не могут содержать ту же строку кавычек (т. е. `'`, `"`, `` ` ``), что и внешние кавычки, например, `'/Tom\'s files/**'`, используйте `"/Tom's files/**"` вместо этого.
 
 ## Веб-сборка
 
@@ -336,6 +354,24 @@ init({
 
 ## Веб-воркеры
 
+### Импорт с помощью конструкторов
+
+Сценарий веб-воркера можно импортировать с помощью [`new Worker()`](https://developer.mozilla.org/en-US/docs/Web/API/Worker/Worker) и [`new SharedWorker()`](https://developer.mozilla.org/en-US/docs/Web/API/SharedWorker/SharedWorker). По сравнению с рабочими суффиксами этот синтаксис ближе к стандартам и является **рекомендуемым** способом создания рабочих процессов.
+
+```ts
+const worker = new Worker(new URL('./worker.js', import.meta.url))
+```
+
+Конструктор воркеров также принимает параметры, которые можно использовать для создания рабочих "module":
+
+```ts
+const worker = new Worker(new URL('./worker.js', import.meta.url), {
+  type: 'module'
+})
+```
+
+### Импорт с суффиксами запроса
+
 Сценарий веб-воркера можно импортировать напрямую, добавив `?worker` или `?sharedworker` к запросу на импорт. Экспортом по умолчанию будет настраиваемый рабочий конструктор:
 
 ```js
@@ -351,6 +387,8 @@ const worker = new MyWorker()
 ```js
 import MyWorker from './worker?worker&inline'
 ```
+
+Смотрите [Параметры рабочего процесса](/config/#worker-options) для получения подробной информации о настройке объединения всех рабочих процессов.
 
 ## Оптимизация сборки
 

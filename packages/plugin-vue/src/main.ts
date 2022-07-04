@@ -1,22 +1,21 @@
-import qs from 'querystring'
 import path from 'path'
 import type { SFCBlock, SFCDescriptor } from 'vue/compiler-sfc'
-import type { ResolvedOptions } from '.'
+import type { PluginContext, SourceMap, TransformPluginContext } from 'rollup'
+import { normalizePath } from '@rollup/pluginutils'
+import type { RawSourceMap } from 'source-map'
+import { SourceMapConsumer, SourceMapGenerator } from 'source-map'
+import { transformWithEsbuild } from 'vite'
 import {
   createDescriptor,
   getPrevDescriptor,
   setSrcDescriptor
 } from './utils/descriptorCache'
-import type { PluginContext, SourceMap, TransformPluginContext } from 'rollup'
-import { normalizePath } from '@rollup/pluginutils'
-import { resolveScript, isUseInlineTemplate } from './script'
+import { isUseInlineTemplate, resolveScript } from './script'
 import { transformTemplateInMain } from './template'
-import { isOnlyTemplateChanged, isEqualBlock } from './handleHotUpdate'
-import type { RawSourceMap } from 'source-map'
-import { SourceMapConsumer, SourceMapGenerator } from 'source-map'
+import { isEqualBlock, isOnlyTemplateChanged } from './handleHotUpdate'
 import { createRollupError } from './utils/error'
-import { transformWithEsbuild } from 'vite'
 import { EXPORT_HELPER_ID } from './helper'
+import type { ResolvedOptions } from '.'
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export async function transformMain(
@@ -27,7 +26,7 @@ export async function transformMain(
   ssr: boolean,
   asCustomElement: boolean
 ) {
-  const { devServer, isProduction } = options
+  const { devServer, isProduction, devToolsEnabled } = options
 
   // prev descriptor is only set and used for hmr
   const prevDescriptor = getPrevDescriptor(filename)
@@ -102,9 +101,12 @@ export async function transformMain(
   if (hasScoped) {
     attachedProps.push([`__scopeId`, JSON.stringify(`data-v-${descriptor.id}`)])
   }
-  if (devServer && !isProduction) {
+  if (devToolsEnabled || (devServer && !isProduction)) {
     // expose filename during serve for devtools to pickup
-    attachedProps.push([`__file`, JSON.stringify(filename)])
+    attachedProps.push([
+      `__file`,
+      JSON.stringify(isProduction ? path.basename(filename) : filename)
+    ])
   }
 
   // HMR
@@ -159,7 +161,7 @@ export async function transformMain(
     const generator = SourceMapGenerator.fromSourceMap(
       new SourceMapConsumer(map)
     )
-    const offset = scriptCode.match(/\r?\n/g)?.length || 1
+    const offset = (scriptCode.match(/\r?\n/g)?.length ?? 0) + 1
     const templateMapConsumer = new SourceMapConsumer(templateMap)
     templateMapConsumer.eachMapping((m) => {
       generator.addMapping({
@@ -209,6 +211,11 @@ export async function transformMain(
     code: resolvedCode,
     map: resolvedMap || {
       mappings: ''
+    },
+    meta: {
+      vite: {
+        lang: descriptor.script?.lang || descriptor.scriptSetup?.lang || 'js'
+      }
     }
   }
 }
@@ -423,8 +430,8 @@ function attrsToQuery(
   for (const name in attrs) {
     const value = attrs[name]
     if (!ignoreList.includes(name)) {
-      query += `&${qs.escape(name)}${
-        value ? `=${qs.escape(String(value))}` : ``
+      query += `&${encodeURIComponent(name)}${
+        value ? `=${encodeURIComponent(value)}` : ``
       }`
     }
   }
