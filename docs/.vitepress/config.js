@@ -8,8 +8,16 @@ module.exports = {
   description: 'Интерфейсные инструменты нового поколения',
   head: [
     ['link', { rel: 'icon', type: 'image/svg+xml', href: '/logo.svg' }],
-    ["script", { type: "text/javascript" }, '(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)}; m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)}) (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym"); ym(89402826, "init", { clickmap:true, trackLinks:true, accurateTrackBounce:true });'],
-    ["noscript", {}, '<div><img src="https://mc.yandex.ru/watch/89402826" style="position:absolute; left:-9999px;" alt="" /></div>'],
+    [
+      'script',
+      { type: 'text/javascript' },
+      '(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)}; m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)}) (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym"); ym(89402826, "init", { clickmap:true, trackLinks:true, accurateTrackBounce:true });'
+    ],
+    [
+      'noscript',
+      {},
+      '<div><img src="https://mc.yandex.ru/watch/89402826" style="position:absolute; left:-9999px;" alt="" /></div>'
+    ]
   ],
   vue: {
     reactivityTransform: true
@@ -18,7 +26,7 @@ module.exports = {
     repo: 'w3ref/vite',
     logo: '/logo.svg',
     docsDir: 'docs',
-    docsBranch: 'main-ru',
+    docsBranch: 'v2-ru',
     editLinks: true,
     editLinkText: 'Предложить изменения на этой странице',
 
@@ -29,11 +37,6 @@ module.exports = {
         facetFilters: ['tags:en']
       }
     },
-
-    // carbonAds: {
-    //   carbon: 'CEBIEK3N',
-    //   placement: 'vitejsdev'
-    // },
 
     nav: [
       { text: 'Руководство', link: '/guide/' },
