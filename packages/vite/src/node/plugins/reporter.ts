@@ -1,7 +1,7 @@
-import path from 'path'
+import path from 'node:path'
+import { gzip } from 'node:zlib'
+import { promisify } from 'node:util'
 import colors from 'picocolors'
-import { gzip } from 'zlib'
-import { promisify } from 'util'
 import type { Plugin } from 'rollup'
 import type { ResolvedConfig } from '../config'
 import { normalizePath } from '../utils'
@@ -33,11 +33,7 @@ export function buildReporterPlugin(config: ResolvedConfig): Plugin {
   }
 
   async function getCompressedSize(code: string | Uint8Array): Promise<string> {
-    if (
-      config.build.ssr ||
-      !config.build.reportCompressedSize ||
-      config.build.brotliSize === false
-    ) {
+    if (config.build.ssr || !config.build.reportCompressedSize) {
       return ''
     }
     return ` / gzip: ${(
@@ -51,14 +47,12 @@ export function buildReporterPlugin(config: ResolvedConfig): Plugin {
     content: string | Uint8Array,
     type: WriteType,
     maxLength: number,
+    outDir = config.build.outDir,
     compressedSize = ''
   ) {
-    const outDir =
+    outDir =
       normalizePath(
-        path.relative(
-          config.root,
-          path.resolve(config.root, config.build.outDir)
-        )
+        path.relative(config.root, path.resolve(config.root, outDir))
       ) + '/'
     const kibs = content.length / 1024
     const sizeColor = kibs > chunkLimit ? colors.yellow : colors.dim
@@ -141,7 +135,7 @@ export function buildReporterPlugin(config: ResolvedConfig): Plugin {
       }
     },
 
-    async writeBundle(_, output) {
+    async writeBundle({ dir: outDir }, output) {
       let hasLargeChunks = false
 
       if (shouldLogInfo) {
@@ -165,6 +159,7 @@ export function buildReporterPlugin(config: ResolvedConfig): Plugin {
                   chunk.code,
                   WriteType.JS,
                   longest,
+                  outDir,
                   await getCompressedSize(chunk.code)
                 )
                 if (chunk.map) {
@@ -172,7 +167,8 @@ export function buildReporterPlugin(config: ResolvedConfig): Plugin {
                     chunk.fileName + '.map',
                     chunk.map.toString(),
                     WriteType.SOURCE_MAP,
-                    longest
+                    longest,
+                    outDir
                   )
                 }
               }
@@ -184,11 +180,17 @@ export function buildReporterPlugin(config: ResolvedConfig): Plugin {
               }
             } else if (chunk.source) {
               const isCSS = chunk.fileName.endsWith('.css')
+              const isMap = chunk.fileName.endsWith('.js.map')
               printFileInfo(
                 chunk.fileName,
                 chunk.source,
-                isCSS ? WriteType.CSS : WriteType.ASSET,
+                isCSS
+                  ? WriteType.CSS
+                  : isMap
+                  ? WriteType.SOURCE_MAP
+                  : WriteType.ASSET,
                 longest,
+                outDir,
                 isCSS ? await getCompressedSize(chunk.source) : undefined
               )
             }

@@ -1,11 +1,25 @@
 import type * as babelCore from '@babel/core'
-import type { PluginItem, types as t } from '@babel/core'
 
-type RestoredJSX = [result: t.File | null | undefined, isCommonJS: boolean]
+type RestoredJSX = [
+  result: babelCore.types.File | null | undefined,
+  isCommonJS: boolean
+]
 
-let babelRestoreJSX: Promise<PluginItem> | undefined
+let babelRestoreJSX: Promise<babelCore.PluginItem> | undefined
 
 const jsxNotFound: RestoredJSX = [null, false]
+
+async function getBabelRestoreJSX() {
+  if (!babelRestoreJSX)
+    babelRestoreJSX = import('./babel-restore-jsx').then((r) => {
+      const fn = r.default
+      if ('default' in fn)
+        // @ts-expect-error
+        return fn.default
+      return fn
+    })
+  return babelRestoreJSX
+}
 
 /** Restore JSX from `React.createElement` calls */
 export async function restoreJSX(
@@ -13,40 +27,20 @@ export async function restoreJSX(
   code: string,
   filename: string
 ): Promise<RestoredJSX> {
-  // Avoid parsing the optimized react-dom since it will never
-  // contain compiled JSX and it's a pretty big file (800kb).
-  if (filename.includes('/.vite/react-dom.js')) {
-    return jsxNotFound
-  }
-
   const [reactAlias, isCommonJS] = parseReactAlias(code)
+
   if (!reactAlias) {
     return jsxNotFound
   }
 
   const reactJsxRE = new RegExp(
-    '\\b' + reactAlias + '\\.(createElement|Fragment)\\b',
+    `\\b${reactAlias}\\.(createElement|Fragment)\\b`,
     'g'
   )
 
-  let hasCompiledJsx = false
-  code = code.replace(reactJsxRE, (_, prop) => {
-    hasCompiledJsx = true
-    // Replace with "React" so JSX can be reverse compiled.
-    return 'React.' + prop
-  })
-
-  if (!hasCompiledJsx) {
+  if (!reactJsxRE.test(code)) {
     return jsxNotFound
   }
-
-  // Support modules that use `import {Fragment} from 'react'`
-  code = code.replace(
-    /createElement\(Fragment,/g,
-    'createElement(React.Fragment,'
-  )
-
-  babelRestoreJSX ||= import('./babel-restore-jsx')
 
   const result = await babel.transformAsync(code, {
     babelrc: false,
@@ -57,23 +51,22 @@ export async function restoreJSX(
     parserOpts: {
       plugins: ['jsx']
     },
-    // @ts-ignore
-    plugins: [(await babelRestoreJSX).default]
+    plugins: [[await getBabelRestoreJSX(), { reactAlias }]]
   })
 
   return [result?.ast, isCommonJS]
 }
 
-function parseReactAlias(
+export function parseReactAlias(
   code: string
 ): [alias: string | undefined, isCommonJS: boolean] {
   let match = code.match(
-    /\b(var|let|const) +(\w+) *= *require\(["']react["']\)/
+    /\b(var|let|const)\s+([^=\{\s]+)\s*=\s*require\(["']react["']\)/
   )
   if (match) {
     return [match[2], true]
   }
-  match = code.match(/^import (\w+).+? from ["']react["']/m)
+  match = code.match(/^import\s+(?:\*\s+as\s+)?(\w+).+?\bfrom\s*["']react["']/m)
   if (match) {
     return [match[1], false]
   }

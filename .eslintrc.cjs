@@ -1,4 +1,5 @@
 // @ts-check
+const { builtinModules } = require('node:module')
 const { defineConfig } = require('eslint-define-config')
 
 module.exports = defineConfig({
@@ -8,6 +9,7 @@ module.exports = defineConfig({
     'plugin:node/recommended',
     'plugin:@typescript-eslint/recommended'
   ],
+  plugins: ['import'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     sourceType: 'module',
@@ -29,14 +31,7 @@ module.exports = defineConfig({
     'node/no-missing-import': [
       'error',
       {
-        allowModules: [
-          'types',
-          'estree',
-          'testUtils',
-          'less',
-          'sass',
-          'stylus'
-        ],
+        allowModules: ['types', 'estree', 'less', 'sass', 'stylus'],
         tryExtensions: ['.ts', '.js', '.jsx', '.tsx', '.d.ts']
       }
     ],
@@ -48,22 +43,10 @@ module.exports = defineConfig({
         tryExtensions: ['.ts', '.js', '.jsx', '.tsx', '.d.ts']
       }
     ],
-    'node/no-restricted-require': [
-      'error',
-      Object.keys(require('./packages/vite/package.json').devDependencies).map(
-        (d) => ({
-          name: d,
-          message:
-            `devDependencies can only be imported using ESM syntax so ` +
-            `that they are included in the rollup bundle. If you are trying to ` +
-            `lazy load a dependency, use (await import('dependency')).default instead.`
-        })
-      )
-    ],
     'node/no-extraneous-import': [
       'error',
       {
-        allowModules: ['vite', 'less', 'sass']
+        allowModules: ['vite', 'less', 'sass', 'vitest']
       }
     ],
     'node/no-extraneous-require': [
@@ -79,6 +62,10 @@ module.exports = defineConfig({
 
     '@typescript-eslint/ban-ts-comment': 'off', // TODO: we should turn this on in a new PR
     '@typescript-eslint/ban-types': 'off', // TODO: we should turn this on in a new PR
+    '@typescript-eslint/explicit-module-boundary-types': [
+      'error',
+      { allowArgumentsExplicitlyTypedAsAny: true }
+    ],
     '@typescript-eslint/no-empty-function': [
       'error',
       { allow: ['arrowFunctions'] }
@@ -93,9 +80,50 @@ module.exports = defineConfig({
     '@typescript-eslint/consistent-type-imports': [
       'error',
       { prefer: 'type-imports' }
+    ],
+
+    'import/no-nodejs-modules': [
+      'error',
+      { allow: builtinModules.map((mod) => `node:${mod}`) }
+    ],
+    'import/no-duplicates': 'error',
+    'import/order': 'error',
+    'sort-imports': [
+      'error',
+      {
+        ignoreCase: false,
+        ignoreDeclarationSort: true,
+        ignoreMemberSort: false,
+        memberSyntaxSortOrder: ['none', 'all', 'multiple', 'single'],
+        allowSeparatedGroups: false
+      }
     ]
   },
   overrides: [
+    {
+      files: ['packages/**'],
+      excludedFiles: '**/__tests__/**',
+      rules: {
+        'no-restricted-globals': ['error', 'require', '__dirname', '__filename']
+      }
+    },
+    {
+      files: 'packages/vite/**/*.*',
+      rules: {
+        'node/no-restricted-require': [
+          'error',
+          Object.keys(
+            require('./packages/vite/package.json').devDependencies
+          ).map((d) => ({
+            name: d,
+            message:
+              `devDependencies can only be imported using ESM syntax so ` +
+              `that they are included in the rollup bundle. If you are trying to ` +
+              `lazy load a dependency, use (await import('dependency')).default instead.`
+          }))
+        ]
+      }
+    },
     {
       files: ['packages/vite/src/node/**'],
       rules: {
@@ -103,22 +131,50 @@ module.exports = defineConfig({
       }
     },
     {
-      files: ['packages/vite/types/**'],
+      files: ['packages/vite/types/**', '*.spec.ts'],
       rules: {
         'node/no-extraneous-import': 'off'
       }
     },
     {
-      files: ['packages/playground/**'],
+      files: ['packages/create-vite/template-*/**', '**/build.config.ts'],
       rules: {
-        'node/no-extraneous-import': 'off',
-        'node/no-extraneous-require': 'off'
+        'no-undef': 'off',
+        'node/no-missing-import': 'off',
+        '@typescript-eslint/explicit-module-boundary-types': 'off'
       }
     },
     {
-      files: ['packages/create-vite/template-*/**'],
+      files: ['playground/**'],
       rules: {
-        'node/no-missing-import': 'off'
+        'node/no-extraneous-import': 'off',
+        'node/no-extraneous-require': 'off',
+        'node/no-missing-import': 'off',
+        'node/no-missing-require': 'off',
+        // engine field doesn't exist in playgrounds
+        'node/no-unsupported-features/es-builtins': [
+          'error',
+          {
+            version: '^14.18.0 || >=16.0.0'
+          }
+        ],
+        'node/no-unsupported-features/node-builtins': [
+          'error',
+          {
+            version: '^14.18.0 || >=16.0.0'
+          }
+        ],
+        '@typescript-eslint/explicit-module-boundary-types': 'off'
+      }
+    },
+    {
+      files: ['playground/**'],
+      excludedFiles: '**/__tests__/**',
+      rules: {
+        'no-undef': 'off',
+        'no-empty': 'off',
+        'no-constant-condition': 'off',
+        '@typescript-eslint/no-empty-function': 'off'
       }
     },
     {
@@ -133,5 +189,6 @@ module.exports = defineConfig({
         '@typescript-eslint/triple-slash-reference': 'off'
       }
     }
-  ]
+  ],
+  reportUnusedDisableDirectives: true
 })

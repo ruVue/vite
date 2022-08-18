@@ -22,28 +22,33 @@
    })
    ```
 
-   Если вы не отключили [модуль полифилл предварительной загрузки](/config/#build-polyfillmodulepreload), вам также необходимо импортировать polyfill в свою запись.
+   Если вы не отключили [модуль полифилл предварительной загрузки](/config/build-options.md#build-polyfillmodulepreload), вам также необходимо импортировать полифил в свою запись.
 
    ```js
    // add the beginning of your app entry
    import 'vite/modulepreload-polyfill'
    ```
 
-2. Для разработки добавьте следующее в HTML-шаблон вашего сервера (замените `http://localhost:3000` на локальный URL-адрес, по которому работает Vite):
+2. Для разработки добавьте следующее в HTML-шаблон вашего сервера (замените `http://localhost:5173` на локальный URL-адрес, по которому работает Vite):
 
    ```html
    <!-- if development -->
-   <script type="module" src="http://localhost:3000/@vite/client"></script>
-   <script type="module" src="http://localhost:3000/main.js"></script>
+   <script type="module" src="http://localhost:5173/@vite/client"></script>
+   <script type="module" src="http://localhost:5173/main.js"></script>
    ```
 
-   Также убедитесь, что сервер настроен для обслуживания статических ресурсов в рабочем каталоге Vite, иначе ресурсы, такие как изображения, не будут загружаться должным образом.
+   Чтобы правильно обслуживать активы, у вас есть два варианта:
+
+   - Убедитесь, что сервер настроен на прокси-запросы статических ресурсов на сервер Vite
+   - Установите [`server.origin`](/config/server-options.md#server-origin) , чтобы сгенерированные URL-адреса ресурсов разрешались с использованием URL-адреса внутреннего сервера вместо относительного пути
+
+   Это необходимо для правильной загрузки таких ресурсов, как изображения.
 
    Обратите внимание, если вы используете React с `@vitejs/plugin-react`, вам также необходимо добавить это перед приведенными выше сценариями, поскольку плагин не может изменять HTML, который вы обслуживаете:
 
    ```html
    <script type="module">
-     import RefreshRuntime from 'http://localhost:3000/@react-refresh'
+     import RefreshRuntime from 'http://localhost:5173/@react-refresh'
      RefreshRuntime.injectIntoGlobalHook(window)
      window.$RefreshReg$ = () => {}
      window.$RefreshSig$ = () => (type) => type
