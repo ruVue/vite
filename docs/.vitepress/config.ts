@@ -11,7 +11,7 @@ const commitRef = process.env.COMMIT_REF?.slice(0, 8) || 'dev'
 
 const deployType = (() => {
   switch (deployURL) {
-    case 'https://main--vite-docs-main.netlify.app':
+    case 'https://vitejs-ru.netlify.app':
       return 'main'
     case '':
       return 'local'
@@ -35,19 +35,19 @@ const versionLinks = ((): DefaultTheme.NavItemWithLink[] => {
     case 'local':
       return [
         {
-          text: 'Vite 3 Docs (release)',
-          link: 'https://vitejs.dev'
+          text: 'Vite 3 Документация (релиз)',
+          link: 'https://vitejs.ru'
         },
         {
-          text: 'Vite 2 Docs',
-          link: 'https://v2.vitejs.dev'
+          text: 'Vite 2 Документация',
+          link: 'https://v2.vitejs.ru'
         }
       ]
     case 'release':
       return [
         {
-          text: 'Vite 2 Docs',
-          link: 'https://v2.vitejs.dev'
+          text: 'Vite 2 Документация',
+          link: 'https://v2.vitejs.ru'
         }
       ]
   }
@@ -55,7 +55,7 @@ const versionLinks = ((): DefaultTheme.NavItemWithLink[] => {
 
 export default defineConfig({
   title: `Vite${additionalTitle}`,
-  description: 'Next Generation Frontend Tooling',
+  description: 'Интерфейсные инструменты нового поколения',
 
   head: [
     ['link', { rel: 'icon', type: 'image/svg+xml', href: '/logo.svg' }],
@@ -77,14 +77,14 @@ export default defineConfig({
     logo: '/logo.svg',
 
     editLink: {
-      pattern: 'https://github.com/vitejs/vite/edit/main/docs/:path',
-      text: 'Suggest changes to this page'
+      pattern: 'https://github.com/ruVue/vite/edit/main-ru/docs/:path',
+      text: 'Предложить изменения на этой странице'
     },
 
     socialLinks: [
       { icon: 'twitter', link: 'https://twitter.com/vite_js' },
       { icon: 'discord', link: 'https://chat.vitejs.dev' },
-      { icon: 'github', link: 'https://github.com/vitejs/vite' }
+      { icon: 'github', link: 'https://github.com/ruVue/vite' }
     ],
 
     algolia: {
@@ -92,35 +92,29 @@ export default defineConfig({
       apiKey: 'deaab78bcdfe96b599497d25acc6460e',
       indexName: 'vitejs',
       searchParameters: {
-        facetFilters: ['tags:en']
+        facetFilters: ['tags:ru']
       }
-    },
-
-    carbonAds: {
-      code: 'CEBIEK3N',
-      placement: 'vitejsdev'
     },
 
     localeLinks: {
       text: 'Русский',
-      items: [
-        { text: 'English', link: 'https://vitejs.dev' }
-      ]
+      items: [{ text: 'English', link: 'https://vitejs.dev' }]
     },
 
     footer: {
-      message: `Released under the MIT License. (${commitRef})`,
-      copyright: 'Copyright © 2019-present Evan You & Vite Contributors'
+      message: `Выпущено под лицензией MIT. (${commitRef})`,
+      copyright:
+        'Copyright © 2019-настоящее время Evan You и Vite контрибьюторам'
     },
 
     nav: [
-      { text: 'Guide', link: '/guide/', activeMatch: '/guide/' },
-      { text: 'Config', link: '/config/', activeMatch: '/config/' },
-      { text: 'Plugins', link: '/plugins/', activeMatch: '/plugins/' },
+      { text: 'Руководство', link: '/guide/', activeMatch: '/guide/' },
+      { text: 'Конфигурация', link: '/config/', activeMatch: '/config/' },
+      { text: 'Плагины', link: '/plugins/', activeMatch: '/plugins/' },
       {
-        text: 'Resources',
+        text: 'Ресурсы',
         items: [
-          { text: 'Team', link: '/team' },
+          { text: 'Команда', link: '/team' },
           {
             items: [
               {
@@ -152,7 +146,7 @@ export default defineConfig({
         ]
       },
       {
-        text: 'Version',
+        text: 'Версия',
         items: versionLinks
       }
     ],
@@ -160,62 +154,62 @@ export default defineConfig({
     sidebar: {
       '/guide/': [
         {
-          text: 'Guide',
+          text: 'Руководство',
           items: [
             {
-              text: 'Why Vite',
+              text: 'Почему Vite',
               link: '/guide/why'
             },
             {
-              text: 'Getting Started',
+              text: 'Начало работы',
               link: '/guide/'
             },
             {
-              text: 'Features',
+              text: 'Возможности',
               link: '/guide/features'
             },
             {
-              text: 'Using Plugins',
+              text: 'Использование плагинов',
               link: '/guide/using-plugins'
             },
             {
-              text: 'Dependency Pre-Bundling',
+              text: 'Предварительное связывание зависимостей',
               link: '/guide/dep-pre-bundling'
             },
             {
-              text: 'Static Asset Handling',
+              text: 'Обработка статических ресурсов',
               link: '/guide/assets'
             },
             {
-              text: 'Building for Production',
+              text: 'Сборка для продакшена',
               link: '/guide/build'
             },
             {
-              text: 'Deploying a Static Site',
+              text: 'Деплой статического сайта',
               link: '/guide/static-deploy'
             },
             {
-              text: 'Env Variables and Modes',
+              text: 'Переменные окружения и режимы',
               link: '/guide/env-and-mode'
             },
             {
-              text: 'Server-Side Rendering (SSR)',
+              text: 'Рендеринг на стороне сервера (SSR)',
               link: '/guide/ssr'
             },
             {
-              text: 'Backend Integration',
+              text: 'Бэкэнд-интеграция',
               link: '/guide/backend-integration'
             },
             {
-              text: 'Comparisons',
+              text: 'Сравнения',
               link: '/guide/comparisons'
             },
             {
-              text: 'Troubleshooting',
+              text: 'Устранение неполадок',
               link: '/guide/troubleshooting'
             },
             {
-              text: 'Migration from v2',
+              text: 'Миграция с v2',
               link: '/guide/migration'
             }
           ]

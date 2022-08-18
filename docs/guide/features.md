@@ -326,7 +326,7 @@ const modules = {
 
 ### Глобальный импорт как
 
-`import.meta.glob` также поддерживает импорт файлов в виде строк (аналогично [Импортировать актив как строку](https://vitejs.dev/guide/assets.html#importing-asset-as-string)) с помощью синтаксиса [Импорт Reflection](https://github.com/tc39/proposal-import-reflection):
+`import.meta.glob` также поддерживает импорт файлов в виде строк (аналогично [Импортировать актив как строку](https://vitejs.ru/guide/assets.html#importing-asset-as-string)) с помощью синтаксиса [Импорт Reflection](https://github.com/tc39/proposal-import-reflection):
 
 ```js
 const modules = import.meta.glob('./dir/*.js', { as: 'raw' })

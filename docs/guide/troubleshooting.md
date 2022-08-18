@@ -48,7 +48,7 @@ To solve this:
 
 When the server / WebSocket server receives a large HTTP header, the request will be dropped and the following warning will be shown.
 
-> Server responded with status code 431. See https://vitejs.dev/guide/troubleshooting.html#_431-request-header-fields-too-large.
+> Server responded with status code 431. See https://vitejs.ru/guide/troubleshooting.html#_431-request-header-fields-too-large.
 
 This is because Node.js limits request header size to mitigate [CVE-2018-12121](https://www.cve.org/CVERecord?id=CVE-2018-12121).
 
