@@ -1,16 +1,16 @@
 # JavaScript API
 
-Vite's JavaScript APIs are fully typed, and it's recommended to use TypeScript or enable JS type checking in VS Code to leverage the intellisense and validation.
+API-интерфейсы JavaScript Vite полностью типизированы, и рекомендуется использовать TypeScript или включить проверку типов JS в VS Code, чтобы использовать intellisense и проверку.
 
 ## `createServer`
 
-**Type Signature:**
+**Тип подписи:**
 
 ```ts
 async function createServer(inlineConfig?: InlineConfig): Promise<ViteDevServer>
 ```
 
-**Example Usage:**
+**Пример использования:**
 
 ```js
 import { fileURLToPath } from 'url'
@@ -33,23 +33,23 @@ const __dirname = fileURLToPath(new URL('.', import.meta.url))
 })()
 ```
 
-::: tip NOTE
-When using `createServer` and `build` in the same Node.js process, both functions rely on `process.env.`<wbr>`NODE_ENV` to work properly, which also depends on the `mode` config option. To prevent conflicting behavior, set `process.env.`<wbr>`NODE_ENV` or the `mode` of the two APIs to `development`. Otherwise, you can spawn a child process to run the APIs separately.
+::: tip ПРИМЕЧАНИЕ
+При использовании `createServer` и `build` в одном и том же процессе Node.js обе функции полагаются на `process.env.`<wbr>`NODE_ENV` для правильной работы, что также зависит от параметра конфигурации `mode`. Чтобы предотвратить конфликтное поведение, установите для `process.env.`<wbr>`NODE_ENV` или `mode` двух API значение `development`. В противном случае вы можете создать дочерний процесс для отдельного запуска API.
 :::
 
 ## `InlineConfig`
 
-The `InlineConfig` interface extends `UserConfig` with additional properties:
+Интерфейс `InlineConfig` расширяет `UserConfig` дополнительными свойствами:
 
-- `configFile`: specify config file to use. If not set, Vite will try to automatically resolve one from project root. Set to `false` to disable auto resolving.
-- `envFile`: Set to `false` to disable `.env` files.
+- `configFile`: укажите используемый файл конфигурации. Если не установлено, Vite попытается автоматически разрешить его из корня проекта. Установите значение `false`, чтобы отключить автоматическое разрешение.
+- `envFile`: Установите значение `false`, чтобы отключить файлы `.env`.
 
 ## `ResolvedConfig`
 
-The `ResolvedConfig` interface has all the same properties of a `UserConfig`, except most properties are resolved and non-undefined. It also contains utilities like:
+Интерфейс `ResolvedConfig` имеет все те же свойства, что и `UserConfig`, за исключением того, что большинство свойств разрешены и не определены. Он также содержит такие утилиты, как:
 
-- `config.assetsInclude`: A function to check if an `id` is considered an asset.
-- `config.logger`: Vite's internal logger object.
+- `config.assetsInclude`: Функция для проверки, считается ли `id` ассетом.
+- `config.logger`: Внутренний объект регистратора Vite.
 
 ## `ViteDevServer`
 
@@ -133,7 +133,7 @@ interface ViteDevServer {
 
 ## `build`
 
-**Type Signature:**
+**Тип подписи:**
 
 ```ts
 async function build(
@@ -141,7 +141,7 @@ async function build(
 ): Promise<RollupOutput | RollupOutput[]>
 ```
 
-**Example Usage:**
+**Пример использования:**
 
 ```js
 import path from 'path'
@@ -165,13 +165,13 @@ const __dirname = fileURLToPath(new URL('.', import.meta.url))
 
 ## `preview`
 
-**Type Signature:**
+**Тип подписи:**
 
 ```ts
 async function preview(inlineConfig?: InlineConfig): Promise<PreviewServer>
 ```
 
-**Example Usage:**
+**Пример использования:**
 
 ```js
 import { preview } from 'vite'
@@ -190,7 +190,7 @@ import { preview } from 'vite'
 
 ## `resolveConfig`
 
-**Type Signature:**
+**Тип подписи:**
 
 ```ts
 async function resolveConfig(
@@ -200,11 +200,11 @@ async function resolveConfig(
 ): Promise<ResolvedConfig>
 ```
 
-The `command` value is `serve` in dev (in the cli `vite`, `vite dev`, and `vite serve` are aliases).
+Значение `command` равно `serve` в dev (в cli `vite`, `vite dev` и `vite serve` являются псевдонимами).
 
 ## `mergeConfig`
 
-**Type Signature:**
+**Тип подписи:**
 
 ```ts
 function mergeConfig(
@@ -214,11 +214,11 @@ function mergeConfig(
 ): Record<string, any>
 ```
 
-Deeply merge two Vite configs. `isRoot` represents the level within the Vite config which is being merged. For example, set `false` if you're merging two `build` options.
+Глубоко объедините две конфигурации Vite. `isRoot` представляет уровень в конфигурации Vite, который объединяется. Например, установите `false`, если вы объединяете две опции `build`.
 
 ## `searchForWorkspaceRoot`
 
-**Type Signature:**
+**Тип подписи:**
 
 ```ts
 function searchForWorkspaceRoot(
@@ -227,18 +227,18 @@ function searchForWorkspaceRoot(
 ): string
 ```
 
-**Related:** [server.fs.allow](/config/server-options.md#server-fs-allow)
+**Связанное:** [server.fs.allow](/config/server-options.md#server-fs-allow)
 
-Search for the root of the potential workspace if it meets the following conditions, otherwise it would fallback to `root`:
+Найдите корень потенциального рабочего пространства, если он соответствует следующим условиям, в противном случае он вернется к `root`:
 
-- contains `workspaces` field in `package.json`
-- contains one of the following file
+- содержит поле `workspaces` в `package.json`
+- содержит один из следующих файлов
   - `lerna.json`
   - `pnpm-workspace.yaml`
 
 ## `loadEnv`
 
-**Type Signature:**
+**Тип подписи:**
 
 ```ts
 function loadEnv(
@@ -248,25 +248,25 @@ function loadEnv(
 ): Record<string, string>
 ```
 
-**Related:** [`.env` Files](./env-and-mode.md#env-files)
+**Связанное:** [Файлы `.env`](./env-and-mode.md#env-files)
 
-Load `.env` files within the `envDir`. By default only env variables prefixed with `VITE_` are loaded, unless `prefixes` is changed.
+Загрузите файлы `.env` в `envDir`. По умолчанию загружаются только переменные env с префиксом `VITE_`, если `prefixes` не изменены.
 
 ## `normalizePath`
 
-**Type Signature:**
+**Тип подписи:**
 
 ```ts
 function normalizePath(id: string): string
 ```
 
-**Related:** [Path Normalization](./api-plugin.md#path-normalization)
+**Связанное:** [Нормализация пути](./api-plugin.md#path-normalization)
 
-Normalizes a path to interoperate between Vite plugins.
+Нормализует путь взаимодействия между плагинами Vite.
 
 ## `transformWithEsbuild`
 
-**Type Signature:**
+**Тип подписи:**
 
 ```ts
 async function transformWithEsbuild(
@@ -277,11 +277,11 @@ async function transformWithEsbuild(
 ): Promise<ESBuildTransformResult>
 ```
 
-Transform JavaScript or TypeScript with esbuild. Useful for plugins that prefers matching Vite's internal esbuild transform.
+Преобразуйте JavaScript или TypeScript с помощью esbuild. Полезно для плагинов, которые предпочитают соответствие внутреннему преобразованию esbuild Vite.
 
 ## `loadConfigFromFile`
 
-**Type Signature:**
+**Тип подписи:**
 
 ```ts
 async function loadConfigFromFile(
@@ -296,4 +296,4 @@ async function loadConfigFromFile(
 } | null>
 ```
 
-Load a Vite config file manually with esbuild.
+Загрузите файл конфигурации Vite вручную с помощью esbuild.
