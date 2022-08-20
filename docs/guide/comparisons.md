@@ -1,4 +1,4 @@
-# Comparisons
+# Сравнения
 
 ## WMR
 

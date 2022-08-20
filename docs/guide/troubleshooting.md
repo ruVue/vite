@@ -1,29 +1,29 @@
-# Troubleshooting
+# Исправление проблем
 
-See [Rollup's troubleshooting guide](https://rollupjs.org/guide/en/#troubleshooting) for more information too.
+Смотрите [Руководство по устранению неполадок Rollup](https://rollupjs.org/guide/en/#troubleshooting) для получения дополнительной информации.
 
-If the suggestions here don't work, please try posting questions on [GitHub Discussions](https://github.com/vitejs/vite/discussions) or in the `#help` channel of [Vite Land Discord](https://chat.vitejs.dev).
+Если приведенные здесь предложения не работают, попробуйте опубликовать вопросы в [Обсуждения GitHub](https://github.com/vitejs/vite/discussions) или на канале `#help` в [Vite Land Discord](https://chat.vitejs.dev).
 
 ## CLI
 
 ### `Error: Cannot find module 'C:\foo\bar&baz\vite\bin\vite.js'`
 
-The path to your project folder may include `&`, which doesn't work with `npm` on Windows ([npm/cmd-shim#45](https://github.com/npm/cmd-shim/issues/45)).
+Путь к папке вашего проекта может включать `&`, что не работает с `npm` в Windows ([npm/cmd-shim#45](https://github.com/npm/cmd-shim/issues/45)).
 
-You will need to either:
+Вам нужно будет либо:
 
-- Switch to another package manager (e.g. `pnpm`, `yarn`)
-- Remove `&` from the path to your project
+- Переключитесь на другой менеджер пакетов (например, `pnpm`, `yarn`)
+- Удалите `&` из пути к вашему проекту
 
-## Dev Server
+## Сервер разработки
 
-### Requests are stalled forever
+### Запросы задерживаются навсегда
 
-If you are using Linux, file descriptor limits and inotify limits may be causing the issue. As Vite does not bundle most of the files, browsers may request many files which require many file descriptors, going over the limit.
+Если вы используете Linux, причиной проблемы могут быть ограничения файловых дескрипторов и ограничения inotify. Поскольку Vite не объединяет большинство файлов, браузеры могут запрашивать много файлов, для которых требуется много файловых дескрипторов, что превышает лимит.
 
-To solve this:
+Чтобы решить эту проблему:
 
-- Increase file descriptor limit by `ulimit`
+- Увеличьте лимит дескриптора файла на `ulimit`
 
   ```shell
   # Check current limit
@@ -33,7 +33,7 @@ To solve this:
   # Restart your browser
   ```
 
-- Increase the following inotify related limits by `sysctl`
+- Увеличьте следующие ограничения, связанные с inotify, с помощью `sysctl`
 
   ```shell
   # Check current limits
@@ -44,48 +44,48 @@ To solve this:
   $ sudo sysctl fs.inotify.max_user_watches=524288
   ```
 
-### 431 Request Header Fields Too Large
+### 431 Поля заголовка запроса слишком велики
 
-When the server / WebSocket server receives a large HTTP header, the request will be dropped and the following warning will be shown.
+Когда сервер / сервер WebSocket получает большой HTTP-заголовок, запрос будет отброшен, и будет показано следующее предупреждение.
 
 > Server responded with status code 431. See https://vitejs.ru/guide/troubleshooting.html#_431-request-header-fields-too-large.
 
-This is because Node.js limits request header size to mitigate [CVE-2018-12121](https://www.cve.org/CVERecord?id=CVE-2018-12121).
+Это связано с тем, что Node.js ограничивает размер заголовка запроса для смягчения последствий [CVE-2018-12121](https://www.cve.org/CVERecord?id=CVE-2018-12121).
 
-To avoid this, try to reduce your request header size. For example, if the cookie is long, delete it. Or you can use [`--max-http-header-size`](https://nodejs.org/api/cli.html#--max-http-header-sizesize) to change max header size.
+Чтобы этого избежать, попробуйте уменьшить размер заголовка запроса. Например, если файл cookie длинный, удалите его. Или вы можете использовать [`--max-http-header-size`](https://nodejs.org/api/cli.html#--max-http-header-sizesize), чтобы изменить максимальный размер заголовка.
 
 ## HMR
 
-### Vite detects a file change but the HMR is not working
+### Vite обнаруживает изменение файла, но HMR не работает
 
-You may be importing a file with a different case. For example, `src/foo.js` exists and `src/bar.js` contains:
+Возможно, вы импортируете файл с другим регистром. Например, `src/foo.js` существует, а `src/bar.js` содержит:
 
 ```js
 import './Foo.js' // should be './foo.js'
 ```
 
-Related issue: [#964](https://github.com/vitejs/vite/issues/964)
+Связанная проблема: [#964](https://github.com/vitejs/vite/issues/964)
 
-### Vite does not detect a file change
+### Vite не обнаруживает изменение файла
 
-If you are running Vite with WSL2, Vite cannot watch file changes in some conditions. See [`server.watch` option](/config/server-options.md#server-watch).
+Если вы используете Vite с WSL2, Vite не может отслеживать изменения файлов в некоторых условиях. Смотрите [параметр `server.watch`](/config/server-options.md#server-watch).
 
-### A full reload happens instead of HMR
+### Происходит полная перезагрузка вместо HMR
 
-If HMR is not handled by Vite or a plugin, a full reload will happen.
+Если HMR не обрабатывается Vite или плагином, произойдет полная перезагрузка.
 
-Also if there is a dependency loop, a full reload will happen. To solve this, try removing the loop.
+Также, если есть цикл зависимости, произойдет полная перезагрузка. Чтобы решить эту проблему, попробуйте удалить петлю.
 
-## Others
+## Другие
 
-### Syntax Error / Type Error happens
+### Произошла ошибка синтаксиса/ошибка типа
 
-Vite cannot handle and does not support code that only runs on non-strict mode (sloppy mode). This is because Vite uses ESM and it is always [strict mode](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode) inside ESM.
+Vite не может обрабатывать и не поддерживает код, который работает только в нестрогом режиме (небрежный режим). Это связано с тем, что Vite использует ESM и всегда [строгий режим](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode) внутри ESM.
 
-For example, you might see these errors.
+Например, вы можете увидеть эти ошибки.
 
 > [ERROR] With statements cannot be used with the "esm" output format due to strict mode
 
 > TypeError: Cannot create property 'foo' on boolean 'false'
 
-If these code are used inside dependencies, you could use [`patch-package`](https://github.com/ds300/patch-package) (or [`yarn patch`](https://yarnpkg.com/cli/patch) or [`pnpm patch`](https://pnpm.io/cli/patch)) for an escape hatch.
+Если этот код используется внутри зависимостей, вы можете использовать [`patch-package`](https://github.com/ds300/patch-package) (или [`yarn patch`](https://yarnpkg.com/cli/patch) или [`pnpm patch`](https://pnpm.io/cli/patch)) для эвакуационного люка.
