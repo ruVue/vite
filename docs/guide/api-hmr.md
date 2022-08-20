@@ -1,12 +1,12 @@
 # HMR API
 
-:::tip Note
-This is the client HMR API. For handling HMR update in plugins, see [handleHotUpdate](./api-plugin#handlehotupdate).
+:::tip Примечание
+Это клиентский HMR API. Для обработки обновления HMR в плагинах смотрите [handleHotUpdate](./api-plugin#handlehotupdate).
 
-The manual HMR API is primarily intended for framework and tooling authors. As an end user, HMR is likely already handled for you in the framework specific starter templates.
+Ручной HMR API в первую очередь предназначен для авторов фреймворков и инструментов. Как конечный пользователь, HMR, скорее всего, уже обрабатывается для вас в начальных шаблонах конкретной платформы.
 :::
 
-Vite exposes its manual HMR API via the special `import.meta.hot` object:
+Vite предоставляет свой ручной HMR API через специальный объект `import.meta.hot`:
 
 ```ts
 interface ImportMeta {
@@ -41,9 +41,9 @@ interface ViteHotContext {
 }
 ```
 
-## Required Conditional Guard
+## Требуемая условная защита
 
-First of all, make sure to guard all HMR API usage with a conditional block so that the code can be tree-shaken in production:
+Прежде всего, обязательно защитите все использование HMR API с помощью условного блока, чтобы код можно было встряхивать в процессе продакшена:
 
 ```js
 if (import.meta.hot) {
@@ -53,7 +53,7 @@ if (import.meta.hot) {
 
 ## `hot.accept(cb)`
 
-For a module to self-accept, use `import.meta.hot.accept` with a callback which receives the updated module:
+Чтобы модуль принимался самостоятельно, используйте `import.meta.hot.accept` с обратным вызовом, который получает обновленный модуль:
 
 ```js
 export const count = 1
@@ -68,15 +68,15 @@ if (import.meta.hot) {
 }
 ```
 
-A module that "accepts" hot updates is considered an **HMR boundary**.
+Модуль, который «принимает» горячие обновления, считается **границей HMR**.
 
-Note that Vite's HMR does not actually swap the originally imported module: if an HMR boundary module re-exports imports from a dep, then it is responsible for updating those re-exports (and these exports must be using `let`). In addition, importers up the chain from the boundary module will not be notified of the change.
+Обратите внимание, что HMR Vite на самом деле не меняет исходно импортированный модуль: если граничный модуль HMR реэкспортирует импорт из dep, то он отвечает за обновление этих реэкспортов (и эти экспорты должны использовать `let`). Кроме того, импортеры вверх по цепочке от пограничного модуля не будут уведомлены об изменении.
 
-This simplified HMR implementation is sufficient for most dev use cases, while allowing us to skip the expensive work of generating proxy modules.
+Эта упрощенная реализация HMR достаточна для большинства случаев использования разработчиками, позволяя нам пропустить дорогостоящую работу по созданию прокси-модулей.
 
 ## `hot.accept(deps, cb)`
 
-A module can also accept updates from direct dependencies without reloading itself:
+Модуль также может принимать обновления от прямых зависимостей без перезагрузки:
 
 ```js
 import { foo } from './foo.js'
@@ -101,7 +101,7 @@ if (import.meta.hot) {
 
 ## `hot.dispose(cb)`
 
-A self-accepting module or a module that expects to be accepted by others can use `hot.dispose` to clean-up any persistent side effects created by its updated copy:
+Самопринимающий модуль или модуль, который ожидает принятия другими, может использовать `hot.dispose` для очистки любых постоянных побочных эффектов, созданных его обновленной копией:
 
 ```js
 function setupSideEffect() {}
@@ -117,33 +117,33 @@ if (import.meta.hot) {
 
 ## `hot.data`
 
-The `import.meta.hot.data` object is persisted across different instances of the same updated module. It can be used to pass on information from a previous version of the module to the next one.
+Объект `import.meta.hot.data` сохраняется в разных экземплярах одного и того же обновленного модуля. Его можно использовать для передачи информации от предыдущей версии модуля к следующей.
 
 ## `hot.decline()`
 
-Calling `import.meta.hot.decline()` indicates this module is not hot-updatable, and the browser should perform a full reload if this module is encountered while propagating HMR updates.
+Вызов `import.meta.hot.decline()` указывает, что этот модуль не поддерживает горячее обновление, и браузер должен выполнить полную перезагрузку, если этот модуль встречается при распространении обновлений HMR.
 
 ## `hot.invalidate()`
 
-For now, calling `import.meta.hot.invalidate()` simply reloads the page.
+На данный момент вызов `import.meta.hot.invalidate()` просто перезагружает страницу.
 
 ## `hot.on(event, cb)`
 
-Listen to an HMR event.
+Прослушайте событие HMR.
 
-The following HMR events are dispatched by Vite automatically:
+Следующие события HMR автоматически отправляются Vite:
 
-- `'vite:beforeUpdate'` when an update is about to be applied (e.g. a module will be replaced)
-- `'vite:beforeFullReload'` when a full reload is about to occur
-- `'vite:beforePrune'` when modules that are no longer needed are about to be pruned
-- `'vite:error'` when an error occurs (e.g. syntax error)
+- `'vite:beforeUpdate'`, когда должно быть применено обновление (например, модуль будет заменен)
+- `'vite:beforeFullReload'`, когда должна произойти полная перезагрузка
+- `'vite:beforePrune'`, когда модули, которые больше не нужны, собираются удалить
+- `'vite:error'` при возникновении ошибки (например, синтаксической ошибки)
 
-Custom HMR events can also be sent from plugins. See [handleHotUpdate](./api-plugin#handlehotupdate) for more details.
+Пользовательские события HMR также можно отправлять из плагинов. Дополнительные сведения смотрите в разделе [handleHotUpdate](./api-plugin#handlehotupdate).
 
 ## `hot.send(event, data)`
 
-Send custom events back to Vite's dev server.
+Отправлять пользовательские события обратно на сервер разработки Vite.
 
-If called before connected, the data will be buffered and sent once the connection is established.
+При вызове перед подключением данные будут помещены в буфер и отправлены после установления соединения.
 
-See [Client-server Communication](/guide/api-plugin.html#client-server-communication) for more details.
+Дополнительные сведения см. в разделе [Связь клиент-сервер](/guide/api-plugin.html#client-server-communication).
