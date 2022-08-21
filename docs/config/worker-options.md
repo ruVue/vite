@@ -1,20 +1,20 @@
-# Worker Options
+# Параметры работника
 
 ## worker.format
 
-- **Type:** `'es' | 'iife'`
-- **Default:** `iife`
+- **Тип:** `'es' | 'iife'`
+- **По умолчанию:** `iife`
 
-Output format for worker bundle.
+Выходной формат для пакета рабочего.
 
 ## worker.plugins
 
-- **Type:** [`(Plugin | Plugin[])[]`](./shared-options#plugins)
+- **Тип:** [`(Plugin | Plugin[])[]`](./shared-options#plugins)
 
-Vite plugins that apply to worker bundle. Note that [config.plugins](./shared-options#plugins) does not apply to workers, it should be configured here instead.
+Плагины Vite, которые применяются к рабочему пакету. Обратите внимание, что [config.plugins](./shared-options#plugins) не применяется к рабочим процессам, вместо этого его следует настроить здесь.
 
 ## worker.rollupOptions
 
-- **Type:** [`RollupOptions`](https://rollupjs.org/guide/en/#big-list-of-options)
+- **Тип:** [`RollupOptions`](https://rollupjs.org/guide/en/#big-list-of-options)
 
-Rollup options to build worker bundle.
+Rollup для создания рабочего пакета.

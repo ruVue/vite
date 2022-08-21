@@ -248,38 +248,38 @@ export default defineConfig({
       ],
       '/config/': [
         {
-          text: 'Config',
+          text: 'Конфиг',
           items: [
             {
-              text: 'Configuring Vite',
+              text: 'Опции Vite',
               link: '/config/'
             },
             {
-              text: 'Shared Options',
+              text: 'Опции Shared',
               link: '/config/shared-options'
             },
             {
-              text: 'Server Options',
+              text: 'Опции Server',
               link: '/config/server-options'
             },
             {
-              text: 'Build Options',
+              text: 'Опции Build',
               link: '/config/build-options'
             },
             {
-              text: 'Preview Options',
+              text: 'Опции Preview',
               link: '/config/preview-options'
             },
             {
-              text: 'Dep Optimization Options',
+              text: 'Опции Dep Optimization',
               link: '/config/dep-optimization-options'
             },
             {
-              text: 'SSR Options',
+              text: 'Опции SSR',
               link: '/config/ssr-options'
             },
             {
-              text: 'Worker Options',
+              text: 'Опции Worker',
               link: '/config/worker-options'
             }
           ]

@@ -1,12 +1,12 @@
 ---
-title: Configuring Vite
+title: Конфигурация Vite
 ---
 
-# Configuring Vite
+# Конфигурирование Vite
 
-When running `vite` from the command line, Vite will automatically try to resolve a config file named `vite.config.js` inside [project root](/guide/#index-html-and-project-root).
+При запуске `vite` из командной строки Vite автоматически попытается разрешить файл конфигурации с именем `vite.config.js` внутри [проекта root](/guide/#index-html-and-project-root).
 
-The most basic config file looks like this:
+Самый простой файл конфигурации выглядит так:
 
 ```js
 // vite.config.js
@@ -15,17 +15,17 @@ export default {
 }
 ```
 
-Note Vite supports using ES modules syntax in the config file even if the project is not using native Node ESM, e.g. `type: "module"` in `package.json`. In this case, the config file is auto pre-processed before load.
+Примечание. Vite поддерживает использование синтаксиса модулей ES в файле конфигурации, даже если проект не использует собственный Node ESM, например, `type: "module"` в `package.json`. В этом случае файл конфигурации автоматически предварительно обрабатывается перед загрузкой.
 
-You can also explicitly specify a config file to use with the `--config` CLI option (resolved relative to `cwd`):
+Вы также можете явно указать файл конфигурации для использования с параметром CLI `--config` (разрешено относительно `cwd`):
 
 ```bash
 vite --config my-config.js
 ```
 
-## Config Intellisense
+## Конфигурация IntelliSense
 
-Since Vite ships with TypeScript typings, you can leverage your IDE's intellisense with jsdoc type hints:
+Поскольку Vite поставляется с типами TypeScript, вы можете использовать intellisense вашей IDE с помощью подсказок типа jsdoc:
 
 ```js
 /** @type {import('vite').UserConfig} */
@@ -34,7 +34,7 @@ export default {
 }
 ```
 
-Alternatively, you can use the `defineConfig` helper which should provide intellisense without the need for jsdoc annotations:
+В качестве альтернативы вы можете использовать хелпер `defineConfig`, который должен предоставлять IntelliSense без необходимости аннотаций jsdoc:
 
 ```js
 import { defineConfig } from 'vite'
@@ -44,11 +44,11 @@ export default defineConfig({
 })
 ```
 
-Vite also directly supports TS config files. You can use `vite.config.ts` with the `defineConfig` helper as well.
+Vite также напрямую поддерживает файлы конфигурации TS. Вы также можете использовать `vite.config.ts` с хелпером `defineConfig`.
 
-## Conditional Config
+## Условная конфигурация
 
-If the config needs to conditionally determine options based on the command (`dev`/`serve` or `build`), the [mode](/guide/env-and-mode) being used, or if it is an SSR build (`ssrBuild`), it can export a function instead:
+Если в конфигурации необходимо условно определить параметры на основе команды (`dev`/`serve` или `build`), используемого [режима](/guide/env-and-mode) или если это сборка SSR (`ssrBuild`), вместо этого он может экспортировать функцию:
 
 ```js
 export default defineConfig(({ command, mode, ssrBuild }) => {
@@ -65,13 +65,13 @@ export default defineConfig(({ command, mode, ssrBuild }) => {
 })
 ```
 
-It is important to note that in Vite's API the `command` value is `serve` during dev (in the cli `vite`, `vite dev`, and `vite serve` are aliases), and `build` when building for production (`vite build`).
+Важно отметить, что в Vite API значением `command` является `serve` во время разработки (в cli `vite`, `vite dev`, и `vite serve` являются псевдонимами), и `build` при сборке для производства (`vite build`).
 
-`ssrBuild` is experimental. It is only available during build instead of a more general `ssr` flag because, during dev, the config is shared by the single server handling SSR and non-SSR requests. The value could be `undefined` for tools that don't have separate commands for the browser and SSR build, so use explicit comparison against `true` and `false`.
+`ssrBuild` является экспериментальным. Он доступен только во время сборки вместо более общего флага `ssr`, потому что во время разработки конфигурация используется одним сервером, обрабатывающим запросы SSR и не-SSR. Значение может быть `undefined` для инструментов, у которых нет отдельных команд для браузера и сборки SSR, поэтому используйте явное сравнение с `true` и `false`.
 
-## Async Config
+## Асинхронная конфигурация
 
-If the config needs to call async function, it can export a async function instead:
+Если конфигу необходимо вызвать асинхронную функцию, он может вместо этого экспортировать асинхронную функцию:
 
 ```js
 export default defineConfig(async ({ command, mode }) => {
@@ -82,11 +82,11 @@ export default defineConfig(async ({ command, mode }) => {
 })
 ```
 
-## Environment Variables
+## Переменные среды
 
-Environmental Variables can be obtained from `process.env` as usual.
+Переменные окружения можно получить, как обычно, из `process.env`.
 
-Note that Vite doesn't load `.env` files by default as the files to load can only be determined after evaluating the Vite config, for example, the `root` and `envDir` options affects the loading behaviour. However, you can use the exported `loadEnv` helper to load the specific `.env` file if needed.
+Обратите внимание, что Vite не загружает файлы `.env` по умолчанию, поскольку файлы для загрузки можно определить только после оценки конфигурации Vite, например, параметры `root` и `envDir` влияют на поведение загрузки. Однако вы можете использовать экспортированный помощник `loadEnv` для загрузки определенного файла `.env`, если это необходимо.
 
 ```js
 import { defineConfig, loadEnv } from 'vite'

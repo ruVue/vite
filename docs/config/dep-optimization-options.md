@@ -1,23 +1,23 @@
-# Dep Optimization Options
+# Параметры оптимизации зависимостей
 
-- **Related:** [Dependency Pre-Bundling](/guide/dep-pre-bundling)
+- **Связанный:** [Dependency Pre-Bundling](/guide/dep-pre-bundling)
 
 ## optimizeDeps.entries
 
-- **Type:** `string | string[]`
+- **Тип:** `string | string[]`
 
-By default, Vite will crawl all your `.html` files to detect dependencies that need to be pre-bundled (ignoring `node_modules`, `build.outDir`, `__tests__` and `coverage`). If `build.rollupOptions.input` is specified, Vite will crawl those entry points instead.
+По умолчанию Vite будет сканировать все ваши файлы `.html`, чтобы обнаружить зависимости, которые необходимо предварительно связать (игнорируя `node_modules`, `build.outDir`, `__tests__` и `coverage`). Если указан `build.rollupOptions.input`, Vite вместо этого будет сканировать эти точки входа.
 
-If neither of these fit your needs, you can specify custom entries using this option - the value should be a [fast-glob pattern](https://github.com/mrmlnc/fast-glob#basic-syntax) or array of patterns that are relative from Vite project root. This will overwrite default entries inference. Only `node_modules` and `build.outDir` folders will be ignored by default when `optimizeDeps.entries` is explicitly defined. If other folders needs to be ignored, you can use an ignore pattern as part of the entries list, marked with an initial `!`.
+Если ни один из них не соответствует вашим потребностям, вы можете указать пользовательские записи с помощью этой опции — значение должно быть [шаблон fast-glob](https://github.com/mrmlnc/fast-glob#basic-syntax) или массивом шаблоны, которые являются относительными от корня проекта Vite. Это перезапишет вывод записей по умолчанию. Только папки `node_modules` и `build.outDir` будут игнорироваться по умолчанию, если `optimizeDeps.entries` определен явно. Если необходимо игнорировать другие папки, вы можете использовать шаблон игнорирования как часть списка записей, помеченный начальным `!`.
 
 ## optimizeDeps.exclude
 
-- **Type:** `string[]`
+- **Тип:** `string[]`
 
-Dependencies to exclude from pre-bundling.
+Зависимости, которые следует исключить из предварительной сборки.
 
 :::warning CommonJS
-CommonJS dependencies should not be excluded from optimization. If an ESM dependency is excluded from optimization, but has a nested CommonJS dependency, the CommonJS dependency should be added to `optimizeDeps.include`. Example:
+Зависимости CommonJS не следует исключать из оптимизации. Если зависимость ESM исключена из оптимизации, но имеет вложенную зависимость CommonJS, зависимость CommonJS должна быть добавлена в `optimizeDeps.include`. Пример:
 
 ```js
 export default defineConfig({
@@ -31,23 +31,23 @@ export default defineConfig({
 
 ## optimizeDeps.include
 
-- **Type:** `string[]`
+- **Тип:** `string[]`
 
-By default, linked packages not inside `node_modules` are not pre-bundled. Use this option to force a linked package to be pre-bundled.
+По умолчанию связанные пакеты не внутри `node_modules` предварительно не объединяются. Используйте этот параметр, чтобы предварительно объединить связанный пакет.
 
 ## optimizeDeps.esbuildOptions
 
-- **Type:** [`EsbuildBuildOptions`](https://esbuild.github.io/api/#simple-options)
+- **Тип:** [`EsbuildBuildOptions`](https://esbuild.github.io/api/#simple-options)
 
-Options to pass to esbuild during the dep scanning and optimization.
+Параметры для передачи в esbuild во время сканирования и оптимизации.
 
-Certain options are omitted since changing them would not be compatible with Vite's dep optimization.
+Некоторые параметры опущены, поскольку их изменение несовместимо с оптимизацией Vite.
 
-- `external` is also omitted, use Vite's `optimizeDeps.exclude` option
-- `plugins` are merged with Vite's dep plugin
+- `external` также опущен, используйте опцию Vite `optimizeDeps.exclude`
+- `plugins` объединены с плагином dep Vite
 
 ## optimizeDeps.force
 
-- **Type:** `boolean`
+- **Тип:** `boolean`
 
-Set to `true` to force dependency pre-bundling, ignoring previously cached optimized dependencies.
+Установите значение `true`, чтобы принудительно выполнить предварительное объединение зависимостей, игнорируя ранее кэшированные оптимизированные зависимости.
