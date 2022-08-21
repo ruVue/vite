@@ -86,6 +86,8 @@ export default defineConfig({
   themeConfig: {
     logo: '/logo.svg',
 
+    outlineTitle: 'На этой странице',
+
     editLink: {
       pattern: 'https://github.com/ruVue/vite/edit/main-ru/docs/:path',
       text: 'Предложить изменения на этой странице'
@@ -228,7 +230,7 @@ export default defineConfig({
           text: 'APIs',
           items: [
             {
-              text: 'Plugin API',
+              text: 'Плагин API',
               link: '/guide/api-plugin'
             },
             {
@@ -240,7 +242,7 @@ export default defineConfig({
               link: '/guide/api-javascript'
             },
             {
-              text: 'Config Reference',
+              text: 'Справочник по конфигурации',
               link: '/config/'
             }
           ]
