@@ -134,7 +134,7 @@ export default defineConfig({
                 link: 'https://twitter.com/vite_js'
               },
               {
-                text: 'Discord Chat',
+                text: 'Чат в Discord',
                 link: 'https://chat.vitejs.dev'
               },
               {
@@ -142,7 +142,7 @@ export default defineConfig({
                 link: 'https://github.com/vitejs/awesome-vite'
               },
               {
-                text: 'DEV Community',
+                text: 'Сообщество разработчиков',
                 link: 'https://dev.to/t/vite'
               },
               {
@@ -150,7 +150,7 @@ export default defineConfig({
                 link: 'https://vite-rollup-plugins.patak.dev/'
               },
               {
-                text: 'Changelog',
+                text: 'Журнал изменений',
                 link: 'https://github.com/vitejs/vite/blob/main/packages/vite/CHANGELOG.md'
               }
             ]
