@@ -208,28 +208,28 @@ dist/my-lib.umd.cjs 0.30 KiB / gzip: 0.16 KiB
 }
 ```
 
-::: tip Note
-If the `package.json` does not contain `"type": "module"`, Vite will generate different file extensions for Node.js compatibility. `.js` will become `.mjs` and `.cjs` will become `.js`.
+::: tip Примечание
+Если `package.json` не содержит `"type": "module"`, Vite будет генерировать разные расширения файлов для совместимости с Node.js. `.js` станет `.mjs`, а `.cjs` станет `.js`.
 :::
 
-::: tip Environment Variables
-In library mode, all `import.meta.env.*` usage are statically replaced when building for production. However, `process.env.*` usage are not, so that consumers of your library can dynamically change it. If this is undesirable, you can use `define: { 'process.env.`<wbr>`NODE_ENV': '"production"' }` for example to statically replace them.
+::: tip Переменные среды
+В режиме библиотеки все использование `import.meta.env.*` статически заменяется при сборке для производства. Однако `process.env.*` не используется, так что потребители вашей библиотеки могут динамически изменять его. Если это нежелательно, вы можете использовать `define: { 'process.env.`<wbr>`NODE_ENV': '"production"' }`, например, для их статической замены.
 :::
 
-## Advanced Base Options
+## Расширенные базовые параметры
 
 ::: warning
-This feature is experimental, the API may change in a future minor without following semver. Please always pin Vite's version to a minor when using it.
+Эта функция является экспериментальной, API может измениться в будущем, но не после этого. Пожалуйста, всегда прикрепляйте версию Vite к минорной версии при ее использовании.
 :::
 
-For advanced use cases, the deployed assets and public files may be in different paths, for example to use different cache strategies.
-A user may choose to deploy in three different paths:
+Для расширенных вариантов использования развернутые ресурсы и общедоступные файлы могут находиться по разным путям, например, для использования разных стратегий кэширования.
+Пользователь может выбрать для развертывания три разных пути:
 
-- The generated entry HTML files (which may be processed during SSR)
-- The generated hashed assets (JS, CSS, and other file types like images)
-- The copied [public files](assets.md#the-public-directory)
+- Сгенерированные входные HTML-файлы (которые могут быть обработаны во время SSR)
+- Сгенерированные хешированные активы (JS, CSS и другие типы файлов, такие как изображения)
+- Скопированные [общедоступные файлы](assets.md#the-public-directory)
 
-A single static [base](#public-base-path) isn't enough in these scenarios. Vite provides experimental support for advanced base options during build, using `experimental.renderBuiltUrl`.
+В этих сценариях недостаточно одного статического [base](#public-base-path). Vite обеспечивает экспериментальную поддержку расширенных базовых параметров во время сборки, используя `experimental.renderBuiltUrl`.
 
 ```ts
 experimental: {
@@ -243,7 +243,7 @@ experimental: {
 }
 ```
 
-If the hashed assets and public files aren't deployed together, options for each group can be defined independently using asset `type` included in the second `context` param given to the function.
+Если хешированные активы и общедоступные файлы не развернуты вместе, параметры для каждой группы могут быть определены независимо, используя ассеты `type`, включенный во второй параметр `context`, заданной функции.
 
 ```ts
 experimental: {

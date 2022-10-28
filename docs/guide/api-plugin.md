@@ -205,7 +205,7 @@ console.log(msg)
   })
   ```
 
-  ::: warning Note
+  ::: warning Примечание
   Пользовательские плагины разрешаются перед запуском этого хука, поэтому внедрение других плагинов внутри хука `config` не будет иметь никакого эффекта.
   :::
 
@@ -329,10 +329,10 @@ console.log(msg)
 
 ### `configurePreviewServer`
 
-- **Type:** `(server: { middlewares: Connect.Server, httpServer: http.Server }) => (() => void) | void | Promise<(() => void) | void>`
-- **Kind:** `async`, `sequential`
+- **Тип:** `(server: { middlewares: Connect.Server, httpServer: http.Server }) => (() => void) | void | Promise<(() => void) | void>`
+- **Вид:** `async`, `sequential`
 
-  Same as [`configureServer`](/guide/api-plugin.html#configureserver) but for the preview server. It provides the [connect](https://github.com/senchalabs/connect) server and its underlying [http server](https://nodejs.org/api/http.html). Similarly to `configureServer`, the `configurePreviewServer` hook is called before other middlewares are installed. If you want to inject a middleware **after** other middlewares, you can return a function from `configurePreviewServer`, which will be called after internal middlewares are installed:
+  То же, что [`configureServer`](/guide/api-plugin.html#configureserver), но для сервера предварительного просмотра. Он предоставляет сервер [connect](https://github.com/senchalabs/connect) и лежащий в его основе [http server](https://nodejs.org/api/http.html). Подобно `configureServer`, хук `configurePreviewServer` вызывается перед установкой других промежуточных программ. Если вы хотите внедрить промежуточное программное обеспечение **после** других промежуточных программ, вы можете вернуть функцию из `configurePreviewServer`, которая будет вызываться после установки внутренних промежуточных программ:
 
   ```js
   const myPlugin = () => ({

@@ -22,7 +22,7 @@
 - **Тип:** `boolean | { polyfill?: boolean, resolveDependencies?: ResolveModulePreloadDependenciesFn }`
 - **По умолчанию:** `true`
 
-By default, a [module preload polyfill](https://guybedford.com/es-module-preloading-integrity#modulepreload-polyfill) is automatically injected. The polyfill is auto injected into the proxy module of each `index.html` entry. If the build is configured to use a non-HTML custom entry via `build.rollupOptions.input`, then it is necessary to manually import the polyfill in your custom entry:
+По умолчанию автоматически внедряется [модуль предварительной загрузки полифилла](https://guybedford.com/es-module-preloading-integrity#modulepreload-polyfill). Полифилл автоматически внедряется в прокси-модуль каждой записи `index.html`. Если сборка настроена на использование пользовательской записи, отличной от HTML, через `build.rollupOptions.input`, необходимо вручную импортировать полифилл в вашу пользовательскую запись:
 
 Следует ли автоматически вводить [модуль предварительной загрузки полифилл](https://guybedford.com/es-module-preloading-integrity#modulepreload-polyfill).
 
@@ -34,11 +34,11 @@ import 'vite/modulepreload-polyfill'
 
 Примечание: Полифилл **не** применяется к [режиму библиотеки](/guide/build#library-mode). Если вам нужно поддерживать браузеры без собственного динамического импорта, вам, вероятно, следует избегать его использования в вашей библиотеке.
 
-The polyfill can be disabled using `{ polyfill: false }`.
+Полифилл можно отключить с помощью `{ polyfill: false }`.
 
-The list of chunks to preload for each dynamic import is computed by Vite. By default, an absolute path including the `base` will be used when loading these dependencies. If the `base` is relative (`''` or `'./'`), `import.meta.url` is used at runtime to avoid absolute paths that depend on the final deployed base.
+Список фрагментов для предварительной загрузки для каждого динамического импорта вычисляется Vite. По умолчанию при загрузке этих зависимостей будет использоваться абсолютный путь, включая `base`. Если `base` является относительной (`''` или `'./'`), `import.meta.url` используется во время выполнения, чтобы избежать абсолютных путей, которые зависят от конечной развернутой базы.
 
-There is experimental support for fine grained control over the dependencies list and their paths using the `resolveDependencies` function. It expects a function of type `ResolveModulePreloadDependenciesFn`:
+Существует экспериментальная поддержка тонкого управления списком зависимостей и их путями с помощью функции `resolveDependencies`. Ожидается функция типа `ResolveModulePreloadDependenciesFn`:
 
 ```ts
 type ResolveModulePreloadDependenciesFn = (
@@ -50,7 +50,7 @@ type ResolveModulePreloadDependenciesFn = (
 ) => (string | { runtime?: string })[]
 ```
 
-The `resolveDependencies` function will be called for each dynamic import with a list of the chunks it depends on, and it will also be called for each chunk imported in entry HTML files. A new dependencies array can be returned with these filtered or more dependencies injected, and their paths modified. The `deps` paths are relative to the `build.outDir`. Returning a relative path to the `hostId` for `hostType === 'js'` is allowed, in which case `new URL(dep, import.meta.url)` is used to get an absolute path when injecting this module preload in the HTML head.
+Функция `resolveDependencies` будет вызываться для каждого динамического импорта со списком фрагментов, от которых он зависит, а также будет вызываться для каждого фрагмента, импортируемого в входных HTML-файлах. Новый массив зависимостей может быть возвращен с этими отфильтрованными или несколькими введенными зависимостями и измененными путями к ним. Пути `deps` относятся к `build.outDir`. Возврат относительного пути к `hostId` для `hostType === 'js'` разрешен, и в этом случае `new URL(dep, import.meta.url)` используется для получения абсолютного пути при внедрении предварительной загрузки этого модуля. в заголовке HTML.
 
 ```js
 modulePreload: {
@@ -60,14 +60,14 @@ modulePreload: {
 }
 ```
 
-The resolved dependency paths can be further modified using [`experimental.renderBuiltUrl`](../guide/build.md#advanced-base-options).
+Разрешенные пути зависимостей можно дополнительно изменить с помощью [`experimental.renderBuiltUrl`](../guide/build.md#advanced-base-options).
 
 ## build.polyfillModulePreload
 
-- **Type:** `boolean`
-- **Default:** `true`
-- **Deprecated** use `build.modulePreload.polyfill` instead
-  Whether to automatically inject a [module preload polyfill](https://guybedford.com/es-module-preloading-integrity#modulepreload-polyfill).
+- **Тип:** `boolean`
+- **По умолчанию:** `true`
+- **Устарело** вместо этого используйте `build.modulePreload.polyfill`
+  Следует ли автоматически вводить [module preload polyfill](https://guybedford.com/es-module-preloading-integrity#modulepreload-polyfill).
 
 ## build.outDir
 
@@ -92,7 +92,7 @@ The resolved dependency paths can be further modified using [`experimental.rende
 
 Заполнители Git LFS автоматически исключаются из встраивания, поскольку они не содержат содержимого файла, который они представляют.
 
-::: tip Note
+::: tip Примечание
 Если вы укажете `build.lib`, `build.assetsInlineLimit` будет игнорироваться, а активы всегда будут встроенными, независимо от размера файла или быть заполнителем Git LFS.
 :::
 
@@ -105,7 +105,7 @@ The resolved dependency paths can be further modified using [`experimental.rende
 
 Если этот параметр отключен, все CSS во всем проекте будут извлечены в один файл CSS.
 
-::: tip Note
+::: tip Примечание
 Если вы укажете `build.lib`, `build.cssCodeSplit` будет по умолчанию `false`.
 :::
 
@@ -169,7 +169,7 @@ The resolved dependency paths can be further modified using [`experimental.rende
 
 Если установлено значение `true`, сборка также будет генерировать манифест SSR для определения ссылок на стили и директив предварительной загрузки ресурсов в рабочей среде. Если значение представляет собой строку, оно будет использоваться в качестве имени файла манифеста.
 
-When set to `true`, the build will also generate an SSR manifest for determining style links and asset preload directives in production. When the value is a string, it will be used as the manifest file name.
+Если установлено значение `true`, сборка также будет генерировать манифест SSR для определения ссылок на стили и директив предварительной загрузки ресурсов в рабочей среде. Если значение представляет собой строку, оно будет использоваться в качестве имени файла манифеста.
 
 ## build.ssr
 
@@ -219,10 +219,10 @@ npm add -D terser
 ## build.copyPublicDir
 
 - **Experimental**
-- **Type:** `boolean`
-- **Default:** `true`
+- **Тип:** `boolean`
+- **По умолчанию:** `true`
 
-By default, Vite will copy files from the `publicDir` into the `outDir` on build. Set to `false` to disable this.
+По умолчанию Vite копирует файлы из `publicDir` в `outDir` при сборке. Установите `false`, чтобы отключить это.
 
 ## build.reportCompressedSize
 

@@ -53,9 +53,7 @@ export type { T }
 
 Вы должны установить `"isolatedModules": true` в вашем `tsconfig.json` в разделе `compilerOptions`, чтобы TS предупредил вас о функциях, которые не работают с изолированной транспиляцией.
 
-However, some libraries (e.g. [`vue`](https://github.com/vuejs/core/issues/1228)) don't work well with `"isolatedModules": true`. You can use `"skipLibCheck": true` to temporarily suppress the errors until it is fixed upstream.
-
-However, some libraries (e.g. [`vue`](https://github.com/vuejs/core/issues/1228)) don't work well with `"isolatedModules": true`. You can use `"skipLibCheck": true` to temporarily suppress the errors until it is fixed upstream.
+Однако некоторые библиотеки (например, [`vue`](https://github.com/vuejs/core/issues/1228)) плохо работают с `"isolatedModules": true`. Вы можете использовать `"skipLibCheck": true`, чтобы временно подавить ошибки, пока они не будут исправлены вышестоящим.
 
 #### `useDefineForClassFields`
 
@@ -108,21 +106,7 @@ However, some libraries (e.g. [`vue`](https://github.com/vuejs/core/issues/1228)
 - Типы для [HMR API](./api-hmr) в `import.meta.hot`
 
 ::: tip
-To override the default typing, declare it before the triple-slash reference. For example, to make the default import of `*.svg` a React component:
-
-```ts
-declare module '*.svg' {
-  const content: React.FC<React.SVGProps<SVGElement>>
-  export default content
-}
-
-/// <reference types="vite/client" />
-```
-
-:::
-
-::: tip
-To override the default typing, declare it before the triple-slash reference. For example, to make the default import of `*.svg` a React component:
+Чтобы переопределить ввод по умолчанию, объявите его перед ссылкой с тройной косой чертой. Например, чтобы сделать импорт `*.svg` компонентом React по умолчанию:
 
 ```ts
 declare module '*.svg' {

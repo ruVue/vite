@@ -53,10 +53,10 @@ const __dirname = fileURLToPath(new URL('.', import.meta.url))
 
 ## `ResolvedConfig`
 
-The `ResolvedConfig` interface has all the same properties of a `UserConfig`, except most properties are resolved and non-undefined. It also contains utilities like:
+Интерфейс `ResolvedConfig` имеет все те же свойства, что и `UserConfig`, за исключением того, что большинство свойств разрешены и не определены. Он также содержит такие утилиты, как:
 
-- `config.assetsInclude`: A function to check if an `id` is considered an asset.
-- `config.logger`: Vite's internal logger object.
+- `config.assetsInclude`: Функция для проверки, считается ли `id` асетом.
+- `config.logger`: Внутренний объект регистратора Vite.
 
 ## `ViteDevServer`
 
@@ -283,7 +283,7 @@ function normalizePath(id: string): string
 
 ## `mergeConfig`
 
-**Type Signature:**
+**Тип подписи:**
 
 ```ts
 function mergeConfig(
@@ -293,11 +293,11 @@ function mergeConfig(
 ): Record<string, any>
 ```
 
-Deeply merge two Vite configs. `isRoot` represents the level within the Vite config which is being merged. For example, set `false` if you're merging two `build` options.
+Глубоко объедините две конфигурации Vite. `isRoot` представляет уровень в конфигурации Vite, который объединяется. Например, установите `false`, если вы объединяете две опции `build`.
 
 ## `searchForWorkspaceRoot`
 
-**Type Signature:**
+**Тип подписи:**
 
 ```ts
 function searchForWorkspaceRoot(
@@ -306,18 +306,18 @@ function searchForWorkspaceRoot(
 ): string
 ```
 
-**Related:** [server.fs.allow](/config/server-options.md#server-fs-allow)
+**Связанное:** [server.fs.allow](/config/server-options.md#server-fs-allow)
 
-Search for the root of the potential workspace if it meets the following conditions, otherwise it would fallback to `root`:
+Найдите корень потенциального рабочего пространства, если он соответствует следующим условиям, в противном случае он вернется к `root`:
 
-- contains `workspaces` field in `package.json`
-- contains one of the following file
+- содержит поле `workspaces` в `package.json`
+- содержит один из следующих файлов
   - `lerna.json`
   - `pnpm-workspace.yaml`
 
 ## `loadEnv`
 
-**Type Signature:**
+**Тип подписи:**
 
 ```ts
 function loadEnv(
@@ -327,21 +327,21 @@ function loadEnv(
 ): Record<string, string>
 ```
 
-**Related:** [`.env` Files](./env-and-mode.md#env-files)
+**Связанное:** [Файлы `.env`](./env-and-mode.md#env-files)
 
-Load `.env` files within the `envDir`. By default, only env variables prefixed with `VITE_` are loaded, unless `prefixes` is changed.
+Загрузите файлы `.env` в `envDir`. По умолчанию загружаются только переменные env с префиксом `VITE_`, если `prefixes` не изменены.
 
 ## `normalizePath`
 
-**Type Signature:**
+**Тип подписи:**
 
 ```ts
 function normalizePath(id: string): string
 ```
 
-**Related:** [Path Normalization](./api-plugin.md#path-normalization)
+**Связанное:** [Нормализация пути](./api-plugin.md#path-normalization)
 
-Normalizes a path to interoperate between Vite plugins.
+Нормализует путь взаимодействия между плагинами Vite.
 
 ## `transformWithEsbuild`
 
