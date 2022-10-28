@@ -74,7 +74,21 @@ import './Foo.js' // should be './foo.js'
 
 Если HMR не обрабатывается Vite или плагином, произойдет полная перезагрузка.
 
-Также, если есть цикл зависимости, произойдет полная перезагрузка. Чтобы решить эту проблему, попробуйте удалить петлю.
+Также, если есть цикл зависимости, произойдет полная перезагрузка. Чтобы решить эту проблему, попробуйте удалить цикл.
+
+## Сборка
+
+### Встроенный файл не работает из-за ошибки CORS
+
+Если вывод HTML-файла был открыт с использованием протокола `file`, сценарии не будут запускаться со следующей ошибкой.
+
+> Access to script at 'file:///foo/bar.js' from origin 'null' has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: http, data, isolated-app, chrome-extension, chrome, https, chrome-untrusted.
+
+> Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at file:///foo/bar.js. (Reason: CORS request not http).
+
+Смотрите [Причина: запрос CORS не HTTP - HTTP | MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS/Errors/CORSRequestNotHttp) для получения дополнительной информации о том, почему это происходит.
+
+Вам нужно будет получить доступ к файлу по протоколу `http`. Самый простой способ добиться этого — запустить `npx vite preview`.
 
 ## Другие
 

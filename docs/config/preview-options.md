@@ -75,3 +75,9 @@ export default defineConfig({
 - **По умолчанию:** [`server.cors`](./server-options#server-cors)
 
 Настройте CORS для сервера предварительного просмотра. Это включено по умолчанию и позволяет любое происхождение. Передайте [options object](https://github.com/expressjs/cors), чтобы точно настроить поведение, или `false`, чтобы отключить.
+
+## preview.headers
+
+- **Тип:** `OutgoingHttpHeaders`
+
+Укажите заголовки ответа сервера.

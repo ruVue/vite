@@ -297,10 +297,9 @@ export default defineConfig({
 ## server.fs.deny
 
 - **Тип:** `string[]`
+- **По умолчанию:** `['.env', '.env.*', '*.{pem,crt}']`.
 
-Черный список для конфиденциальных файлов, обслуживание которых ограничено сервером Vite dev.
-
-По умолчанию `['.env', '.env.*', '*.{pem,crt}']`.
+Черный список для конфиденциальных файлов, обслуживание которых ограничено сервером Vite dev. Это будет иметь более высокий приоритет, чем [`server.fs.allow`](#server-fs-allow). Поддерживаются [шаблоны picomatch](https://github.com/micromatch/picomatch#globbing-features).
 
 ## server.origin
 

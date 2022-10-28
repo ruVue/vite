@@ -19,6 +19,7 @@ import type {
   RenderedChunk
 } from 'rollup'
 import type { PluginItem as BabelPlugin } from '@babel/core'
+import colors from 'picocolors'
 import type { Options } from './types'
 
 // lazy load babel since it's not used during dev
@@ -156,6 +157,7 @@ function viteLegacyPlugin(options: Options = {}): Plugin[] {
     })
   }
 
+  let overriddenBuildTarget = false
   const legacyConfigPlugin: Plugin = {
     name: 'vite:legacy-config',
 
@@ -173,6 +175,20 @@ function viteLegacyPlugin(options: Options = {}): Plugin[] {
           // So targeting `chrome61` suffices to fix the compatibility issue.
           config.build.cssTarget = 'chrome61'
         }
+
+        if (genLegacy) {
+          // Vite's default target browsers are **not** the same.
+          // See https://github.com/vitejs/vite/pull/10052#issuecomment-1242076461
+          overriddenBuildTarget = config.build.target !== undefined
+          // browsers supporting ESM + dynamic import + import.meta
+          config.build.target = [
+            'es2020',
+            'edge79',
+            'firefox67',
+            'chrome64',
+            'safari11.1'
+          ]
+        }
       }
 
       return {
@@ -182,6 +198,15 @@ function viteLegacyPlugin(options: Options = {}): Plugin[] {
               ? false
               : legacyEnvVarMarker
         }
+      }
+    },
+    configResolved(config) {
+      if (overriddenBuildTarget) {
+        config.logger.warn(
+          colors.yellow(
+            `plugin-legacy overrode 'build.target'. You should pass 'targets' as an option to this plugin with the list of legacy browsers to support instead.`
+          )
+        )
       }
     }
   }
@@ -205,6 +230,7 @@ function viteLegacyPlugin(options: Options = {}): Plugin[] {
             modernPolyfills
           )
         await buildPolyfillChunk(
+          config.mode,
           modernPolyfills,
           bundle,
           facadeToModernPolyfillMap,
@@ -237,6 +263,7 @@ function viteLegacyPlugin(options: Options = {}): Plugin[] {
           )
 
         await buildPolyfillChunk(
+          config.mode,
           legacyPolyfills,
           bundle,
           facadeToLegacyPolyfillMap,
@@ -615,6 +642,7 @@ function createBabelPresetEnvOptions(
 }
 
 async function buildPolyfillChunk(
+  mode: string,
   imports: Set<string>,
   bundle: OutputBundle,
   facadeToChunkMap: Map<string, string>,
@@ -626,6 +654,7 @@ async function buildPolyfillChunk(
   let { minify, assetsDir } = buildOptions
   minify = minify ? 'terser' : false
   const res = await build({
+    mode,
     // so that everything is resolved from here
     root: path.dirname(fileURLToPath(import.meta.url)),
     configFile: false,
@@ -633,8 +662,6 @@ async function buildPolyfillChunk(
     plugins: [polyfillsPlugin(imports, excludeSystemJS)],
     build: {
       write: false,
-      // if a value above 'es5' is set, esbuild injects helper functions which uses es2015 features
-      target: 'es5',
       minify,
       assetsDir,
       rollupOptions: {
@@ -645,6 +672,18 @@ async function buildPolyfillChunk(
           format,
           entryFileNames: rollupOutputOptions.entryFileNames
         }
+      }
+    },
+    // Don't run esbuild for transpilation or minification
+    // because we don't want to transpile code.
+    esbuild: false,
+    optimizeDeps: {
+      esbuildOptions: {
+        // If a value above 'es5' is set, esbuild injects helper functions which uses es2015 features.
+        // This limits the input code not to include es2015+ codes.
+        // But core-js is the only dependency which includes commonjs code
+        // and core-js doesn't include es2015+ codes.
+        target: 'es5'
       }
     }
   })
@@ -685,21 +724,6 @@ function polyfillsPlugin(
           (excludeSystemJS ? '' : `import "systemjs/dist/s.min.js";`)
         )
       }
-    },
-    renderChunk(_, __, opts) {
-      // systemjs includes code that can't be minified down to es5 by esbuild
-      if (!excludeSystemJS) {
-        // @ts-ignore avoid esbuild transform on legacy chunks since it produces
-        // legacy-unsafe code - e.g. rewriting object properties into shorthands
-        opts.__vite_skip_esbuild__ = true
-
-        // @ts-ignore force terser for legacy chunks. This only takes effect if
-        // minification isn't disabled, because that leaves out the terser plugin
-        // entirely.
-        opts.__vite_force_terser__ = true
-      }
-
-      return null
     }
   }
 }

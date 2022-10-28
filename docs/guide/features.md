@@ -55,9 +55,11 @@ export type { T }
 
 However, some libraries (e.g. [`vue`](https://github.com/vuejs/core/issues/1228)) don't work well with `"isolatedModules": true`. You can use `"skipLibCheck": true` to temporarily suppress the errors until it is fixed upstream.
 
+However, some libraries (e.g. [`vue`](https://github.com/vuejs/core/issues/1228)) don't work well with `"isolatedModules": true`. You can use `"skipLibCheck": true` to temporarily suppress the errors until it is fixed upstream.
+
 #### `useDefineForClassFields`
 
-Начиная с Vite 2.5.0, значением по умолчанию будет `true`, если целью TypeScript является `ESNext`. Это соответствует [поведению `tsc` 4.3.2 и более поздних версий](https://github.com/microsoft/TypeScript/pull/42663). Это также стандартное поведение среды выполнения ECMAScript.
+Начиная с Vite 2.5.0, значением по умолчанию будет `true`, если целью TypeScript является `ESNext` или выше, включая `ESNext`. Это соответствует [поведению `tsc` 4.3.2 и более поздних версий](https://github.com/microsoft/TypeScript/pull/42663). Это также стандартное поведение среды выполнения ECMAScript.
 
 Но это может быть нелогичным для тех, кто работает с другими языками программирования или более старыми версиями TypeScript.
 Подробнее о переходе можно прочитать в [примечаниях к выпуску TypeScript 3.7](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-7.html#the-usedefineforclassfields-flag-and-the-declare-property-modifier).
@@ -71,10 +73,13 @@ However, some libraries (e.g. [`vue`](https://github.com/vuejs/core/issues/1228)
 #### Другие параметры компилятора, влияющие на результат сборки
 
 - [`extends`](https://www.typescriptlang.org/tsconfig#extends)
+- [`alwaysStrict`](https://www.typescriptlang.org/tsconfig#alwaysStrict)
 - [`importsNotUsedAsValues`](https://www.typescriptlang.org/tsconfig#importsNotUsedAsValues)
-- [`preserveValueImports`](https://www.typescriptlang.org/tsconfig#preserveValueImports)
+- [`jsx`](https://www.typescriptlang.org/tsconfig#jsx)
 - [`jsxFactory`](https://www.typescriptlang.org/tsconfig#jsxFactory)
 - [`jsxFragmentFactory`](https://www.typescriptlang.org/tsconfig#jsxFragmentFactory)
+- [`jsxImportSource`](https://www.typescriptlang.org/tsconfig#jsxImportSource)
+- [`preserveValueImports`](https://www.typescriptlang.org/tsconfig#preserveValueImports)
 
 Если перенос вашей кодовой базы на `"isolatedModules": true` является непреодолимым усилием, вы можете обойти это с помощью стороннего плагина, такого как [rollup-plugin-friendly-type-imports](https://www.npmjs.com/package/rollup-plugin-friendly-type-imports). Однако этот подход официально не поддерживается Vite.
 
@@ -101,6 +106,20 @@ However, some libraries (e.g. [`vue`](https://github.com/vuejs/core/issues/1228)
 - Импорт ассетов (например, импорт файла `.svg`)
 - Типы для Vite-injected [переменных env](./env-and-mode#env-variables) в `import.meta.env`
 - Типы для [HMR API](./api-hmr) в `import.meta.hot`
+
+::: tip
+To override the default typing, declare it before the triple-slash reference. For example, to make the default import of `*.svg` a React component:
+
+```ts
+declare module '*.svg' {
+  const content: React.FC<React.SVGProps<SVGElement>>
+  export default content
+}
+
+/// <reference types="vite/client" />
+```
+
+:::
 
 ::: tip
 To override the default typing, declare it before the triple-slash reference. For example, to make the default import of `*.svg` a React component:

@@ -76,11 +76,14 @@ $ npm run preview
    # navigate into the build output directory
    cd dist
 
+   # place .nojekyll to bypass Jekyll processing
+   echo > .nojekyll
+
    # if you are deploying to a custom domain
    # echo 'www.example.com' > CNAME
 
    git init
-   git checkout -b main
+   git checkout -И main
    git add -A
    git commit -m 'deploy'
 
@@ -275,60 +278,6 @@ $ npx wrangler pages publish dist
 3. Выполните развертывание для surge, набрав `surge dist`.
 
 Вы также можете выполнить развертывание в [пользовательском домене](http://surge.sh/help/adding-a-custom-domain), добавив `surge dist yourdomain.com`.
-
-## Heroku
-
-1. Установите [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli).
-
-2. Создайте учетную запись Heroku, [зарегистрировавшись](https://signup.heroku.com).
-
-3. Запустите `heroku login` и введите свои учетные данные Heroku:
-
-   ```bash
-   $ heroku login
-   ```
-
-4. Создайте файл с именем `static.json` в корне вашего проекта со следующим содержимым:
-
-   `static.json`:
-
-   ```json
-   {
-     "root": "./dist"
-   }
-   ```
-
-   Это конфигурация вашего сайта; читайте больше на [heroku-buildpack-static](https://github.com/heroku/heroku-buildpack-static).
-
-5. Настройте свой Heroku git remote:
-
-   ```bash
-   # version change
-   $ git init
-   $ git add .
-   $ git commit -m "My site ready for deployment."
-
-   # creates a new app with a specified name
-   $ heroku apps:create example
-   ```
-
-6. Установить билдпаки. Мы используем `heroku/nodejs` для сборки проекта и `heroku-buildpack-static` для его обслуживания.
-
-   ```bash
-   # set buildpacks
-   $ heroku buildpacks:set heroku/nodejs
-   $ heroku buildpacks:add https://github.com/heroku/heroku-buildpack-static.git
-   ```
-
-7. Разверните свой сайт:
-
-   ```bash
-   # publish site
-   $ git push heroku main
-
-   # opens a browser to view the Dashboard version of Heroku CI
-   $ heroku open
-   ```
 
 ## Azure Static Web Apps
 

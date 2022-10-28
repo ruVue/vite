@@ -17,10 +17,12 @@
 
 Обратите внимание, что сборка завершится ошибкой, если код содержит функции, которые нельзя безопасно перенести с помощью esbuild. Подробнее смотрите в [документации esbuild](https://esbuild.github.io/content-types/#javascript).
 
-## build.polyfillModulePreload
+## build.modulePreload
 
-- **Тип:** `boolean`
+- **Тип:** `boolean | { polyfill?: boolean, resolveDependencies?: ResolveModulePreloadDependenciesFn }`
 - **По умолчанию:** `true`
+
+By default, a [module preload polyfill](https://guybedford.com/es-module-preloading-integrity#modulepreload-polyfill) is automatically injected. The polyfill is auto injected into the proxy module of each `index.html` entry. If the build is configured to use a non-HTML custom entry via `build.rollupOptions.input`, then it is necessary to manually import the polyfill in your custom entry:
 
 Следует ли автоматически вводить [модуль предварительной загрузки полифилл](https://guybedford.com/es-module-preloading-integrity#modulepreload-polyfill).
 
@@ -30,7 +32,42 @@
 import 'vite/modulepreload-polyfill'
 ```
 
-Примечание: полифилл **не** применяется к [режиму библиотеки](/guide/build#library-mode). Если вам нужно поддерживать браузеры без собственного динамического импорта, вам, вероятно, следует избегать его использования в вашей библиотеке.
+Примечание: Полифилл **не** применяется к [режиму библиотеки](/guide/build#library-mode). Если вам нужно поддерживать браузеры без собственного динамического импорта, вам, вероятно, следует избегать его использования в вашей библиотеке.
+
+The polyfill can be disabled using `{ polyfill: false }`.
+
+The list of chunks to preload for each dynamic import is computed by Vite. By default, an absolute path including the `base` will be used when loading these dependencies. If the `base` is relative (`''` or `'./'`), `import.meta.url` is used at runtime to avoid absolute paths that depend on the final deployed base.
+
+There is experimental support for fine grained control over the dependencies list and their paths using the `resolveDependencies` function. It expects a function of type `ResolveModulePreloadDependenciesFn`:
+
+```ts
+type ResolveModulePreloadDependenciesFn = (
+  url: string,
+  deps: string[],
+  context: {
+    importer: string
+  }
+) => (string | { runtime?: string })[]
+```
+
+The `resolveDependencies` function will be called for each dynamic import with a list of the chunks it depends on, and it will also be called for each chunk imported in entry HTML files. A new dependencies array can be returned with these filtered or more dependencies injected, and their paths modified. The `deps` paths are relative to the `build.outDir`. Returning a relative path to the `hostId` for `hostType === 'js'` is allowed, in which case `new URL(dep, import.meta.url)` is used to get an absolute path when injecting this module preload in the HTML head.
+
+```js
+modulePreload: {
+  resolveDependencies: (filename, deps, { hostId, hostType }) => {
+    return deps.filter(condition)
+  }
+}
+```
+
+The resolved dependency paths can be further modified using [`experimental.renderBuiltUrl`](../guide/build.md#advanced-base-options).
+
+## build.polyfillModulePreload
+
+- **Type:** `boolean`
+- **Default:** `true`
+- **Deprecated** use `build.modulePreload.polyfill` instead
+  Whether to automatically inject a [module preload polyfill](https://guybedford.com/es-module-preloading-integrity#modulepreload-polyfill).
 
 ## build.outDir
 
@@ -53,8 +90,10 @@ import 'vite/modulepreload-polyfill'
 
 Импортированные ресурсы или ресурсы, на которые есть ссылки, размер которых меньше этого порога, будут встроены как URL-адреса base64, чтобы избежать дополнительных HTTP-запросов. Установите `0`, чтобы полностью отключить встраивание.
 
+Заполнители Git LFS автоматически исключаются из встраивания, поскольку они не содержат содержимого файла, который они представляют.
+
 ::: tip Note
-Если вы укажете `build.lib`, `build.assetsInlineLimit` будет игнорироваться, а активы всегда будут встроенными, независимо от размера файла.
+Если вы укажете `build.lib`, `build.assetsInlineLimit` будет игнорироваться, а активы всегда будут встроенными, независимо от размера файла или быть заполнителем Git LFS.
 :::
 
 ## build.cssCodeSplit
@@ -75,7 +114,7 @@ import 'vite/modulepreload-polyfill'
 - **Тип:** `string | string[]`
 - **По умолчанию:** то же, что и [`build.target`](#build-target)
 
-Эти параметры позволяют пользователям установить другую цель браузера для минификации CSS, отличную от той, которая используется для транспиляции JavaScript.
+Этот параметр позволяет пользователям установить другую цель браузера для минификации CSS, отличную от той, которая используется для транспиляции JavaScript.
 
 Его следует использовать только в том случае, если вы ориентируетесь на неосновной браузер.
 Одним из примеров является Android WeChat WebView, который поддерживает большинство современных функций JavaScript, но не поддерживает [`#RGBA` шестнадцатеричное обозначение цвета в CSS](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#rgb_colors).
@@ -109,14 +148,14 @@ import 'vite/modulepreload-polyfill'
 
 ## build.lib
 
-- **Тип:** `{ entry: string, name?: string, formats?: ('es' | 'cjs' | 'umd' | 'iife')[], fileName?: string | ((format: ModuleFormat) => string) }`
+- **Тип:** `{ entry: string | string[] | { [entryAlias: string]: string }, name?: string, formats?: ('es' | 'cjs' | 'umd' | 'iife')[], fileName?: string | ((format: ModuleFormat, entryName: string) => string) }`
 - **Связанный:** [Library Mode](/guide/build#library-mode)
 
-Построить как библиотеку. `entry` необходима, так как библиотека не может использовать HTML в качестве записи. `name` является открытой глобальной переменной и требуется, когда `formats` включает `'umd'` или `'iife'`. Форматы `formats` по умолчанию: `['es', 'umd']`. `fileName` — это имя выходного файла пакета, по умолчанию `fileName` — это параметр имени package.json, его также можно определить как функцию, принимающую `format` в качестве аргумента.
+Построить как библиотеку. `entry` необходима, так как библиотека не может использовать HTML в качестве записи. `name` является открытой глобальной переменной и требуется, когда `formats` включает `'umd'` или `'iife'`. Форматы `formats` по умолчанию: `['es', 'umd']` , или `['es', 'cjs']`, если используется несколько записей. `fileName` — это имя выходного файла пакета, по умолчанию `fileName` — это параметр имени package.json, его также можно определить как функцию, принимающую `format` в качестве аргумента и `entryAlias` в качестве аргументов.
 
 ## build.manifest
 
-- **Тип:** `boolean | string`
+- **Тип:** `boolean | string | string[] | { [entryAlias: string]: string }`
 - **По умолчанию:** `false`
 - **Связанный:** [Backend Integration](/guide/backend-integration)
 
@@ -129,6 +168,8 @@ import 'vite/modulepreload-polyfill'
 - **Связанный:** [Server-Side Rendering](/guide/ssr)
 
 Если установлено значение `true`, сборка также будет генерировать манифест SSR для определения ссылок на стили и директив предварительной загрузки ресурсов в рабочей среде. Если значение представляет собой строку, оно будет использоваться в качестве имени файла манифеста.
+
+When set to `true`, the build will also generate an SSR manifest for determining style links and asset preload directives in production. When the value is a string, it will be used as the manifest file name.
 
 ## build.ssr
 
@@ -144,6 +185,8 @@ import 'vite/modulepreload-polyfill'
 - **По умолчанию:** `'esbuild'`
 
 Установите значение `false`, чтобы отключить минимизацию, или укажите минимизатор для использования. По умолчанию используется [esbuild](https://github.com/evanw/esbuild), который в 20–40 раз быстрее, чем краткий, и только на 1–2% хуже сжатие. [Тесты](https://github.com/privatenumber/minification-benchmarks)
+
+Note the `build.minify` option does not minify whitespaces when using the `'es'` format in lib mode, as it removes pure annotations and breaks tree-shaking.
 
 Обратите внимание, что опция `build.minify` не минимизирует пробелы при использовании формата `'es'` в режиме lib, поскольку она удаляет чистые аннотации и прерывает встряхивание дерева.
 
@@ -172,6 +215,14 @@ npm add -D terser
 - **По умолчанию:** `true`, если `outDir` находится внутри `root`
 
 По умолчанию Vite очищает `outDir` при сборке, если он находится внутри корня проекта. Он выдаст предупреждение, если `outDir` находится за пределами root, чтобы избежать случайного удаления важных файлов. Вы можете явно установить этот параметр, чтобы скрыть предупреждение. Это также доступно через командную строку как `--emptyOutDir`.
+
+## build.copyPublicDir
+
+- **Experimental**
+- **Type:** `boolean`
+- **Default:** `true`
+
+By default, Vite will copy files from the `publicDir` into the `outDir` on build. Set to `false` to disable this.
 
 ## build.reportCompressedSize
 

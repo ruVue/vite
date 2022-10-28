@@ -35,18 +35,18 @@ const versionLinks = ((): DefaultTheme.NavItemWithLink[] => {
     case 'local':
       return [
         {
-          text: 'Vite 3 Документация (релиз)',
+          text: 'Документация Vite 3 (релиз)',
           link: 'https://vitejs.ru'
         },
         {
-          text: 'Vite 2 Документация',
+          text: 'Документация Vite 2',
           link: 'https://v2.vitejs.ru'
         }
       ]
     case 'release':
       return [
         {
-          text: 'Vite 2 Документация',
+          text: 'Документация Vite 2',
           link: 'https://v2.vitejs.ru'
         }
       ]
@@ -67,6 +67,15 @@ export default defineConfig({
     ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
     ['meta', { name: 'twitter:site', content: '@vite_js' }],
     ['meta', { name: 'theme-color', content: '#646cff' }],
+    [
+      'script',
+      {
+        src: 'https://cdn.usefathom.com/script.js',
+        'data-site': 'CBDFBSLI',
+        'data-spa': 'auto',
+        defer: ''
+      }
+    ],
     [
       'script',
       { type: 'text/javascript' },
@@ -96,7 +105,7 @@ export default defineConfig({
     socialLinks: [
       { icon: 'twitter', link: 'https://twitter.com/vite_js' },
       { icon: 'discord', link: 'https://chat.vitejs.dev' },
-      { icon: 'github', link: 'https://github.com/ruVue/vite' }
+      { icon: 'github', link: 'https://github.com/vitejs/vite' }
     ],
 
     algolia: {
@@ -116,7 +125,7 @@ export default defineConfig({
     footer: {
       message: `Выпущено под лицензией MIT. (${commitRef})`,
       copyright:
-        'Copyright © 2019-настоящее время Evan You и Vite контрибьюторам'
+        'Все права © 2019-настоящее время Evan You и Vite контрибьюторам'
     },
 
     nav: [
