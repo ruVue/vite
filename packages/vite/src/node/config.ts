@@ -408,12 +408,6 @@ export async function resolveConfig(
     }
   }
 
-  // Define logger
-  const logger = createLogger(config.logLevel, {
-    allowClearScreen: config.clearScreen,
-    customLogger: config.customLogger
-  })
-
   // user config may provide an alternative mode. But --mode has a higher priority
   mode = inlineConfig.mode || config.mode || mode
   configEnv.mode = mode
@@ -456,6 +450,12 @@ export async function resolveConfig(
     config.build ??= {}
     config.build.commonjsOptions = { include: [] }
   }
+
+  // Define logger
+  const logger = createLogger(config.logLevel, {
+    allowClearScreen: config.clearScreen,
+    customLogger: config.customLogger
+  })
 
   // resolve root
   const resolvedRoot = normalizePath(
@@ -529,9 +529,11 @@ export async function resolveConfig(
     ? path.join(path.dirname(pkgPath), `node_modules/.vite`)
     : path.join(resolvedRoot, `.vite`)
 
-  const assetsFilter = config.assetsInclude
-    ? createFilter(config.assetsInclude)
-    : () => false
+  const assetsFilter =
+    config.assetsInclude &&
+    (!(config.assetsInclude instanceof Array) || config.assetsInclude.length)
+      ? createFilter(config.assetsInclude)
+      : () => false
 
   // create an internal resolver to be used in special scenarios, e.g.
   // optimizer & handling css @imports

@@ -60,6 +60,17 @@ console.log(import.meta.env.VITE_SOME_KEY) // 123
 console.log(import.meta.env.DB_PASSWORD) // undefined
 ```
 
+Кроме того, Vite использует [dotenv-expand](https://github.com/motdotla/dotenv-expand) для расширения переменных из коробки. Чтобы узнать больше о синтаксисе, ознакомьтесь с [их документацией](https://github.com/motdotla/dotenv-expand#what-rules-does-the-expansion-engine-follow).
+
+Обратите внимание, что если вы хотите использовать `$` внутри значения вашей среды, вы должны экранировать его с помощью `\`.
+
+```
+KEY=123
+NEW_KEY1=test$foo   # test
+NEW_KEY2=test\$foo  # test$foo
+NEW_KEY3=test$KEY   # test123
+```
+
 Если вы хотите настроить префикс переменных env, смотрите параметр [envPrefix](/config/shared-options.html#envprefix).
 
 :::warning ЗАМЕЧАНИЯ ПО БЕЗОПАСНОСТИ
