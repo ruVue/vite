@@ -6,7 +6,7 @@ const ogTitle = 'Vite'
 const ogUrl = 'https://vitejs.ru'
 
 // netlify envs
-const deployURL = process.env.DEPLOY_PRIME_URL || ''
+const deployURL = process.env.DEPLOY_PRIME_URL || 'main'
 const commitRef = process.env.COMMIT_REF?.slice(0, 8) || 'dev'
 
 const deployType = (() => {
@@ -46,8 +46,16 @@ const versionLinks = ((): DefaultTheme.NavItemWithLink[] => {
     case 'release':
       return [
         {
-          text: 'Документация Vite 2',
-          link: 'https://v2.vitejs.ru'
+          text: 'Документация Vite',
+          link: 'https://vitejs.ru'
+        },
+        {
+          text: 'Vite Docs',
+          link: 'https://vitejs.dev'
+        },
+        {
+          text: 'Vite 2 Docs',
+          link: 'https://v2.vitejs.dev'
         }
       ]
   }
