@@ -57,7 +57,7 @@ export type { T }
 
 #### `useDefineForClassFields`
 
-Начиная с Vite 2.5.0, значением по умолчанию будет `true`, если целью TypeScript является `ESNext`. Это соответствует [поведению `tsc` и более поздних версий](https://github.com/microsoft/TypeScript/pull/42663). Это также стандартное поведение среды выполнения ECMAScript.
+Начиная с Vite 2.5.0, значением по умолчанию будет `true`, если целью TypeScript является `ESNext` или `ES2022` или новее. Это соответствует [поведению `tsc` 4.3.2 и более поздних версий](https://github.com/microsoft/TypeScript/pull/42663). Это также стандартное поведение среды выполнения ECMAScript.
 
 Но это может быть нелогичным для тех, кто работает с другими языками программирования или более старыми версиями TypeScript.
 Подробнее о переходе можно прочитать в [примечаниях к выпуску TypeScript 3.7](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-7.html#the-usedefineforclassfields-flag-and-the-declare-property-modifier).

@@ -1,5 +1,7 @@
 # Параметры работника
 
+Options related to Web Workers.
+
 ## worker.format
 
 - **Тип:** `'es' | 'iife'`
