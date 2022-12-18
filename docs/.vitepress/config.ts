@@ -35,8 +35,12 @@ const versionLinks = ((): DefaultTheme.NavItemWithLink[] => {
     case 'local':
       return [
         {
-          text: 'Документация Vite 3 (релиз)',
-          link: 'https://vitejs.ru'
+          text: 'Vite 3 Docs (release)',
+          link: 'https://vitejs.dev'
+        },
+        {
+          text: 'Документация Vite 3',
+          link: 'https://v3.vitejs.ru',
         },
         {
           text: 'Документация Vite 2',
@@ -46,9 +50,13 @@ const versionLinks = ((): DefaultTheme.NavItemWithLink[] => {
     case 'release':
       return [
         {
+          text: 'Документация Vite 3',
+          link: 'https://v3.vitejs.ru',
+        },
+        {
           text: 'Документация Vite 2',
-          link: 'https://v2.vitejs.ru'
-        }
+          link: 'https://v2.vitejs.ru',
+        },
       ]
   }
 })()
@@ -89,7 +97,7 @@ export default defineConfig({
   ],
 
   vue: {
-    reactivityTransform: true
+    reactivityTransform: true,
   },
 
   themeConfig: {
@@ -105,7 +113,7 @@ export default defineConfig({
     socialLinks: [
       { icon: 'twitter', link: 'https://twitter.com/vite_js' },
       { icon: 'discord', link: 'https://chat.vitejs.dev' },
-      { icon: 'github', link: 'https://github.com/vitejs/vite' }
+      { icon: 'github', link: 'https://github.com/vitejs/vite' },
     ],
 
     algolia: {
@@ -140,7 +148,7 @@ export default defineConfig({
             items: [
               {
                 text: 'Twitter',
-                link: 'https://twitter.com/vite_js'
+                link: 'https://twitter.com/vite_js',
               },
               {
                 text: 'Чат в Discord',
@@ -148,7 +156,7 @@ export default defineConfig({
               },
               {
                 text: 'Awesome Vite',
-                link: 'https://github.com/vitejs/awesome-vite'
+                link: 'https://github.com/vitejs/awesome-vite',
               },
               {
                 text: 'Сообщество разработчиков',
@@ -156,20 +164,20 @@ export default defineConfig({
               },
               {
                 text: 'Rollup Plugins Compat',
-                link: 'https://vite-rollup-plugins.patak.dev/'
+                link: 'https://vite-rollup-plugins.patak.dev/',
               },
               {
                 text: 'Журнал изменений',
-                link: 'https://github.com/vitejs/vite/blob/main/packages/vite/CHANGELOG.md'
-              }
-            ]
-          }
-        ]
+                link: 'https://github.com/vitejs/vite/blob/main/packages/vite/CHANGELOG.md',
+              },
+            ],
+          },
+        ],
       },
       {
         text: 'Версия',
-        items: versionLinks
-      }
+        items: versionLinks,
+      },
     ],
 
     sidebar: {
@@ -179,123 +187,127 @@ export default defineConfig({
           items: [
             {
               text: 'Почему Vite',
-              link: '/guide/why'
+              link: '/guide/why',
             },
             {
               text: 'Начало работы',
-              link: '/guide/'
+              link: '/guide/',
             },
             {
               text: 'Возможности',
-              link: '/guide/features'
+              link: '/guide/features',
+            },
+            {
+              text: 'CLI',
+              link: '/guide/cli',
             },
             {
               text: 'Использование плагинов',
-              link: '/guide/using-plugins'
+              link: '/guide/using-plugins',
             },
             {
               text: 'Предварительное связывание зависимостей',
-              link: '/guide/dep-pre-bundling'
+              link: '/guide/dep-pre-bundling',
             },
             {
               text: 'Обработка статических ресурсов',
-              link: '/guide/assets'
+              link: '/guide/assets',
             },
             {
               text: 'Сборка для продакшена',
-              link: '/guide/build'
+              link: '/guide/build',
             },
             {
               text: 'Деплой статического сайта',
-              link: '/guide/static-deploy'
+              link: '/guide/static-deploy',
             },
             {
               text: 'Переменные окружения и режимы',
-              link: '/guide/env-and-mode'
+              link: '/guide/env-and-mode',
             },
             {
               text: 'Рендеринг на стороне сервера (SSR)',
-              link: '/guide/ssr'
+              link: '/guide/ssr',
             },
             {
               text: 'Бэкэнд-интеграция',
-              link: '/guide/backend-integration'
+              link: '/guide/backend-integration',
             },
             {
               text: 'Сравнения',
-              link: '/guide/comparisons'
+              link: '/guide/comparisons',
             },
             {
               text: 'Устранение неполадок',
-              link: '/guide/troubleshooting'
+              link: '/guide/troubleshooting',
             },
             {
-              text: 'Миграция с v2',
-              link: '/guide/migration'
-            }
-          ]
+              text: 'Миграция с v3',
+              link: '/guide/migration',
+            },
+          ],
         },
         {
           text: 'APIs',
           items: [
             {
               text: 'Плагин API',
-              link: '/guide/api-plugin'
+              link: '/guide/api-plugin',
             },
             {
               text: 'HMR API',
-              link: '/guide/api-hmr'
+              link: '/guide/api-hmr',
             },
             {
               text: 'JavaScript API',
-              link: '/guide/api-javascript'
+              link: '/guide/api-javascript',
             },
             {
               text: 'Справочник по конфигурации',
-              link: '/config/'
-            }
-          ]
-        }
+              link: '/config/',
+            },
+          ],
+        },
       ],
       '/config/': [
         {
           text: 'Конфиг',
           items: [
             {
-              text: 'Опции Vite',
-              link: '/config/'
+              text: 'Настройка Vite',
+              link: '/config/',
             },
             {
               text: 'Опции Shared',
-              link: '/config/shared-options'
+              link: '/config/shared-options',
             },
             {
               text: 'Опции Server',
-              link: '/config/server-options'
+              link: '/config/server-options',
             },
             {
               text: 'Опции Build',
-              link: '/config/build-options'
+              link: '/config/build-options',
             },
             {
               text: 'Опции Preview',
-              link: '/config/preview-options'
+              link: '/config/preview-options',
             },
             {
               text: 'Опции Dep Optimization',
-              link: '/config/dep-optimization-options'
+              link: '/config/dep-optimization-options',
             },
             {
               text: 'Опции SSR',
-              link: '/config/ssr-options'
+              link: '/config/ssr-options',
             },
             {
               text: 'Опции Worker',
-              link: '/config/worker-options'
-            }
-          ]
-        }
-      ]
-    }
-  }
+              link: '/config/worker-options',
+            },
+          ],
+        },
+      ],
+    },
+  },
 })

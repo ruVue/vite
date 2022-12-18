@@ -34,7 +34,7 @@ export function useSponsor() {
   })
 
   return {
-    data
+    data,
   }
 }
 
@@ -43,19 +43,19 @@ function mapSponsors(sponsors: Sponsors) {
     {
       tier: 'Платиновые спонсоры',
       size: 'big',
-      items: mapImgPath(sponsors['platinum'])
+      items: mapImgPath(sponsors['platinum']),
     },
     {
       tier: 'Золотые спонсоры',
       size: 'medium',
-      items: mapImgPath(sponsors['gold'])
-    }
+      items: mapImgPath(sponsors['gold']),
+    },
   ]
 }
 
 function mapImgPath(sponsors: Sponsor[]) {
   return sponsors.map((sponsor) => ({
     ...sponsor,
-    img: `${dataHost}/images/${sponsor.img}`
+    img: `${dataHost}/images/${sponsor.img}`,
   }))
 }

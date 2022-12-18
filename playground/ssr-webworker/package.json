@@ -1,5 +1,5 @@
 {
-  "name": "test-ssr-webworker",
+  "name": "@vitejs/test-ssr-webworker",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -13,6 +13,6 @@
   "devDependencies": {
     "cross-env": "^7.0.3",
     "miniflare": "^1.4.1",
-    "resolve-linked": "workspace:*"
+    "@vitejs/test-resolve-linked": "workspace:*"
   }
 }

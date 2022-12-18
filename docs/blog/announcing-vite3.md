@@ -234,12 +234,12 @@ Vite заботится о своих публикациях и установк
 
 Работая над Vite 3, мы также улучшили взаимодействие участников [Vite Core](https://github.com/vitejs/vite).
 
-- Модульные и E2E-тесты перенесены в [Vitest](https://vitest.dev), что обеспечивает более быстрый и стабильный DX. Этот шаг также работает как корм для собак для важного инфраструктурного проекта в экосистеме.
+- UnМодульные и E2E-тесты перенесены в [Vitest](https://vitest.dev), что обеспечивает более быстрый и стабильный DX. Этот шаг также работает как корм для собак для важного инфраструктурного проекта в экосистеме.
 - Сборка VitePress теперь тестируется как часть CI.
 - Vite обновлен до [pnpm 7](https://pnpm.io/), как и остальная часть экосистемы.
 - Playgrounds были перемещены в [`/playgrounds`](https://github.com/vitejs/vite/tree/main/playground) из каталога пакетов.
 - Пакеты и playgrounds теперь `"type": "module"`.
-- Плагины теперь объединяются с помощью [unbuild](https://github.com/unjs/unbuild) и [plugin-vue-jsx](https://github.com/vitejs/vite/tree/main/packages/plugin-vue-jsx) и [plugin-legacy](https://github.com/vitejs/vite/tree/main/packages/plugin-legacy) были перемещены в TypeScript.
+- Плагины теперь объединяются с помощью [unbuild](https://github.com/unjs/unbuild) и[plugin-vue-jsx](https://github.com/vitejs/vite-plugin-vue/tree/main/packages/plugin-vue-jsx) и [plugin-legacy](https://github.com/vitejs/vite/tree/main/packages/plugin-legacy) были перемещены в TypeScript.
 
 ## Экосистема готова к v3
 

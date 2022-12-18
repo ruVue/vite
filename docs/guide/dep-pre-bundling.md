@@ -47,13 +47,13 @@ Pre-bundling dependencies:
 ```js
 export default defineConfig({
   optimizeDeps: {
-    include: ['linked-dep']
+    include: ['linked-dep'],
   },
   build: {
     commonjsOptions: {
-      include: [/linked-dep/, /node_modules/]
-    }
-  }
+      include: [/linked-dep/, /node_modules/],
+    },
+  },
 })
 ```
 
@@ -77,9 +77,10 @@ export default defineConfig({
 
 Vite кэширует предварительно связанные зависимости в `node_modules/.vite`. Он определяет, нужно ли повторно запустить этап предварительной сборки на основе нескольких источников:
 
-- Список зависимостей `dependencies` в вашем `package.json`.
-- Файлы блокировки менеджера пакетов, т.е. `package-lock.json`, `yarn.lock` или `pnpm-lock.yaml`.
+- Содержимое файла блокировки менеджера пакетов, например, `package-lock.json`, `yarn.lock`, `pnpm-lock.yaml` или `bun.lockb`.
+- Исправлено время модификации папки.
 - Соответствующие поля в вашем `vite.config.js`, если они есть.
+- Значение `NODE_ENV`.
 
 Шаг предварительной сборки нужно будет повторить только в том случае, если что-то из вышеперечисленного изменилось.
 

@@ -25,17 +25,17 @@ interface ViteHotContext {
   accept(dep: string, cb: (mod: ModuleNamespace | undefined) => void): void
   accept(
     deps: readonly string[],
-    cb: (mods: Array<ModuleNamespace | undefined>) => void
+    cb: (mods: Array<ModuleNamespace | undefined>) => void,
   ): void
 
   dispose(cb: (data: any) => void): void
-  decline(): void
-  invalidate(): void
+  prune(cb: (data: any) => void): void
+  invalidate(message?: string): void
 
   // `InferCustomEventPayload` provides types for built-in Vite events
   on<T extends string>(
     event: T,
-    cb: (payload: InferCustomEventPayload<T>) => void
+    cb: (payload: InferCustomEventPayload<T>) => void,
   ): void
   send<T extends string>(event: T, data?: InferCustomEventPayload<T>): void
 }
@@ -93,8 +93,9 @@ if (import.meta.hot) {
   import.meta.hot.accept(
     ['./foo.js', './bar.js'],
     ([newFooModule, newBarModule]) => {
-      // the callback receives the updated modules in an Array
-    }
+      // The callback receives an array where only the updated module is non null
+      // If the update was not succeful (syntax error for ex.), the array is empty
+    },
   )
 }
 ```
@@ -115,17 +116,33 @@ if (import.meta.hot) {
 }
 ```
 
+## `hot.prune(cb)`
+
+Зарегистрируйте обратный вызов, который будет вызываться, когда модуль больше не импортируется на страницу. По сравнению с `hot.dispose`, это можно использовать, если исходный код сам очищает побочные эффекты при обновлениях, и вам нужно очищать только тогда, когда он удаляется со страницы. В настоящее время Vite использует это для импорта `.css`.
+
+```js
+function setupOrReuseSideEffect() {}
+
+setupOrReuseSideEffect()
+
+if (import.meta.hot) {
+  import.meta.hot.prune((data) => {
+    // cleanup side effect
+  })
+}
+```
+
 ## `hot.data`
 
 Объект `import.meta.hot.data` сохраняется в разных экземплярах одного и того же обновленного модуля. Его можно использовать для передачи информации от предыдущей версии модуля к следующей.
 
 ## `hot.decline()`
 
-Вызов `import.meta.hot.decline()` указывает, что этот модуль не поддерживает горячее обновление, и браузер должен выполнить полную перезагрузку, если этот модуль встречается при распространении обновлений HMR.
+В настоящее время это noop и существует для обратной совместимости. Это может измениться в будущем, если для него появится новое использование. Чтобы указать, что модуль не поддерживает горячее обновление, используйте `hot.invalidate()`.
 
-## `hot.invalidate()`
+## `hot.invalidate(message?: string)`
 
-Самоподдерживающийся модуль может понять во время выполнения, что он не может обработать обновление HMR, и поэтому обновление необходимо принудительно распространить среди импортеров. Вызывая `import.meta.hot.invalidate()`, сервер HMR аннулирует импортеры вызывающей стороны, как если бы вызывающая сторона не принимала себя.
+Самоподдерживающийся модуль может понять во время выполнения, что он не может обработать обновление HMR, и поэтому обновление необходимо принудительно распространить среди импортеров. Вызывая `import.meta.hot.invalidate()`, сервер HMR аннулирует импортеры вызывающей стороны, как если бы вызывающая сторона не принимала себя. Это зарегистрирует сообщение как в консоли браузера, так и в терминале. Вы можете передать сообщение, чтобы дать некоторый контекст о том, почему произошла недействительность.
 
 Обратите внимание, что вы всегда должны вызывать `import.meta.hot.accept`, даже если вы планируете вызывать `invalidate` сразу после этого, иначе клиент HMR не будет прослушивать будущие изменения в самопринимающемся модуле. Чтобы четко сообщить о ваших намерениях, мы рекомендуем вызывать `invalidate` в обратном вызове `accept` следующим образом:
 
@@ -144,7 +161,8 @@ import.meta.hot.accept((module) => {
 
 Следующие события HMR автоматически отправляются Vite:
 
-- `'vite:beforeUpdate'`, когда должно быть применено обновление (например, модуль будет заменен)
+- `'vite:beforeUpdate', когда должно быть применено обновление (например, модуль будет заменен)
+- `'vite:afterUpdate'`, когда только что было применено обновление (например, модуль был заменен)
 - `'vite:beforeFullReload'`, когда должна произойти полная перезагрузка
 - `'vite:beforePrune'`, когда модули, которые больше не нужны, собираются удалить
 - `'vite:invalidate'`, когда модуль становится недействительным с помощью `import.meta.hot.invalidate()`

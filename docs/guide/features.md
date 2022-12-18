@@ -22,7 +22,7 @@ Vite кэширует запросы зависимостей через заг�
 
 ## Горячая Замена Модуля (HMR)
 
-Vite предоставляет [HMR API](./api-hmr) поверх собственного ESM. Платформы с возможностями HMR могут использовать API для предоставления мгновенных и точных обновлений без перезагрузки страницы или стирания состояния приложения. Vite предоставляет сторонние интеграции HMR для [Vue Single File Components](https://github.com/vitejs/vite/tree/main/packages/plugin-vue) и [React Fast Refresh](https://github.com/vitejs/vite/tree/main/packages/plugin-react). Также существуют официальные интеграции для Preact через [@prefresh/vite](https://github.com/JoviDeCroock/prefresh/tree/main/packages/vite).
+Vite предоставляет [HMR API](./api-hmr) поверх собственного ESM. Платформы с возможностями HMR могут использовать API для предоставления мгновенных и точных обновлений без перезагрузки страницы или стирания состояния приложения. Vite предоставляет сторонние интеграции HMR для [Vue Single File Components](https://github.com/vitejs/vite-plugin-vue/tree/main/packages/plugin-vue) и [React Fast Refresh](https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react). Также существуют официальные интеграции для Preact через [@prefresh/vite](https://github.com/JoviDeCroock/prefresh/tree/main/packages/vite).
 
 Обратите внимание, что вам не нужно настраивать их вручную — когда вы [создаете приложение с помощью `create-vite`](./), в выбранных шаблонах они уже будут предварительно настроены для вас.
 
@@ -57,7 +57,7 @@ export type { T }
 
 #### `useDefineForClassFields`
 
-Начиная с Vite 2.5.0, значением по умолчанию будет `true`, если целью TypeScript является `ESNext` или выше, включая `ESNext`. Это соответствует [поведению `tsc` 4.3.2 и более поздних версий](https://github.com/microsoft/TypeScript/pull/42663). Это также стандартное поведение среды выполнения ECMAScript.
+Начиная с Vite 2.5.0, значением по умолчанию будет `true`, если целью TypeScript является `ESNext`. Это соответствует [поведению `tsc` и более поздних версий](https://github.com/microsoft/TypeScript/pull/42663). Это также стандартное поведение среды выполнения ECMAScript.
 
 Но это может быть нелогичным для тех, кто работает с другими языками программирования или более старыми версиями TypeScript.
 Подробнее о переходе можно прочитать в [примечаниях к выпуску TypeScript 3.7](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-7.html#the-usedefineforclassfields-flag-and-the-declare-property-modifier).
@@ -71,13 +71,10 @@ export type { T }
 #### Другие параметры компилятора, влияющие на результат сборки
 
 - [`extends`](https://www.typescriptlang.org/tsconfig#extends)
-- [`alwaysStrict`](https://www.typescriptlang.org/tsconfig#alwaysStrict)
 - [`importsNotUsedAsValues`](https://www.typescriptlang.org/tsconfig#importsNotUsedAsValues)
-- [`jsx`](https://www.typescriptlang.org/tsconfig#jsx)
+- [`preserveValueImports`](https://www.typescriptlang.org/tsconfig#preserveValueImports)
 - [`jsxFactory`](https://www.typescriptlang.org/tsconfig#jsxFactory)
 - [`jsxFragmentFactory`](https://www.typescriptlang.org/tsconfig#jsxFragmentFactory)
-- [`jsxImportSource`](https://www.typescriptlang.org/tsconfig#jsxImportSource)
-- [`preserveValueImports`](https://www.typescriptlang.org/tsconfig#preserveValueImports)
 
 Если перенос вашей кодовой базы на `"isolatedModules": true` является непреодолимым усилием, вы можете обойти это с помощью стороннего плагина, такого как [rollup-plugin-friendly-type-imports](https://www.npmjs.com/package/rollup-plugin-friendly-type-imports). Однако этот подход официально не поддерживается Vite.
 
@@ -123,16 +120,16 @@ declare module '*.svg' {
 
 Vite обеспечивает первоклассную поддержку Vue:
 
-- Поддержка Vue 3 SFC через [@vitejs/plugin-vue](https://github.com/vitejs/vite/tree/main/packages/plugin-vue)
-- Поддержка Vue 3 JSX через [@vitejs/plugin-vue-jsx](https://github.com/vitejs/vite/tree/main/packages/plugin-vue-jsx)
+- Поддержка Vue 3 SFC через [@vitejs/plugin-vue](https://github.com/vitejs/vite-plugin-vue/tree/main/packages/plugin-vue)
+- Поддержка Vue 3 JSX через [@vitejs/plugin-vue-jsx](https://github.com/vitejs/vite-plugin-vue/tree/main/packages/plugin-vue-jsx)
 - Поддержка Vue 2.7 через [@vitejs/plugin-vue2](https://github.com/vitejs/vite-plugin-vue2)
-- Поддержка Vue < 2.7 через [vite-plugin-vue2](https://github.com/underfin/vite-plugin-vue2)
+- Поддержка Vue <2.7 через [vite-plugin-vue2](https://github.com/underfin/vite-plugin-vue2)
 
 ## JSX
 
 Файлы `.jsx` и `.tsx` также поддерживаются по умолчанию. Транспиляция JSX также выполняется через [esbuild](https://esbuild.github.io).
 
-Пользователи Vue должны использовать официальный плагин [@vitejs/plugin-vue-jsx](https://github.com/vitejs/vite/tree/main/packages/plugin-vue-jsx), который предоставляет специальные функции Vue 3, включая HMR, глобальное разрешение компонентов, директивы и слоты.
+Пользователи Vue должны использовать официальный плагин [@vitejs/plugin-vue-jsx](https://github.com/vitejs/vite-plugin-vue/tree/main/packages/plugin-vue-jsx), который предоставляет Vue 3 специальные функции, включая HMR, глобальное разрешение компонентов, директивы и слоты.
 
 Если JSX не используется с React или Vue, пользовательские `jsxFactory` и `jsxFragment` можно настроить с помощью [параметра `esbuild`](/config/shared-options.md#esbuild). Например, для Preact:
 
@@ -143,8 +140,8 @@ import { defineConfig } from 'vite'
 export default defineConfig({
   esbuild: {
     jsxFactory: 'h',
-    jsxFragment: 'Fragment'
-  }
+    jsxFragment: 'Fragment',
+  },
 })
 ```
 
@@ -158,8 +155,8 @@ import { defineConfig } from 'vite'
 
 export default defineConfig({
   esbuild: {
-    jsxInject: `import React from 'react'`
-  }
+    jsxInject: `import React from 'react'`,
+  },
 })
 ```
 
@@ -176,6 +173,8 @@ Vite предварительно настроен для поддержки в�
 ### PostCSS
 
 Если проект содержит допустимую конфигурацию PostCSS (любой формат, поддерживаемый [postcss-load-config](https://github.com/postcss/postcss-load-config), например, `postcss.config.js`), он будет автоматически применяется ко всем импортированным CSS.
+
+Обратите внимание, что минимизация CSS будет выполняться после PostCSS и будет использовать параметр [`build.cssTarget`](/config/build-options.md#build-csstarget).
 
 ### CSS модули
 
@@ -295,7 +294,7 @@ const modules = import.meta.glob('./dir/*.js')
 // code produced by vite
 const modules = {
   './dir/foo.js': () => import('./dir/foo.js'),
-  './dir/bar.js': () => import('./dir/bar.js')
+  './dir/bar.js': () => import('./dir/bar.js'),
 }
 ```
 
@@ -323,7 +322,7 @@ import * as __glob__0_0 from './dir/foo.js'
 import * as __glob__0_1 from './dir/bar.js'
 const modules = {
   './dir/foo.js': __glob__0_0,
-  './dir/bar.js': __glob__0_1
+  './dir/bar.js': __glob__0_1,
 }
 ```
 
@@ -341,7 +340,7 @@ const modules = import.meta.glob('./dir/*.js', { as: 'raw' })
 // code produced by vite
 const modules = {
   './dir/foo.js': 'export default "foo"\n',
-  './dir/bar.js': 'export default "bar"\n'
+  './dir/bar.js': 'export default "bar"\n',
 }
 ```
 
@@ -366,7 +365,7 @@ const modules = import.meta.glob(['./dir/*.js', '!**/bar.js'])
 ```js
 // code produced by vite
 const modules = {
-  './dir/foo.js': () => import('./dir/foo.js')
+  './dir/foo.js': () => import('./dir/foo.js'),
 }
 ```
 
@@ -382,7 +381,7 @@ const modules = import.meta.glob('./dir/*.js', { import: 'setup' })
 // code produced by vite
 const modules = {
   './dir/foo.js': () => import('./dir/foo.js').then((m) => m.setup),
-  './dir/bar.js': () => import('./dir/bar.js').then((m) => m.setup)
+  './dir/bar.js': () => import('./dir/bar.js').then((m) => m.setup),
 }
 ```
 
@@ -398,7 +397,7 @@ import { setup as __glob__0_0 } from './dir/foo.js'
 import { setup as __glob__0_1 } from './dir/bar.js'
 const modules = {
   './dir/foo.js': __glob__0_0,
-  './dir/bar.js': __glob__0_1
+  './dir/bar.js': __glob__0_1,
 }
 ```
 
@@ -407,7 +406,7 @@ const modules = {
 ```ts
 const modules = import.meta.glob('./dir/*.js', {
   import: 'default',
-  eager: true
+  eager: true,
 })
 ```
 
@@ -417,7 +416,7 @@ import __glob__0_0 from './dir/foo.js'
 import __glob__0_1 from './dir/bar.js'
 const modules = {
   './dir/foo.js': __glob__0_0,
-  './dir/bar.js': __glob__0_1
+  './dir/bar.js': __glob__0_1,
 }
 ```
 
@@ -427,7 +426,7 @@ const modules = {
 
 ```ts
 const modules = import.meta.glob('./dir/*.js', {
-  query: { foo: 'bar', bar: true }
+  query: { foo: 'bar', bar: true },
 })
 ```
 
@@ -437,7 +436,7 @@ const modules = {
   './dir/foo.js': () =>
     import('./dir/foo.js?foo=bar&bar=true').then((m) => m.setup),
   './dir/bar.js': () =>
-    import('./dir/bar.js?foo=bar&bar=true').then((m) => m.setup)
+    import('./dir/bar.js?foo=bar&bar=true').then((m) => m.setup),
 }
 ```
 
@@ -479,8 +478,8 @@ init({
   imports: {
     someFunc: () => {
       /* ... */
-    }
-  }
+    },
+  },
 }).then(() => {
   /* ... */
 })
@@ -507,7 +506,7 @@ const worker = new Worker(new URL('./worker.js', import.meta.url))
 
 ```ts
 const worker = new Worker(new URL('./worker.js', import.meta.url), {
-  type: 'module'
+  type: 'module',
 })
 ```
 

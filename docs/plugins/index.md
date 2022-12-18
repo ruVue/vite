@@ -8,17 +8,21 @@ Vite стремится обеспечить готовую поддержку �
 
 ## Официальные плагины
 
-### [@vitejs/plugin-vue](https://github.com/vitejs/vite/tree/main/packages/plugin-vue)
+### [@vitejs/plugin-vue](https://github.com/vitejs/vite-plugin-vue/tree/main/packages/plugin-vue)
 
 - Обеспечивает поддержку отдельных файловых компонентов Vue 3.
 
-### [@vitejs/plugin-vue-jsx](https://github.com/vitejs/vite/tree/main/packages/plugin-vue-jsx)
+### [@vitejs/plugin-vue-jsx](https://github.com/vitejs/vite-plugin-vue/tree/main/packages/plugin-vue-jsx)
 
 - Обеспечивает поддержку Vue 3 JSX (через [специальное преобразование Babel](https://github.com/vuejs/jsx-next)).
 
-### [@vitejs/plugin-react](https://github.com/vitejs/vite/tree/main/packages/plugin-react)
+### [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react)
 
-- Обеспечивает комплексную поддержку React.
+- Использует esbuild и Babel, обеспечивая быстрый HMR с небольшим размером пакета и гибкостью, позволяющей использовать конвейер преобразования Babel.
+
+### [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc)
+
+- Использует esbuild во время сборки, но заменяет Babel на SWC во время разработки. Для больших проектов, не требующих нестандартных расширений React, холодный запуск и замена горячего модуля (HMR) могут быть значительно быстрее.
 
 ### [@vitejs/plugin-legacy](https://github.com/vitejs/vite/tree/main/packages/plugin-legacy)
 

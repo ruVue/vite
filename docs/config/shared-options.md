@@ -69,7 +69,7 @@ declare const __APP_VERSION__: string
 ```js
 const obj = {
   __NAME__, // Don't define object shorthand property names
-  __KEY__: value // Don't define object key
+  __KEY__: value, // Don't define object key
 }
 ```
 
@@ -233,13 +233,13 @@ export default defineConfig({
   css: {
     preprocessorOptions: {
       scss: {
-        additionalData: `$injectedColor: orange;`
+        additionalData: `$injectedColor: orange;`,
       },
       styl: {
-        additionalData: `$injectedColor ?= orange`
-      }
-    }
-  }
+        additionalData: `$injectedColor ?= orange`,
+      },
+    },
+  },
 })
 ```
 
@@ -277,8 +277,8 @@ export default defineConfig({
 export default defineConfig({
   esbuild: {
     jsxFactory: 'h',
-    jsxFragment: 'Fragment'
-  }
+    jsxFragment: 'Fragment',
+  },
 })
 ```
 
@@ -289,8 +289,8 @@ export default defineConfig({
 ```js
 export default defineConfig({
   esbuild: {
-    jsxInject: `import React from 'react'`
-  }
+    jsxInject: `import React from 'react'`,
+  },
 })
 ```
 
@@ -315,7 +315,7 @@ export default defineConfig({
 
 ```js
 export default defineConfig({
-  assetsInclude: ['**/*.gltf']
+  assetsInclude: ['**/*.gltf'],
 })
 ```
 
@@ -359,8 +359,8 @@ export default defineConfig({
 
 Независимо от того, является ли ваше приложение одностраничным приложением (SPA), [многостраничным приложением (MPA)](../guide/build#multi-page-app) или пользовательским приложением (SSR и фреймворки с пользовательской обработкой HTML):
 
-- `'spa'`: включите резервный мидлвар SPA и настройте [sirv](https://github.com/lukeed/sirv) с `single: true` в предварительном просмотре
-- `'mpa'`: включать только мидлвар HTML, не относящееся к SPA.
-- `'custom'`: не включать мидлвар HTML.
+- `'spa'`: включить HTML-мидлвары и использовать запасной вариант SPA. Настройте [sirv](https://github.com/lukeed/sirv) с `single: true` в превью
+- `'mpa'`: включить HTML-мидлвары
+- `'custom'`: не включать HTML-мидлвары
 
 Узнайте больше в [Руководстве по Vite](/guide/ssr#vite-cli). Связанный: [`server.middlewareMode`](./server-options#server-middlewaremode).

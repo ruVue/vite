@@ -46,7 +46,7 @@ type ResolveModulePreloadDependenciesFn = (
   deps: string[],
   context: {
     importer: string
-  }
+  },
 ) => (string | { runtime?: string })[]
 ```
 

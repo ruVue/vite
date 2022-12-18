@@ -18,8 +18,8 @@ SSR конкретно относится к интерфейсным платф
 
 Vite предоставляет встроенную поддержку рендеринга на стороне сервера (SSR). Игровая площадка Vite содержит примеры настроек SSR для Vue 3 и React, которые можно использовать в качестве справочных материалов для этого руководства:
 
-- [Vue 3](https://github.com/vitejs/vite/tree/main/playground/ssr-vue)
-- [React](https://github.com/vitejs/vite/tree/main/playground/ssr-react)
+- [Vue 3](https://github.com/vitejs/vite-plugin-vue/tree/main/playground/ssr-vue)
+- [React](https://github.com/vitejs/vite-plugin-react/tree/main/playground/ssr-react)
 
 ## Исходная структура
 
@@ -107,7 +107,7 @@ app.use('*', async (req, res, next) => {
     // 1. Read index.html
     let template = fs.readFileSync(
       path.resolve(__dirname, 'index.html'),
-      'utf-8'
+      'utf-8',
     )
 
     // 2. Apply Vite HTML transforms. This injects the Vite HMR client, and
@@ -162,7 +162,7 @@ app.use('*', async (req, res, next) => {
   "scripts": {
     "dev": "node server",
     "build:client": "vite build --outDir dist/client",
-    "build:server": "vite build --outDir dist/server --ssr src/entry-server.js "
+    "build:server": "vite build --outDir dist/server --ssr src/entry-server.js"
   }
 }
 ```
@@ -177,7 +177,7 @@ app.use('*', async (req, res, next) => {
 
 - Переместите создание и все использование сервера разработки `vite` за условные ветки только для разработки, затем добавьте мидлвар для обслуживания статических файлов для обслуживания файлов из `dist/client`.
 
-Смотрите демо для рабочей установки [Vue](https://github.com/vitejs/vite/tree/main/playground/ssr-vue) и [React](https://github.com/vitejs/vite/tree/main/playground/ssr-react).
+Обратитесь к демонстрациям [Vue](https://github.com/vitejs/vite-plugin-vue/tree/main/playground/ssr-vue) и [React](https://github.com/vitejs/vite-plugin-react/tree/main/playground/ssr-react) для рабочей конфигурации.
 
 ## Создание директив предварительной загрузки
 
@@ -201,11 +201,11 @@ const html = await vueServerRenderer.renderToString(app, ctx)
 // ctx.modules is now a Set of module IDs that were used during the render
 ```
 
-В рабочей ветке `server.js` нам нужно прочитать и передать манифест функции `render`, экспортируемой `src/entry-server.js`. Это даст нам достаточно информации для рендеринга директив предварительной загрузки для файлов, используемых асинхронными маршрутами! Полный пример см. в [источнике демо](https://github.com/vitejs/vite/blob/main/playground/ssr-vue/src/entry-server.js).
+В рабочей ветке `server.js` нам нужно прочитать и передать манифест функции `render`, экспортируемой `src/entry-server.js`. Это даст нам достаточно информации для рендеринга директив предварительной загрузки для файлов, используемых асинхронными маршрутами! Полный пример смотрите в [источнике демо](https://github.com/vitejs/vite-plugin-vue/blob/main/playground/ssr-vue/src/entry-server.js).
 
 ## Предварительный рендеринг / SSG
 
-Если маршруты и данные, необходимые для определенных маршрутов, известны заранее, мы можем предварительно преобразовать эти маршруты в статический HTML, используя ту же логику, что и производственная SSR. Это также можно рассматривать как форму создания статических сайтов (SSG). Смотрите [демонстрационный сценарий предварительного рендеринга](https://github.com/vitejs/vite/blob/main/playground/ssr-vue/prerender.js) для рабочего примера.
+Если маршруты и данные, необходимые для определенных маршрутов, известны заранее, мы можем предварительно преобразовать эти маршруты в статический HTML, используя ту же логику, что и производственная SSR. Это также можно рассматривать как форму создания статических сайтов (SSG). Смотрите [демонстрационный скрипт предварительного рендеринга](https://github.com/vitejs/vite/blob/main/playground/ssr-vue/prerender.js) для рабочего примера.
 
 ## Внешний SSR
 
@@ -237,7 +237,7 @@ export function mySSRPlugin() {
       if (options?.ssr) {
         // perform ssr-specific transform...
       }
-    }
+    },
   }
 }
 ```

@@ -48,7 +48,7 @@ import vitePlugin from 'vite-plugin-feature'
 import rollupPlugin from 'rollup-plugin-feature'
 
 export default defineConfig({
-  plugins: [vitePlugin(), rollupPlugin()]
+  plugins: [vitePlugin(), rollupPlugin()],
 })
 ```
 
@@ -72,7 +72,7 @@ import { defineConfig } from 'vite'
 import framework from 'vite-plugin-framework'
 
 export default defineConfig({
-  plugins: [framework()]
+  plugins: [framework()],
 })
 ```
 
@@ -95,10 +95,10 @@ export default function myPlugin() {
       if (fileRegex.test(id)) {
         return {
           code: compileFileToJS(src),
-          map: null // provide source map if available
+          map: null, // provide source map if available
         }
       }
-    }
+    },
   }
 }
 ```
@@ -127,7 +127,7 @@ export default function myPlugin() {
       if (id === resolvedVirtualModuleId) {
         return `export const msg = "from virtual module"`
       }
-    }
+    },
   }
 }
 ```
@@ -188,10 +188,10 @@ console.log(msg)
     config: () => ({
       resolve: {
         alias: {
-          foo: 'bar'
-        }
-      }
-    })
+          foo: 'bar',
+        },
+      },
+    }),
   })
 
   // mutate the config directly (use only when merging doesn't work)
@@ -201,7 +201,7 @@ console.log(msg)
       if (command === 'build') {
         config.root = 'foo'
       }
-    }
+    },
   })
   ```
 
@@ -237,7 +237,7 @@ console.log(msg)
         } else {
           // build: plugin invoked by Rollup
         }
-      }
+      },
     }
   }
   ```
@@ -259,7 +259,7 @@ console.log(msg)
       server.middlewares.use((req, res, next) => {
         // custom handle request...
       })
-    }
+    },
   })
   ```
 
@@ -278,7 +278,7 @@ console.log(msg)
           // custom handle request...
         })
       }
-    }
+    },
   })
   ```
 
@@ -298,7 +298,7 @@ console.log(msg)
         if (server) {
           // use server...
         }
-      }
+      },
     }
   }
   ```
@@ -323,7 +323,7 @@ console.log(msg)
           // custom handle request...
         })
       }
-    }
+    },
   })
   ```
 
@@ -345,13 +345,13 @@ console.log(msg)
           // custom handle request...
         })
       }
-    }
+    },
   })
   ```
 
 ### `transformIndexHtml`
 
-- **Тип:** `IndexHtmlTransformHook | { enforce?: 'pre' | 'post', transform: IndexHtmlTransformHook }`
+- **Тип:** `IndexHtmlTransformHook | { order?: 'pre' | 'post', handler: IndexHtmlTransformHook }`
 - **Вид:** `async`, `sequential`
 
   Специальный хук для преобразования файлов точек входа HTML, таких как `index.html`. Хук получает текущую строку HTML и контекст преобразования. Контекст предоставляет экземпляр [`ViteDevServer`](./api-javascript#vitedevserver) во время разработки и предоставляет выходной пакет Rollup во время сборки.
@@ -371,9 +371,9 @@ console.log(msg)
       transformIndexHtml(html) {
         return html.replace(
           /<title>(.*?)<\/title>/,
-          `<title>Title replaced!</title>`
+          `<title>Title replaced!</title>`,
         )
-      }
+      },
     }
   }
   ```
@@ -389,7 +389,7 @@ console.log(msg)
       server?: ViteDevServer
       bundle?: import('rollup').OutputBundle
       chunk?: import('rollup').OutputChunk
-    }
+    },
   ) =>
     | IndexHtmlTransformResult
     | void
@@ -481,7 +481,7 @@ console.log(msg)
 function myPlugin() {
   return {
     name: 'build-only',
-    apply: 'build' // or 'serve'
+    apply: 'build', // or 'serve'
   }
 }
 ```
@@ -518,9 +518,9 @@ export default defineConfig({
     {
       ...example(),
       enforce: 'post',
-      apply: 'build'
-    }
-  ]
+      apply: 'build',
+    },
+  ],
 })
 ```
 
@@ -559,9 +559,9 @@ export default defineConfig({
       // ...
       configureServer(server) {
         server.ws.send('my:greetings', { msg: 'hello' })
-      }
-    }
-  ]
+      },
+    },
+  ],
 })
 ```
 
@@ -605,9 +605,9 @@ export default defineConfig({
           // reply only to the client (if needed)
           client.send('my:ack', { msg: 'Hi! I got your message!' })
         })
-      }
-    }
-  ]
+      },
+    },
+  ],
 })
 ```
 
