@@ -11,7 +11,7 @@ const commitRef = process.env.COMMIT_REF?.slice(0, 8) || 'dev'
 
 const deployType = (() => {
   switch (deployURL) {
-    case 'https://vitejs-ru.netlify.app':
+    case 'https://vitejs.ru':
       return 'main'
     case '':
       return 'local'
