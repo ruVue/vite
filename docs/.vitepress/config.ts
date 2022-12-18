@@ -36,26 +36,18 @@ const versionLinks = ((): DefaultTheme.NavItemWithLink[] => {
       return [
         {
           text: 'Vite 3 Docs (release)',
-          link: 'https://vitejs.dev'
+          link: 'https://vitejs.dev',
         },
         {
           text: 'Документация Vite 3',
           link: 'https://v3.vitejs.ru',
         },
-        {
-          text: 'Документация Vite 2',
-          link: 'https://v2.vitejs.ru'
-        }
       ]
     case 'release':
       return [
         {
           text: 'Документация Vite 3',
           link: 'https://v3.vitejs.ru',
-        },
-        {
-          text: 'Документация Vite 2',
-          link: 'https://v2.vitejs.ru',
         },
       ]
   }
@@ -81,19 +73,19 @@ export default defineConfig({
         src: 'https://cdn.usefathom.com/script.js',
         'data-site': 'CBDFBSLI',
         'data-spa': 'auto',
-        defer: ''
-      }
+        defer: '',
+      },
     ],
     [
       'script',
       { type: 'text/javascript' },
-      '(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)}; m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)}) (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym"); ym(89402826, "init", { clickmap:true, trackLinks:true, accurateTrackBounce:true });'
+      '(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)}; m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)}) (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym"); ym(89402826, "init", { clickmap:true, trackLinks:true, accurateTrackBounce:true });',
     ],
     [
       'noscript',
       {},
-      '<div><img src="https://mc.yandex.ru/watch/89402826" style="position:absolute; left:-9999px;" alt="" /></div>'
-    ]
+      '<div><img src="https://mc.yandex.ru/watch/89402826" style="position:absolute; left:-9999px;" alt="" /></div>',
+    ],
   ],
 
   vue: {
@@ -107,7 +99,7 @@ export default defineConfig({
 
     editLink: {
       pattern: 'https://github.com/ruVue/vite/edit/main-ru/docs/:path',
-      text: 'Предложить изменения на этой странице'
+      text: 'Предложить изменения на этой странице',
     },
 
     socialLinks: [
@@ -121,19 +113,19 @@ export default defineConfig({
       apiKey: 'deaab78bcdfe96b599497d25acc6460e',
       indexName: 'vitejs',
       searchParameters: {
-        facetFilters: ['tags:ru']
-      }
+        facetFilters: ['tags:ru'],
+      },
     },
 
     localeLinks: {
       text: 'Русский',
-      items: [{ text: 'English', link: 'https://vitejs.dev' }]
+      items: [{ text: 'English', link: 'https://vitejs.dev' }],
     },
 
     footer: {
       message: `Выпущено под лицензией MIT. (${commitRef})`,
       copyright:
-        'Все права © 2019-настоящее время Evan You и Vite контрибьюторам'
+        'Все права © 2019-настоящее время Evan You и Vite контрибьюторам',
     },
 
     nav: [
@@ -152,7 +144,7 @@ export default defineConfig({
               },
               {
                 text: 'Чат в Discord',
-                link: 'https://chat.vitejs.dev'
+                link: 'https://chat.vitejs.dev',
               },
               {
                 text: 'Awesome Vite',
@@ -160,7 +152,7 @@ export default defineConfig({
               },
               {
                 text: 'Сообщество разработчиков',
-                link: 'https://dev.to/t/vite'
+                link: 'https://dev.to/t/vite',
               },
               {
                 text: 'Rollup Plugins Compat',
