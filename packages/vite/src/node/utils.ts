@@ -88,6 +88,12 @@ export const flattenId = (id: string): string =>
 export const normalizeId = (id: string): string =>
   id.replace(replaceNestedIdRE, ' > ')
 
+// Supported by Node, Deno, Bun
+const NODE_BUILTIN_NAMESPACE = 'node:'
+// Supported by Deno
+const NPM_BUILTIN_NAMESPACE = 'npm:'
+// Supported by Bun
+const BUN_BUILTIN_NAMESPACE = 'bun:'
 //TODO: revisit later to see if the edge case that "compiling using node v12 code to be run in node v16 in the server" is what we intend to support.
 const builtins = new Set([
   ...builtinModules,
@@ -105,14 +111,19 @@ const builtins = new Set([
   'util/types',
   'wasi',
 ])
+// Some runtimes like Bun injects namespaced modules here, which is not a node builtin
+const nodeBuiltins = [...builtins].filter((id) => !id.includes(':'))
 
-const NODE_BUILTIN_NAMESPACE = 'node:'
+// TODO: Use `isBuiltin` from `node:module`, but Deno doesn't support it
 export function isBuiltin(id: string): boolean {
-  return builtins.has(
-    id.startsWith(NODE_BUILTIN_NAMESPACE)
-      ? id.slice(NODE_BUILTIN_NAMESPACE.length)
-      : id,
-  )
+  if (process.versions.deno && id.startsWith(NPM_BUILTIN_NAMESPACE)) return true
+  if (process.versions.bun && id.startsWith(BUN_BUILTIN_NAMESPACE)) return true
+  return isNodeBuiltin(id)
+}
+
+export function isNodeBuiltin(id: string): boolean {
+  if (id.startsWith(NODE_BUILTIN_NAMESPACE)) return true
+  return nodeBuiltins.includes(id)
 }
 
 export function isInNodeModules(id: string): boolean {
@@ -123,7 +134,9 @@ export function moduleListContains(
   moduleList: string[] | undefined,
   id: string,
 ): boolean | undefined {
-  return moduleList?.some((m) => m === id || id.startsWith(m + '/'))
+  return moduleList?.some(
+    (m) => m === id || id.startsWith(withTrailingSlash(m)),
+  )
 }
 
 export function isOptimizable(
@@ -221,6 +234,13 @@ export function fsPathFromUrl(url: string): string {
   return fsPathFromId(cleanUrl(url))
 }
 
+export function withTrailingSlash(path: string): string {
+  if (path[path.length - 1] !== '/') {
+    return `${path}/`
+  }
+  return path
+}
+
 /**
  * Check if dir is a parent of file
  *
@@ -231,9 +251,7 @@ export function fsPathFromUrl(url: string): string {
  * @returns true if dir is a parent of file
  */
 export function isParentDirectory(dir: string, file: string): boolean {
-  if (dir[dir.length - 1] !== '/') {
-    dir = `${dir}/`
-  }
+  dir = withTrailingSlash(dir)
   return (
     file.startsWith(dir) ||
     (isCaseInsensitiveFS && file.toLowerCase().startsWith(dir.toLowerCase()))
@@ -644,7 +662,7 @@ export function ensureWatchedFile(
   if (
     file &&
     // only need to watch if out of root
-    !file.startsWith(root + '/') &&
+    !file.startsWith(withTrailingSlash(root)) &&
     // some rollup plugins use null bytes for private resolved Ids
     !file.includes('\0') &&
     fs.existsSync(file)
@@ -1222,7 +1240,7 @@ export function stripBase(path: string, base: string): string {
   if (path === base) {
     return '/'
   }
-  const devBase = base[base.length - 1] === '/' ? base : base + '/'
+  const devBase = withTrailingSlash(base)
   return path.startsWith(devBase) ? path.slice(devBase.length - 1) : path
 }
 

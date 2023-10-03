@@ -33,12 +33,14 @@ import {
   dynamicImport,
   isBuiltin,
   isExternalUrl,
+  isNodeBuiltin,
   isObject,
   lookupFile,
   mergeAlias,
   mergeConfig,
   normalizeAlias,
   normalizePath,
+  withTrailingSlash,
 } from './utils'
 import {
   createPluginHookUtils,
@@ -680,7 +682,7 @@ export async function resolveConfig(
     ),
     inlineConfig,
     root: resolvedRoot,
-    base: resolvedBase.endsWith('/') ? resolvedBase : resolvedBase + '/',
+    base: withTrailingSlash(resolvedBase),
     rawBase: resolvedBase,
     resolve: resolveOptions,
     publicDir: resolvedPublicDir,
@@ -856,7 +858,7 @@ assetFileNames isn't equal for every build.rollupOptions.output. A single patter
   ) {
     resolved.logger.warn(
       colors.yellow(`
-(!) Experimental legacy.buildSsrCjsExternalHeuristics and ssr.format: 'cjs' are going to be removed in Vite 5. 
+(!) Experimental legacy.buildSsrCjsExternalHeuristics and ssr.format: 'cjs' are going to be removed in Vite 5.
     Find more information and give feedback at https://github.com/vitejs/vite/discussions/13816.
 `),
     )
@@ -1081,13 +1083,15 @@ async function bundleConfigFile(
               if (
                 kind === 'entry-point' ||
                 path.isAbsolute(id) ||
-                isBuiltin(id)
+                isNodeBuiltin(id)
               ) {
                 return
               }
 
-              // partial deno support as `npm:` does not work with esbuild
-              if (id.startsWith('npm:')) {
+              // With the `isNodeBuiltin` check above, this check captures if the builtin is a
+              // non-node built-in, which esbuild doesn't know how to handle. In that case, we
+              // externalize it so the non-node runtime handles it instead.
+              if (isBuiltin(id)) {
                 return { external: true }
               }
 
