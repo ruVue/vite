@@ -30,7 +30,17 @@ Vite предоставляет [HMR API](./api-hmr) поверх собстве
 
 Vite поддерживает импорт файлов `.ts` из коробки.
 
-Vite выполняет транспиляцию только для файлов `.ts` и **НЕ** выполняет проверку типов. Предполагается, что о проверке типов заботится ваша IDE и процесс сборки (вы можете запустить `tsc --noEmit` в сценарии сборки или установить `vue-tsc` и запустить `vue-tsc --noEmit`, чтобы также проверить свой тип файлов `*.vue`).
+### Только транспиляция
+
+Обратите внимание, что Vite выполняет транспиляцию только файлов `.ts` и **НЕ** выполняет проверку типов. Предполагается, что проверка типов осуществляется вашей IDE и процессом сборки.
+
+Причина, по которой Vite не выполняет проверку типов в процессе преобразования, заключается в том, что эти два задания работают принципиально по-разному. Транспиляция может работать для каждого файла отдельно и идеально согласуется с моделью компиляции Vite по требованию. Для сравнения, проверка типов требует знания всего графа модуля. Проверка типа подключения к конвейеру преобразования Vite неизбежно поставит под угрозу преимущества скорости Vite.
+
+Задача Vite — привести ваши исходные модули в форму, которая может работать в браузере как можно быстрее. С этой целью мы рекомендуем отделить проверки статического анализа от конвейера преобразования Vite. Этот принцип применим и к другим проверкам статического анализа, таким как ESLint.
+
+- Для производственных сборок вы можете запустить `tsc --noEmit` в дополнение к команде сборки Vite.
+
+- Во время разработки, если вам нужно больше, чем подсказки IDE, мы рекомендуем запустить `tsc --noEmit --watch` в отдельном процессе или использовать [vite-plugin-checker](https://github.com/fi3ework/vite-plugin-checker), если вы предпочитаете, чтобы ошибки типа сообщались непосредственно в браузере.
 
 Vite использует [esbuild](https://github.com/evanw/esbuild) для преобразования TypeScript в JavaScript, что примерно в 20–30 раз быстрее, чем ванильный `tsc`, а обновления HMR могут отображаться в браузере менее чем за 50 мс.
 
@@ -64,7 +74,7 @@ export type { T }
 
 Если вы используете библиотеку, которая сильно зависит от полей класса, будьте осторожны с ее предполагаемым использованием библиотекой.
 
-Большинство библиотек ожидают `"useDefineForClassFields": true`, например [MobX](https://mobx.js.org/installation.html#use-spec-compliant-transpilation-for-class-properties), [Компоненты класса Vue 8.x](https://github.com/vuejs/vue-class-component/issues/465), и т. д.
+Большинство библиотек ожидают `"useDefineForClassFields": true`, например, [MobX](https://mobx.js.org/installation.html#use-spec-compliant-transpilation-for-class-properties).
 
 Но несколько библиотек еще не перешли на это новое значение по умолчанию, в том числе [`lit-element`](https://github.com/lit/lit-element/issues/1030). В этих случаях явно установите для `useDefineForClassFields` значение `false`.
 
@@ -76,7 +86,7 @@ export type { T }
 - [`jsxFactory`](https://www.typescriptlang.org/tsconfig#jsxFactory)
 - [`jsxFragmentFactory`](https://www.typescriptlang.org/tsconfig#jsxFragmentFactory)
 
-Если перенос вашей кодовой базы на `"isolatedModules": true` является непреодолимым усилием, вы можете обойти это с помощью стороннего плагина, такого как [rollup-plugin-friendly-type-imports](https://www.npmjs.com/package/rollup-plugin-friendly-type-imports). Однако этот подход официально не поддерживается Vite.
+Если миграция вашей кодовой базы на `"isolatedModules": true` является непреодолимой задачей, вы можете обойти ее с помощью стороннего плагина, такого как [rollup-plugin-friendly-type-imports](https://www.npmjs.com/package/rollup-plugin-friendly-type-imports). Однако этот подход официально не поддерживается Vite.
 
 ### Клиентские типы
 
@@ -86,7 +96,7 @@ export type { T }
 /// <reference types="vite/client" />
 ```
 
-Кроме того, вы можете добавить `vite/client` в `compilerOptions.types` вашего `tsconfig`:
+Альтернативно, вы можете добавить `vite/client` в `compilerOptions.types` внутри `tsconfig.json`:
 
 ```json
 {
@@ -103,16 +113,22 @@ export type { T }
 - Типы для [HMR API](./api-hmr) в `import.meta.hot`
 
 ::: tip
-Чтобы переопределить ввод по умолчанию, объявите его перед ссылкой с тройной косой чертой. Например, чтобы сделать импорт `*.svg` компонентом React по умолчанию:
+Чтобы переопределить типизацию по умолчанию, добавьте файл определения типа, содержащий ваши типизации. Затем добавьте ссылку на тип перед `vite/client`.
 
-```ts
-declare module '*.svg' {
-  const content: React.FC<React.SVGProps<SVGElement>>
-  export default content
-}
+For example, to make the default import of `*.svg` a React component:
 
-/// <reference types="vite/client" />
-```
+- `vite-env-override.d.ts` (the file that contains your typings):
+  ```ts
+  declare module '*.svg' {
+    const content: React.FC<React.SVGProps<SVGElement>>
+    export default content
+  }
+  ```
+- The file containing the reference to `vite/client`:
+  ```ts
+  /// <reference types="./vite-env-override.d.ts" />
+  /// <reference types="vite/client" />
+  ```
 
 :::
 
@@ -122,8 +138,8 @@ Vite обеспечивает первоклассную поддержку Vue:
 
 - Поддержка Vue 3 SFC через [@vitejs/plugin-vue](https://github.com/vitejs/vite-plugin-vue/tree/main/packages/plugin-vue)
 - Поддержка Vue 3 JSX через [@vitejs/plugin-vue-jsx](https://github.com/vitejs/vite-plugin-vue/tree/main/packages/plugin-vue-jsx)
-- Поддержка Vue 2.7 через [@vitejs/plugin-vue2](https://github.com/vitejs/vite-plugin-vue2)
-- Поддержка Vue <2.7 через [vite-plugin-vue2](https://github.com/underfin/vite-plugin-vue2)
+- Поддержка Vue 2.7 SFC через [@vitejs/plugin-vue2](https://github.com/vitejs/vite-plugin-vue2)
+- Поддержка Vue 2.7 JSX через [@vitejs/plugin-vue2-jsx](https://github.com/vitejs/vite-plugin-vue2-jsx)
 
 ## JSX
 
@@ -232,9 +248,31 @@ Vite улучшает разрешение `@import` для Sass и Less, так
 Автоматическое внедрение содержимого CSS можно отключить с помощью параметра запроса `?inline`. В этом случае обработанная строка CSS возвращается как экспорт модуля по умолчанию, как обычно, но стили не внедряются на страницу.
 
 ```js
-import styles from './foo.css' // will be injected into the page
-import otherStyles from './bar.css?inline' // will not be injected into the page
+import './foo.css' // will be injected into the page
+import otherStyles from './bar.css?inline' // will not be injected
 ```
+
+::: tip ПРИМЕЧАНИЕ
+Импорт по умолчанию и именованный импорт из файлов CSS (например, `import style from './foo.css'`) устарел, начиная с Vite 4. Вместо этого используйте запрос `?inline`.
+:::
+
+### Lightning CSS
+
+Начиная с Vite 4.4 существует экспериментальная поддержка [Lightning CSS](https://lightningcss.dev/). Вы можете принять его, добавив [`css.transformer: 'lightningcss'`](../config/shared-options.md#css-transformer) в свой файл конфигурации и установив дополнительную зависимость [`lightningcss`](https://www.npmjs.com/package/lightningcss):
+
+```bash
+npm add -D lightningcss
+```
+
+Если этот параметр включен, файлы CSS будут обрабатываться с помощью Lightning CSS вместо PostCSS. Чтобы настроить его, вы можете передать параметры CSS Lightning в параметр конфигурации [`css.lightingcss`](../config/shared-options.md#css-lightningcss).
+
+Чтобы настроить модули CSS, вы будете использовать [`css.lightningcss.cssModules`](https://lightningcss.dev/css-modules.html) вместо [`css.modules`](../config/shared-options.md#css-modules) (который настраивает способ обработки PostCSS модулей CSS).
+
+По умолчанию Vite использует esbuild для минимизации CSS. Lightning CSS также можно использовать в качестве минификатора CSS с помощью [`build.cssMinify: 'lightningcss'`](../config/build-options.md#build-cssminify).
+
+::: tip ПРИМЕЧАНИЕ
+[Препроцессоры CSS](#css-pre-processors) не поддерживаются при использовании Lightning CSS.
+:::
 
 ## Статические ресурсы
 
@@ -331,7 +369,7 @@ const modules = {
 `import.meta.glob` также поддерживает импорт файлов в виде строк (аналогично [Импортировать актив как строку](https://vitejs.ru/guide/assets.html#importing-asset-as-string)) с помощью синтаксиса [Импорт Reflection](https://github.com/tc39/proposal-import-reflection):
 
 ```js
-const modules = import.meta.glob('./dir/*.js', { as: 'raw' })
+const modules = import.meta.glob('./dir/*.js', { as: 'raw', eager: true })
 ```
 
 Вышеупомянутое будет преобразовано в следующее:
@@ -388,7 +426,10 @@ const modules = {
 В сочетании с `eager` можно даже включить встряхивание дерева для этих модулей.
 
 ```ts
-const modules = import.meta.glob('./dir/*.js', { import: 'setup', eager: true })
+const modules = import.meta.glob('./dir/*.js', {
+  import: 'setup',
+  eager: true,
+})
 ```
 
 ```ts
@@ -433,10 +474,8 @@ const modules = import.meta.glob('./dir/*.js', {
 ```ts
 // code produced by vite:
 const modules = {
-  './dir/foo.js': () =>
-    import('./dir/foo.js?foo=bar&bar=true').then((m) => m.setup),
-  './dir/bar.js': () =>
-    import('./dir/bar.js?foo=bar&bar=true').then((m) => m.setup),
+  './dir/foo.js': () => import('./dir/foo.js?foo=bar&bar=true'),
+  './dir/bar.js': () => import('./dir/bar.js?foo=bar&bar=true'),
 }
 ```
 
@@ -461,7 +500,8 @@ const module = await import(`./dir/${file}.js`)
 
 ## Веб-сборка
 
-Предварительно скомпилированные файлы `.wasm` можно импортировать с помощью `?init` – экспорт по умолчанию будет функцией инициализации, которая возвращает Promise экземпляра wasm:
+Предварительно скомпилированные файлы `.wasm` можно импортировать с помощью `?init`.
+Экспортом по умолчанию будет функция инициализации, которая возвращает промис [`WebAssembly.Instance`](https://developer.mozilla.org/en-US/docs/WebAssembly/JavaScript_interface/Instance):
 
 ```js
 import init from './example.wasm?init'
@@ -471,7 +511,7 @@ init().then((instance) => {
 })
 ```
 
-Функция инициализации также может принимать объект `imports`, который передается `WebAssembly.instantiate` в качестве второго аргумента:
+Функция init также может принимать объект importObject, который передается в [`WebAssembly.instantiate`](https://developer.mozilla.org/en-US/docs/WebAssembly/JavaScript_interface/instantiate) в качестве второго аргумента:
 
 ```js
 init({
@@ -485,14 +525,55 @@ init({
 })
 ```
 
-В производственной сборке файлы `.wasm` меньше, чем `assetInlineLimit`, будут встроены как строки base64. В противном случае они будут скопированы в каталог dist как ресурс и извлечены по запросу.
+В производственной сборке файлы `.wasm` размером меньше, чем `assetInlineLimit`, будут встроены как строки base64. В противном случае они будут рассматриваться как [статический ресурс](./assets) и извлекаться по требованию.
 
-::: warning
+::: tip ПРИМЕЧАНИЕ
 [Предложение по интеграции модуля ES для WebAssembly](https://github.com/WebAssembly/esm-integration) в настоящее время не поддерживается.
-Используйте [`vite-plugin-wasm`](https://github.com/Menci/vite-plugin-wasm) или другие плагины сообщества, чтобы справиться с этим.
+Для решения этой проблемы используйте [`vite-plugin-wasm`](https://github.com/Menci/vite-plugin-wasm) или другие плагины сообщества.
 :::
 
-## Веб-работники
+### Доступ к модулю WebAssembly
+
+Если вам нужен доступ к объекту `Module`, например, чтобы создать его экземпляр несколько раз, используйте [импорт явного URL-адреса](./assets#explicit-url-imports) для разрешения ресурса, а затем выполните создание экземпляра:
+
+```js
+import wasmUrl from 'foo.wasm?url'
+
+const main = async () => {
+  const responsePromise = fetch(wasmUrl)
+  const { module, instance } = await WebAssembly.instantiateStreaming(
+    responsePromise,
+  )
+  /* ... */
+}
+
+main()
+```
+
+### Fetching the module in Node.js
+
+In SSR, the `fetch()` happening as part of the `?init` import, may fail with `TypeError: Invalid URL`.
+See the issue [Support wasm in SSR](https://github.com/vitejs/vite/issues/8882).
+
+Here is an alternative, assuming the project base is the current directory:
+
+```js
+import wasmUrl from 'foo.wasm?url'
+import { readFile } from 'node:fs/promises'
+
+const main = async () => {
+  const resolvedUrl = (await import('./test/boot.test.wasm?url')).default
+  const buffer = await readFile('.' + resolvedUrl)
+  const { instance } = await WebAssembly.instantiate(buffer, {
+    /* ... */
+  })
+  /* ... */
+}
+
+main()
+```
+
+## Web Workers
 
 ### Импорт с помощью конструкторов
 
@@ -520,7 +601,7 @@ import MyWorker from './worker?worker'
 const worker = new MyWorker()
 ```
 
-Рабочий скрипт также может использовать операторы `import` вместо `importScripts()` - обратите внимание, что во время разработки это зависит от встроенной поддержки браузера и в настоящее время работает только в Chrome, но для рабочей сборки он скомпилирован.
+Рабочий скрипт также может использовать операторы `import` ESM вместо `importScripts()`. **Примечание**: Во время разработки это зависит от [встроенной поддержки браузера](https://caniuse.com/?search=module%20worker), но для производственной сборки она компилируется отдельно.
 
 По умолчанию рабочий скрипт будет выпущен как отдельный блок в производственной сборке. Если вы хотите встроить worker в виде строк base64, добавьте запрос `inline`:
 

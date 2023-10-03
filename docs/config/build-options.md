@@ -6,12 +6,12 @@
 - **По умолчанию:** `'modules'`
 - **Связанный:** [Browser Compatibility](/guide/build#browser-compatibility)
 
-Цель совместимости браузера для окончательного пакета. Значением по умолчанию является специальное значение Vite, `'modules'`, предназначенное для браузеров с [нативными модулями ES](https://caniuse.com/es6-module), [нативным динамическим импортом ESM](https://caniuse.com/es6-module-dynamic-import), и [`import.meta`](https://caniuse.com/mdn-javascript_operators_import_meta).
+Целевая совместимость браузера для финального пакета. Значением по умолчанию является специальное значение Vite, `'modules'`, предназначенное для браузеров с [нативными модулями ES](https://caniuse.com/es6-module), [нативным динамическим импортом ESM](https://caniuse.com/es6-module-dynamic-import) и поддержку [`import.meta`](https://caniuse.com/mdn-javascript_operators_import_meta). Vite заменит `'modules'` на `['es2020', 'edge88', 'firefox78', 'chrome87', 'safari14']`
 
 Другое специальное значение — `'esnext'` — предполагает встроенную поддержку динамического импорта и будет транспилировать как можно меньше:
 
-- Если параметр [`build.minify`](#build-minify) имеет значение `'terser'`, `'esnext'` будет принудительно уменьшен до `'es2021'`.
-- В других случаях он вообще не будет выполнять транспиляцию.
+- Если опция [`build.minify`](#build-minify) равна `'terser'`и установленная версия Terser ниже 5.16.0, `'esnext'` будет принудительно понижен до `'es2021'`.
+- В других случаях транспиляция вообще не будет выполняться.
 
 Преобразование выполняется с помощью esbuild, и значение должно быть допустимым [опция цели esbuild](https://esbuild.github.io/api/#target). Настраиваемыми целями могут быть версия ES (например, `es2015`), браузер с версией (например, `chrome58`) или массив из нескольких целевых строк.
 
@@ -20,7 +20,7 @@
 ## build.modulePreload
 
 - **Тип:** `boolean | { polyfill?: boolean, resolveDependencies?: ResolveModulePreloadDependenciesFn }`
-- **По умолчанию:** `true`
+- **По умолчанию:** `{ polyfill: true }`
 
 По умолчанию автоматически внедряется [модуль предварительной загрузки полифилла](https://guybedford.com/es-module-preloading-integrity#modulepreload-polyfill). Полифилл автоматически внедряется в прокси-модуль каждой записи `index.html`. Если сборка настроена на использование пользовательской записи, отличной от HTML, через `build.rollupOptions.input`, необходимо вручную импортировать полифилл в вашу пользовательскую запись:
 
@@ -38,7 +38,7 @@ import 'vite/modulepreload-polyfill'
 
 Список фрагментов для предварительной загрузки для каждого динамического импорта вычисляется Vite. По умолчанию при загрузке этих зависимостей будет использоваться абсолютный путь, включая `base`. Если `base` является относительной (`''` или `'./'`), `import.meta.url` используется во время выполнения, чтобы избежать абсолютных путей, которые зависят от конечной развернутой базы.
 
-Существует экспериментальная поддержка тонкого управления списком зависимостей и их путями с помощью функции `resolveDependencies`. Ожидается функция типа `ResolveModulePreloadDependenciesFn`:
+Существует экспериментальная поддержка детального контроля над списком зависимостей и их путями с помощью функции `resolveDependencies`. [Оставить отзыв](https://github.com/vitejs/vite/discussions/13841). Он ожидает функцию типа `ResolveModulePreloadDependenciesFn`:
 
 ```ts
 type ResolveModulePreloadDependenciesFn = (
@@ -81,7 +81,7 @@ modulePreload: {
 - **Тип:** `string`
 - **По умолчанию:** `assets`
 
-Укажите каталог для вложения сгенерированных ресурсов (относительно `build.outDir`).
+Укажите каталог для вложения сгенерированных ресурсов (относительно `build.outDir`. Он не используется в [режиме библиотеки](/guide/build#library-mode)).
 
 ## build.assetsInlineLimit
 
@@ -101,7 +101,7 @@ modulePreload: {
 - **Тип:** `boolean`
 - **По умолчанию:** `true`
 
-Включить/выключить разделение кода CSS. Если этот параметр включен, CSS, импортированный в асинхронные фрагменты, будет встроен в сам асинхронный фрагмент и вставлен при его загрузке.
+Включить/отключить разделение CSS-кода. Если этот параметр включен, CSS, импортированный в асинхронные фрагменты JS, будет сохраняться как фрагменты и извлекаться вместе при извлечении фрагмента.
 
 Если этот параметр отключен, все CSS во всем проекте будут извлечены в один файл CSS.
 
@@ -120,6 +120,13 @@ modulePreload: {
 Одним из примеров является Android WeChat WebView, который поддерживает большинство современных функций JavaScript, но не поддерживает [`#RGBA` шестнадцатеричное обозначение цвета в CSS](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#rgb_colors).
 В этом случае вам нужно установить для `build.cssTarget` значение `chrome61`, чтобы vite не преобразовывал цвета `rgba()` в шестнадцатеричные обозначения `#RGBA`.
 
+## build.cssMinify
+
+- **Type:** `boolean | 'esbuild' | 'lightningcss'`
+- **Default:** the same as [`build.minify`](#build-minify)
+
+This option allows users to override CSS minification specifically instead of defaulting to `build.minify`, so you can configure minification for JS and CSS separately. Vite uses `esbuild` by default to minify CSS. Set the option to `'lightningcss'` to use [Lightning CSS](https://lightningcss.dev/minification.html) instead. If selected, it can be configured using [`css.lightningcss`](./shared-options.md#css-lightningcss).
+
 ## build.sourcemap
 
 - **Тип:** `boolean | 'inline' | 'hidden'`
@@ -129,9 +136,9 @@ modulePreload: {
 
 ## build.rollupOptions
 
-- **Тип:** [`RollupOptions`](https://rollupjs.org/guide/en/#big-list-of-options)
+- **Тип:** [`RollupOptions`](https://rollupjs.org/configuration-options/)
 
-Непосредственно настраивайте базовый пакет Rollup. Это то же самое, что и параметры, которые можно экспортировать из файла конфигурации Rollup, и они будут объединены с внутренними параметрами Rollup Vite. Дополнительные сведения см. в [Документация по вариантам Rollup](https://rollupjs.org/guide/en/#big-list-of-options).
+Непосредственно настройте базовый пакет Rollup. Это то же самое, что параметры, которые можно экспортировать из файла конфигурации накопительного пакета и будут объединены с внутренними параметрами накопительного пакета Vite. Дополнительную информацию см. в [Документации по Rollup](https://rollupjs.org/configuration-options/).
 
 ## build.commonjsOptions
 
@@ -174,7 +181,7 @@ modulePreload: {
 ## build.ssr
 
 - **Тип:** `boolean | string`
-- **По умолчанию:** `undefined`
+- **По умолчанию:** `false`
 - **Связанный:** [Server-Side Rendering](/guide/ssr)
 
 Создание сборки, ориентированной на SSR. Значение может быть строкой для прямого указания записи SSR или `true`, что требует указания записи SSR через `rollupOptions.input`.
@@ -218,7 +225,7 @@ npm add -D terser
 
 ## build.copyPublicDir
 
-- **Experimental**
+- **Экспериментальный:** [Дать обратную связь](https://github.com/vitejs/vite/discussions/13807)
 - **Тип:** `boolean`
 - **По умолчанию:** `true`
 
@@ -236,11 +243,11 @@ npm add -D terser
 - **Тип:** `number`
 - **По умолчанию:** `500`
 
-Ограничение предупреждений о размере фрагмента (в КБ).
+Ограничение для предупреждений о размере фрагмента (в килобайтах). Он сравнивается с размером несжатого фрагмента, поскольку [размер JavaScript сам по себе связан со временем выполнения](https://v8.dev/blog/cost-of-javascript-2019).
 
 ## build.watch
 
-- **Тип:** [`WatcherOptions`](https://rollupjs.org/guide/en/#watch-options)`| null`
+- **Тип:** [`WatcherOptions`](https://rollupjs.org/configuration-options/#watch)`| null`
 - **По умолчанию:** `null`
 
 Установите `{}`, чтобы включить наблюдатель сводки. Это в основном используется в случаях, когда речь идет о плагинах только для сборки или процессах интеграции.

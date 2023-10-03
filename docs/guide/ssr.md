@@ -81,8 +81,8 @@ async function createServer() {
     appType: 'custom'
   })
 
-  // use vite's connect instance as middleware
-  // if you use your own express router (express.Router()), you should use router.use
+  // Use vite's connect instance as middleware. If you use your own
+  // express router (express.Router()), you should use router.use
   app.use(vite.middlewares)
 
   app.use('*', async (req, res) => {
@@ -110,18 +110,18 @@ app.use('*', async (req, res, next) => {
       'utf-8',
     )
 
-    // 2. Apply Vite HTML transforms. This injects the Vite HMR client, and
-    //    also applies HTML transforms from Vite plugins, e.g. global preambles
-    //    from @vitejs/plugin-react
+    // 2. Apply Vite HTML transforms. This injects the Vite HMR client,
+    //    and also applies HTML transforms from Vite plugins, e.g. global
+    //    preambles from @vitejs/plugin-react
     template = await vite.transformIndexHtml(url, template)
 
-    // 3. Load the server entry. vite.ssrLoadModule automatically transforms
-    //    your ESM source code to be usable in Node.js! There is no bundling
+    // 3. Load the server entry. ssrLoadModule automatically transforms
+    //    ESM source code to be usable in Node.js! There is no bundling
     //    required, and provides efficient invalidation similar to HMR.
     const { render } = await vite.ssrLoadModule('/src/entry-server.js')
 
-    // 4. render the app HTML. This assumes entry-server.js's exported `render`
-    //    function calls appropriate framework SSR APIs,
+    // 4. render the app HTML. This assumes entry-server.js's exported
+    //     `render` function calls appropriate framework SSR APIs,
     //    e.g. ReactDOMServer.renderToString()
     const appHtml = await render(url)
 
@@ -131,8 +131,8 @@ app.use('*', async (req, res, next) => {
     // 6. Send the rendered HTML back.
     res.status(200).set({ 'Content-Type': 'text/html' }).end(html)
   } catch (e) {
-    // If an error is caught, let Vite fix the stack trace so it maps back to
-    // your actual source code.
+    // If an error is caught, let Vite fix the stack trace so it maps back
+    // to your actual source code.
     vite.ssrFixStacktrace(e)
     next(e)
   }
@@ -169,7 +169,7 @@ app.use('*', async (req, res, next) => {
 
 Обратите внимание на флаг `--ssr`, который указывает, что это сборка SSR. Также следует указать запись SSR.
 
-Затем в `server.js` нам нужно добавить некоторую специфичную для производства логику, проверив `process.env.`<wbr>`NODE_ENV`:
+Затем в `server.js` нам нужно добавить некоторую логику, специфичную для продакшена, проверив `process.env.NODE_ENV`:
 
 - Вместо того, чтобы читать корень `index.html`, используйте `dist/client/index.html` в качестве шаблона, так как он содержит правильные ссылки ресурсов на сборку клиента.
 
@@ -201,7 +201,7 @@ const html = await vueServerRenderer.renderToString(app, ctx)
 // ctx.modules is now a Set of module IDs that were used during the render
 ```
 
-В рабочей ветке `server.js` нам нужно прочитать и передать манифест функции `render`, экспортируемой `src/entry-server.js`. Это даст нам достаточно информации для рендеринга директив предварительной загрузки для файлов, используемых асинхронными маршрутами! Полный пример смотрите в [источнике демо](https://github.com/vitejs/vite-plugin-vue/blob/main/playground/ssr-vue/src/entry-server.js).
+В продакшен ветке `server.js` нам нужно прочитать и передать манифест функции `render`, экспортируемой `src/entry-server.js`. Это предоставит нам достаточно информации для отображения директив предварительной загрузки для файлов, используемых асинхронными маршрутами! Полный пример см. в [источнике демонстрационной версии](https://github.com/vitejs/vite-plugin-vue/blob/main/playground/ssr-vue/src/entry-server.js). Вы также можете использовать эту информацию для [103 Early Hints](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/103).
 
 ## Предварительный рендеринг / SSG
 
@@ -216,7 +216,7 @@ const html = await vueServerRenderer.renderToString(app, ctx)
 Для связанных зависимостей они по умолчанию не экстернализуются, чтобы использовать преимущества HMR Vite. Если это нежелательно, например, для проверки зависимостей, как если бы они не были связаны, вы можете добавить его в [`ssr.external`](../config/ssr-options.md#ssr-external).
 
 :::warning Работа с псевдонимами
-Если вы настроили псевдонимы, которые перенаправляют один пакет на другой, вы можете вместо этого использовать псевдонимы для фактических пакетов `node_modules`, чтобы он работал для внешних зависимостей SSR. И [Yarn](https://classic.yarnpkg.com/en/docs/cli/add/#toc-yarn-add-alias), и [pnpm](https://pnpm.js.org/en/aliases) поддерживают псевдонимы через префикс `npm:`.
+Если вы настроили псевдонимы, которые перенаправляют один пакет на другой, вы можете вместо этого использовать псевдонимы фактических пакетов `node_modules`, чтобы они работали для внешних зависимостей SSR. Оба [Yarn](https://classic.yarnpkg.com/en/docs/cli/add/#toc-yarn-add-alias) и [pnpm](https://pnpm.io/aliases/) поддерживают псевдонимы через префикс `npm:`.
 :::
 
 ## Логика плагина, специфичная для SSR
@@ -269,4 +269,8 @@ export function mySSRPlugin() {
 
 ## Формат SSR
 
-По умолчанию Vite генерирует пакет SSR в ESM. Существует экспериментальная поддержка настройки `ssr.format`, но это не рекомендуется. Будущие усилия по разработке SSR будут основываться на ESM, а CommonJS останется доступным для обратной совместимости. Если использование ESM для SSR в вашем проекте невозможно, вы можете установить `legacy.buildSsrCjsExternalHeuristics: true` для создания пакета CJS с использованием той же [эвристики экстернализации Vite v2](https://v2.vitejs.dev/guide/ssr.html#ssr-externals).
+By default, Vite generates the SSR bundle in ESM. There is experimental support for configuring `ssr.format`, but it isn't recommended. Future efforts around SSR development will be based on ESM, and CommonJS remains available for backward compatibility. If using ESM for SSR isn't possible in your project, you can set `legacy.buildSsrCjsExternalHeuristics: true` to generate a CJS bundle using the same [externalization heuristics of Vite v2](https://v2.vitejs.dev/guide/ssr.html#ssr-externals).
+
+:::warning Предупреждение
+Экспериментальные `legacy.buildSsrCjsExternalHeuristics` и `ssr.format: 'cjs'` будут удалены в Vite 5. Найдите дополнительную информацию и оставьте отзыв [в этом обсуждении](https://github.com/vitejs/vite/discussions/13816).
+:::

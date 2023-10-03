@@ -4,7 +4,7 @@ title: Конфигурация Vite
 
 # Конфигурирование Vite
 
-При запуске `vite` из командной строки Vite автоматически попытается разрешить файл конфигурации с именем `vite.config.js` внутри [проекта root](/guide/#index-html-and-project-root).
+При запуске `vite` из командной строки Vite автоматически попытается разрешить файл конфигурации с именем `vite.config.js` внутри [project root](/guide/#index-html-and-project-root) (другие JS и расширения TS также поддерживаются).
 
 Самый простой файл конфигурации выглядит так:
 
@@ -71,7 +71,7 @@ export default defineConfig(({ command, mode, ssrBuild }) => {
 
 ## Асинхронная конфигурация
 
-Если конфигу необходимо вызвать асинхронную функцию, он может вместо этого экспортировать асинхронную функцию:
+Если конфигурации необходимо вызывать асинхронные функции, вместо этого она может экспортировать асинхронную функцию. Эту асинхронную функцию также можно передать через `defineConfig` для улучшения поддержки intellisense:
 
 ```js
 export default defineConfig(async ({ command, mode }) => {
@@ -82,7 +82,7 @@ export default defineConfig(async ({ command, mode }) => {
 })
 ```
 
-## Переменные среды
+## Использование переменных среды в конфигурации
 
 Переменные окружения можно получить, как обычно, из `process.env`.
 
@@ -98,7 +98,7 @@ export default defineConfig(({ command, mode }) => {
   return {
     // vite config
     define: {
-      __APP_ENV__: env.APP_ENV,
+      __APP_ENV__: JSON.stringify(env.APP_ENV),
     },
   }
 })

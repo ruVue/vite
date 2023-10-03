@@ -88,8 +88,13 @@ export default defineConfig({
     ],
   ],
 
-  vue: {
-    reactivityTransform: true,
+  locales: {
+    root: { label: 'English' },
+    zh: { label: '简体中文', link: 'https://cn.vitejs.dev' },
+    ja: { label: '日本語', link: 'https://ja.vitejs.dev' },
+    es: { label: 'Español', link: 'https://es.vitejs.dev' },
+    pt: { label: 'Português', link: 'https://pt.vitejs.dev' },
+    ko: { label: '한국어', link: 'https://ko.vitejs.dev' },
   },
 
   themeConfig: {
@@ -103,6 +108,7 @@ export default defineConfig({
     },
 
     socialLinks: [
+      { icon: 'mastodon', link: 'https://elk.zone/m.webtoo.ls/@vite' },
       { icon: 'twitter', link: 'https://twitter.com/vite_js' },
       { icon: 'discord', link: 'https://chat.vitejs.dev' },
       { icon: 'github', link: 'https://github.com/vitejs/vite' },
@@ -136,6 +142,7 @@ export default defineConfig({
         text: 'Ресурсы',
         items: [
           { text: 'Команда', link: '/team' },
+          { text: 'Релизы', link: '/releases' },
           {
             items: [
               {
@@ -232,6 +239,10 @@ export default defineConfig({
             {
               text: 'Устранение неполадок',
               link: '/guide/troubleshooting',
+            },
+            {
+              text: 'Философия',
+              link: '/guide/philosophy',
             },
             {
               text: 'Миграция с v3',

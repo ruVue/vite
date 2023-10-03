@@ -34,7 +34,7 @@ const __dirname = fileURLToPath(new URL('.', import.meta.url))
 ```
 
 ::: tip ПРИМЕЧАНИЕ
-При использовании `createServer` и `build` в одном и том же процессе Node.js обе функции полагаются на `process.env.`<wbr>`NODE_ENV` для правильной работы, что также зависит от параметра конфигурации `mode`. Чтобы предотвратить конфликтное поведение, установите для `process.env.`<wbr>`NODE_ENV` или `mode` двух API значение `development`. В противном случае вы можете создать дочерний процесс для отдельного запуска API.
+При использовании `createServer` и `build` в одном и том же процессе Node.js обе функции полагаются на `process.env.NODE_ENV` для правильной работы, что также зависит от параметра конфигурации `mode`. Чтобы предотвратить конфликтное поведение, установите для `process.env.NODE_ENV` или `mode` двух API значение `development`. В противном случае вы можете создать дочерний процесс для отдельного запуска API.
 :::
 
 ## `InlineConfig`
@@ -205,6 +205,46 @@ import { preview } from 'vite'
 })()
 ```
 
+## `PreviewServer`
+
+```ts
+interface PreviewServer extends PreviewServerForHook {
+  resolvedUrls: ResolvedServerUrls
+}
+```
+
+## `PreviewServerForHook`
+
+```ts
+interface PreviewServerForHook {
+  /**
+   * The resolved vite config object
+   */
+  config: ResolvedConfig
+  /**
+   * A connect app instance.
+   * - Can be used to attach custom middlewares to the preview server.
+   * - Can also be used as the handler function of a custom http server
+   *   or as a middleware in any connect-style Node.js frameworks
+   *
+   * https://github.com/senchalabs/connect#use-middleware
+   */
+  middlewares: Connect.Server
+  /**
+   * native Node http server instance
+   */
+  httpServer: http.Server
+  /**
+   * The resolved urls Vite prints on the CLI
+   */
+  resolvedUrls: ResolvedServerUrls | null
+  /**
+   * Print server urls
+   */
+  printUrls(): void
+}
+```
+
 ## `resolveConfig`
 
 **Тип подписи:**
@@ -232,6 +272,10 @@ function mergeConfig(
 ```
 
 Глубоко объедините две конфигурации Vite. `isRoot` представляет уровень в конфигурации Vite, который объединяется. Например, установите `false`, если вы объединяете две опции `build`.
+
+::: tip NOTE
+`mergeConfig` accepts only config in object form. If you have a config in callback form, you should call it before passing into `mergeConfig`.
+:::
 
 ## `searchForWorkspaceRoot`
 
@@ -289,7 +333,7 @@ function normalizePath(id: string): string
 function mergeConfig(
   defaults: Record<string, any>,
   overrides: Record<string, any>,
-  isRoot = true
+  isRoot = true,
 ): Record<string, any>
 ```
 
@@ -302,7 +346,7 @@ function mergeConfig(
 ```ts
 function searchForWorkspaceRoot(
   current: string,
-  root = searchForPackageRoot(current)
+  root = searchForPackageRoot(current),
 ): string
 ```
 
@@ -323,7 +367,7 @@ function searchForWorkspaceRoot(
 function loadEnv(
   mode: string,
   envDir: string,
-  prefixes: string | string[] = 'VITE_'
+  prefixes: string | string[] = 'VITE_',
 ): Record<string, string>
 ```
 

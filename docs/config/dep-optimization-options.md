@@ -35,6 +35,16 @@ export default defineConfig({
 
 По умолчанию связанные пакеты не внутри `node_modules` предварительно не объединяются. Используйте этот параметр, чтобы предварительно объединить связанный пакет.
 
+**Experimental:** If you're using a library with many deep imports, you can also specify a trailing glob pattern to pre-bundle all deep imports at once. This will avoid constantly pre-bundling whenever a new deep import is used. For example:
+
+```js
+export default defineConfig({
+  optimizeDeps: {
+    include: ['my-lib/components/**/*.vue'],
+  },
+})
+```
+
 ## optimizeDeps.esbuildOptions
 
 - **Тип:** [`EsbuildBuildOptions`](https://esbuild.github.io/api/#simple-options)
@@ -51,3 +61,24 @@ export default defineConfig({
 - **Тип:** `boolean`
 
 Установите значение `true`, чтобы принудительно выполнить предварительное объединение зависимостей, игнорируя ранее кэшированные оптимизированные зависимости.
+
+## optimizeDeps.disabled
+
+- **Экспериментальный:** [Give Feedback](https://github.com/vitejs/vite/discussions/13839)
+- **Тип:** `boolean | 'build' | 'dev'`
+- **По умолчанию:** `'build'`
+
+Отключает оптимизацию зависимостей, `true` отключает оптимизатор во время сборки и разработки. Передайте `'build'` или `'dev'` to only disable the optimizer in one of the modes. Dependency optimization is enabled by default in dev only.
+
+:::warning
+Оптимизация зависимостей в режиме сборки носит **экспериментальный** характер. Если этот параметр включен, он устраняет одно из наиболее существенных различий между dev и prod. [`@rollup/plugin-commonjs`](https://github.com/rollup/plugins/tree/master/packages/commonjs) в этом случае больше не нужен, поскольку esbuild преобразует зависимости только для CJS в ESM.
+
+Если вы хотите попробовать эту стратегию сборки, вы можете использовать `optimizeDeps.disabled: false`. `@rollup/plugin-commonjs` можно удалить, передав `build.commonjsOptions: { include: [] }`.
+:::
+
+## optimizeDeps.needsInterop
+
+- **Экспериментальный**
+- **Тип:** `string[]`
+
+Принудительно обеспечивает взаимодействие ESM при импорте этих зависимостей. Vite может правильно определить, когда зависимость требует взаимодействия, поэтому эта опция обычно не требуется. Однако различные комбинации зависимостей могут привести к тому, что некоторые из них будут предварительно объединены по-разному. Добавление этих пакетов в `needsInterop` может ускорить холодный запуск, избегая полной перезагрузки страницы. Если это относится к одной из ваших зависимостей, вы получите предупреждение с предложением добавить имя пакета в этот массив в вашей конфигурации.

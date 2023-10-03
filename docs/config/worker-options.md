@@ -1,11 +1,11 @@
 # Параметры работника
 
-Options related to Web Workers.
+Параметры, относящиеся к веб-работникам.
 
 ## worker.format
 
 - **Тип:** `'es' | 'iife'`
-- **По умолчанию:** `iife`
+- **По умолчанию:** `'iife'`
 
 Выходной формат для пакета рабочего.
 
@@ -13,10 +13,10 @@ Options related to Web Workers.
 
 - **Тип:** [`(Plugin | Plugin[])[]`](./shared-options#plugins)
 
-Плагины Vite, которые применяются к рабочему пакету. Обратите внимание, что [config.plugins](./shared-options#plugins) не применяется к рабочим процессам, вместо этого его следует настроить здесь.
+Плагины Vite, которые применяются к рабочему пакету. Обратите внимание, что [config.plugins](./shared-options#plugins) применяется только к workers в разработке, вместо этого его следует настроить здесь для сборки.
 
 ## worker.rollupOptions
 
-- **Тип:** [`RollupOptions`](https://rollupjs.org/guide/en/#big-list-of-options)
+- **Тип:** [`RollupOptions`](https://rollupjs.org/configuration-options/)
 
 Rollup для создания рабочего пакета.

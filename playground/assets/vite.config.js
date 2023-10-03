@@ -1,9 +1,7 @@
-const path = require('node:path')
+import path from 'node:path'
+import { defineConfig } from 'vite'
 
-/**
- * @type {import('vite').UserConfig}
- */
-module.exports = {
+export default defineConfig({
   base: '/foo',
   publicDir: 'static',
   resolve: {
@@ -18,4 +16,4 @@ module.exports = {
     manifest: true,
     watch: {},
   },
-}
+})

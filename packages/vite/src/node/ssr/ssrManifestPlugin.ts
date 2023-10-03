@@ -2,10 +2,16 @@ import { basename, dirname, join, relative } from 'node:path'
 import { parse as parseImports } from 'es-module-lexer'
 import type { ImportSpecifier } from 'es-module-lexer'
 import type { OutputChunk } from 'rollup'
+import jsonStableStringify from 'json-stable-stringify'
 import type { ResolvedConfig } from '..'
 import type { Plugin } from '../plugin'
 import { preloadMethod } from '../plugins/importAnalysisBuild'
-import { joinUrlSegments, normalizePath } from '../utils'
+import {
+  generateCodeFrame,
+  joinUrlSegments,
+  normalizePath,
+  numberToPos,
+} from '../utils'
 
 export function ssrManifestPlugin(config: ResolvedConfig): Plugin {
   // module id => preload assets mapping
@@ -26,11 +32,11 @@ export function ssrManifestPlugin(config: ResolvedConfig): Plugin {
               mappedChunks.push(joinUrlSegments(base, chunk.fileName))
               // <link> tags for entry chunks are already generated in static HTML,
               // so we only need to record info for non-entry chunks.
-              chunk.viteMetadata.importedCss.forEach((file) => {
+              chunk.viteMetadata!.importedCss.forEach((file) => {
                 mappedChunks.push(joinUrlSegments(base, file))
               })
             }
-            chunk.viteMetadata.importedAssets.forEach((file) => {
+            chunk.viteMetadata!.importedAssets.forEach((file) => {
               mappedChunks.push(joinUrlSegments(base, file))
             })
           }
@@ -41,7 +47,16 @@ export function ssrManifestPlugin(config: ResolvedConfig): Plugin {
             try {
               imports = parseImports(code)[0].filter((i) => i.n && i.d > -1)
             } catch (e: any) {
-              this.error(e, e.idx)
+              const loc = numberToPos(code, e.idx)
+              this.error({
+                name: e.name,
+                message: e.message,
+                stack: e.stack,
+                cause: e.cause,
+                pos: e.idx,
+                loc: { ...loc, file: chunk.fileName },
+                frame: generateCodeFrame(code, loc),
+              })
             }
             if (imports.length) {
               for (let index = 0; index < imports.length; index++) {
@@ -58,7 +73,7 @@ export function ssrManifestPlugin(config: ResolvedConfig): Plugin {
                   analyzed.add(filename)
                   const chunk = bundle[filename] as OutputChunk | undefined
                   if (chunk) {
-                    chunk.viteMetadata.importedCss.forEach((file) => {
+                    chunk.viteMetadata!.importedCss.forEach((file) => {
                       deps.push(joinUrlSegments(base, file)) // TODO:base
                     })
                     chunk.imports.forEach(addDeps)
@@ -81,7 +96,7 @@ export function ssrManifestPlugin(config: ResolvedConfig): Plugin {
             ? config.build.ssrManifest
             : 'ssr-manifest.json',
         type: 'asset',
-        source: JSON.stringify(ssrManifest, null, 2),
+        source: jsonStableStringify(ssrManifest, { space: 2 }),
       })
     },
   }

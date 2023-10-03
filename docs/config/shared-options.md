@@ -33,11 +33,11 @@
 
 ## define
 
-- **Тип:** `Record<string, string>`
+- **Тип:** `Record<string, any>`
 
 Определить глобальные замены констант. Записи будут определены как глобальные во время разработки и статически заменены во время сборки.
 
-- Начиная с `2.0.0-beta.70`, строковые значения будут использоваться как необработанные выражения, поэтому при определении строковой константы ее необходимо явно заключать в кавычки (например, с `JSON.stringify`).
+- Строковые значения будут использоваться как необработанные выражения, поэтому при определении строковой константы **ее необходимо явно заключить в кавычки** (например, с помощью `JSON.stringify`).
 
 - Чтобы соответствовать [поведению esbuild](https://esbuild.github.io/api/#define), выражения должны быть либо объектом JSON (пустым, логическим, числом, строкой, массивом или объектом), либо одним идентификатор.
 
@@ -111,7 +111,7 @@ const obj = {
 Более расширенное пользовательское разрешение можно получить с помощью [плагинов](/guide/api-plugin).
 
 ::: warning Использование с SSR
-Если вы настроили псевдонимы для [внешних зависимостей SSR](/guide/ssr.md#ssr-externals), вы можете захотеть использовать псевдонимы для фактических пакетов `node_modules`. И [Yarn](https://classic.yarnpkg.com/en/docs/cli/add/#toc-yarn-add-alias), и [pnpm](https://pnpm.js.org/en/aliases) поддерживают псевдонимы через префикс `npm:`.
+Если вы настроили псевдонимы для [внешних зависимостей SSR](/guide/ssr.md#ssr-externals), вы можете захотеть создать псевдонимы для реальных пакетов `node_modules`. Оба [Yarn](https://classic.yarnpkg.com/en/docs/cli/add/#toc-yarn-add-alias) и [pnpm](https://pnpm.io/aliases/) поддерживают псевдонимы через префикс `npm:`.
 :::
 
 ## resolve.dedupe
@@ -171,7 +171,7 @@ Vite имеет список «разрешенных условий» и буд
 ## resolve.extensions
 
 - **Тип:** `string[]`
-- **По умолчанию:** `['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json']`
+- **По умолчанию:** `['.mjs', '.js', '.mts', '.ts', '.jsx', '.tsx', '.json']`
 
 Список расширений файлов, которые можно попробовать для импорта без расширений. Обратите внимание, что **НЕ** рекомендуется опускать расширения для пользовательских типов импорта (например, `.vue`), так как это может помешать IDE и поддержке типов.
 
@@ -210,6 +210,8 @@ Vite имеет список «разрешенных условий» и буд
 
 Настройте поведение модулей CSS. Параметры передаются [postcss-modules](https://github.com/css-modules/postcss-modules).
 
+This option doesn't have any effect when using [Lightning CSS](../guide/features.md#lightning-css). If enabled, [`css.lightningcss.cssModules`](https://lightningcss.dev/css-modules.html) should be used instead.
+
 ## css.postcss
 
 - **Тип:** `string | (postcss.ProcessOptions & { plugins?: postcss.AcceptedPlugin[] })`
@@ -226,7 +228,15 @@ Vite имеет список «разрешенных условий» и буд
 
 - **Тип:** `Record<string, object>`
 
-Укажите параметры для передачи в препроцессоры CSS. Расширения файлов используются в качестве ключей для опций. Пример:
+Укажите параметры для передачи препроцессорам CSS. Расширения файлов используются в качестве ключей для параметров. Поддерживаемые параметры для каждого препроцессора можно найти в соответствующей документации:
+
+- `sass`/`scss` - [Параметры](https://sass-lang.com/documentation/js-api/interfaces/LegacyStringOptions).
+- `less` - [Параметры](https://lesscss.org/usage/#less-options).
+- `styl`/`stylus` - Only [`define`](https://stylus-lang.com/docs/js.html#define-name-node), который можно передать как объект.
+
+Все параметры препроцессора также поддерживают параметр `additionalData`, который можно использовать для внедрения дополнительного кода для каждого содержимого стиля. Обратите внимание: если вы включаете реальные стили, а не только переменные, эти стили будут дублироваться в окончательном пакете.
+
+Example:
 
 ```js
 export default defineConfig({
@@ -235,8 +245,13 @@ export default defineConfig({
       scss: {
         additionalData: `$injectedColor: orange;`,
       },
+      less: {
+        math: 'parens-division',
+      },
       styl: {
-        additionalData: `$injectedColor ?= orange`,
+        define: {
+          $specialColor: new stylus.nodes.RGBA(51, 197, 255, 1),
+        },
       },
     },
   },
@@ -245,11 +260,51 @@ export default defineConfig({
 
 ## css.devSourcemap
 
-- **Экспериментальный**
+- **Экспериментальный** [Дать обратную связь](https://github.com/vitejs/vite/discussions/13845)
 - **Тип:** `boolean`
 - **По умолчанию:** `false`
 
 Включить ли исходные карты во время разработки.
+
+## css.transformer
+
+- **Экспериментальный** [Дать обратную связь](https://github.com/vitejs/vite/discussions/13835)
+- **Тип:** `'postcss' | 'lightningcss'`
+- **По умолчанию:** `'postcss'`
+
+Selects the engine used for CSS processing. Check out [Lightning CSS](../guide/features.md#lightning-css) for more information.
+
+## css.lightningcss
+
+- **Экспериментальный** [Дать обратную связь](https://github.com/vitejs/vite/discussions/13835)
+- **Тип:**
+
+```js
+import type {
+  CSSModulesConfig,
+  Drafts,
+  Features,
+  NonStandard,
+  PseudoClasses,
+  Targets,
+} from 'lightningcss'
+```
+
+```js
+{
+  targets?: Targets
+  include?: Features
+  exclude?: Features
+  drafts?: Drafts
+  nonStandard?: NonStandard
+  pseudoClasses?: PseudoClasses
+  unusedSymbols?: string[]
+  cssModules?: CSSModulesConfig,
+  // ...
+}
+```
+
+Configures Lightning CSS. Full transform options can be found in [the Lightning CSS repo](https://github.com/parcel-bundler/lightningcss/blob/master/node/index.d.ts).
 
 ## json.namedExports
 
@@ -325,6 +380,40 @@ export default defineConfig({
 
 Настройте уровень детализации вывода консоли. По умолчанию это `'info'`.
 
+## customLogger
+
+- **Тип:**
+  ```ts
+  interface Logger {
+    info(msg: string, options?: LogOptions): void
+    warn(msg: string, options?: LogOptions): void
+    warnOnce(msg: string, options?: LogOptions): void
+    error(msg: string, options?: LogErrorOptions): void
+    clearScreen(type: LogType): void
+    hasErrorLogged(error: Error | RollupError): boolean
+    hasWarned: boolean
+  }
+  ```
+
+Use a custom logger to log messages. You can use Vite's `createLogger` API to get the default logger and customize it to, for example, change the message or filter out certain warnings.
+
+```js
+import { createLogger, defineConfig } from 'vite'
+
+const logger = createLogger()
+const loggerWarn = logger.warn
+
+logger.warn = (msg, options) => {
+  // Ignore empty CSS files warning
+  if (msg.includes('vite:css') && msg.includes(' is empty')) return
+  loggerWarn(msg, options)
+}
+
+export default defineConfig({
+  customLogger: logger,
+})
+```
+
 ## clearScreen
 
 - **Тип:** `boolean`
@@ -349,7 +438,16 @@ export default defineConfig({
 Переменные Env, начинающиеся с `envPrefix`, будут доступны исходному коду вашего клиента через `import.meta.env`.
 
 :::warning ЗАМЕЧАНИЯ ПО БЕЗОПАСНОСТИ
-`envPrefix` не должен быть установлен как `''`, что приведет к раскрытию всех ваших переменных env и неожиданной утечке конфиденциальной информации. Vite выдаст ошибку при обнаружении `''`.
+`envPrefix` не должен быть установлен как `''`, это приведет к раскрытию всех ваших переменных env и приведет к неожиданной утечке конфиденциальной информации. Vite выдаст ошибку при обнаружении `''`.
+
+Если вы хотите предоставить переменную без префикса, вы можете использовать [define](#define) для ее предоставления:
+
+```js
+define: {
+  'import.meta.env.ENV_VARIABLE': JSON.stringify(process.env.ENV_VARIABLE)
+}
+```
+
 :::
 
 ## appType

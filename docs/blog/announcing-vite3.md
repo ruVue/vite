@@ -23,7 +23,9 @@ head:
 
 # Vite 3.0 вышел!
 
-В феврале прошлого года [Evan You](https://twitter.com/youyuxi) выпустил Vite 2. С тех пор его внедрение неуклонно росло, достигнув более 1 миллиона загрузок npm в неделю. После релиза быстро сформировалась обширная экосистема. Vite запускает новую гонку инноваций в веб-фреймворках. [Nuxt 3](https://v3.nuxtjs.org/) по умолчанию использует Vite. [SvelteKit](https://kit.svelte.dev/), [Astro](https://astro.build/), [Hydrogen](https://hydrogen.shopify.dev/) и [SolidStart](https://docs.solidjs.com/start) созданы с помощью Vite. [Laravel теперь решил использовать Vite по умолчанию](https://laravel.com/docs/9.x/vite). [Vite Ruby](https://vite-ruby.netlify.app/) показывает, как Vite может улучшить Rails DX. [Vitest](https://vitest.dev) делает успехи в качестве альтернативы Jest для Vite. Vite стоит за [Cypress](https://docs.cypress.io/guides/component-testing/writing-your-first-component-test) и [Playwright](https://playwright.dev/docs/test-components) новые функции тестирования компонентов, Storybook имеет [Vite в качестве официального сборщика](https://github.com/storybookjs/builder-vite). И [список можно продолжить](https://patak.dev/vite/ecosystem.html). Специалисты по поддержке большинства этих проектов участвовали в улучшении самого ядра Vite, тесно сотрудничая с [командой Vite](https://vitejs.ru/team) и другими контрибьюторами.
+_23 июля 2022 г._ - Ознакомьтесь с [объявлением о Vite 4.0](./announcing-vite4.md)
+
+В феврале прошлого года [Evan You](https://twitter.com/youyuxi) выпустил Vite 2. С тех пор его распространение постоянно росло, достигнув более 1 миллиона загрузок npm в неделю. После релиза быстро сформировалась обширная экосистема. Vite стимулирует новую гонку инноваций в веб-фреймворках. [Nuxt 3](https://v3.nuxtjs.org/) по умолчанию использует Vite. [SvelteKit](https://kit.svelte.dev/), [Astro](https://astro.build/), [Hydrogen](https://гидроген.shopify.dev/) и [SolidStart] (https://docs.solidjs.com/start) созданы с помощью Vite. [Laravel теперь решил использовать Vite по умолчанию](https://laravel.com/docs/9.x/vite). [Vite Ruby](https://vite-ruby.netlify.app/) показывает, как Vite может улучшить Rails DX. [Vitest](https://vitest.dev) добивается успехов в качестве альтернативы Jest, встроенной в Vite. Vite стоит за [Cypress](https://docs.cypress.io/guides/comComponent-testing/writing-your-first-comComponent-test) и [Драматургом](https://playwright.dev/docs/test- компоненты) новых функций тестирования компонентов, Storybook имеет [Vite в качестве официального сборщика] (https://github.com/storybookjs/builder-vite). И [список можно продолжить](https://patak.dev/vite/ecosystem.html). Разработчики большинства этих проектов участвовали в улучшении самого ядра Vite, тесно сотрудничая с [командой] Vite (https://vitejs.dev/team) и другими участниками.
 
 ![Обложка анонса Vite 3](/og-image-announcing-vite3.png)
 
@@ -32,7 +34,7 @@ head:
 Быстрые ссылки:
 
 - [Документация](/)
-- [Руководство по миграции](/guide/migration)
+- [Руководство по миграции](https://v3.vitejs.dev/guide/migration.html)
 - [Журнал изменений](https://github.com/vitejs/vite/blob/main/packages/vite/CHANGELOG.md#300-2022-07-13)
 
 Если вы новичок в Vite, мы рекомендуем прочитать [Руководство по использованию Vite](https://vitejs.ru/guide/why.html). Затем ознакомьтесь с [Начало работы](https://vitejs.ru/guide/) и [Руководством по функциям](https://vitejs.ru/guide/features), чтобы узнать, что Vite предоставляет из коробки. Как обычно, комментарии приветствуются на [GitHub](https://github.com/vitejs/vite). Более [600 сотрудников](https://github.com/vitejs/vite/graphs/contributors) уже помогли улучшить Vite. Следите за обновлениями в [Twitter](https://twitter.com/vite_js) или присоединяйтесь к обсуждениям с другими пользователями Vite на нашем [сервере чата Discord](http://chat.vitejs.dev/).
@@ -193,7 +195,7 @@ Vite 3 теперь правильно поддерживает относите
 
 ### Оптимизация Esbuild Deps во время сборки (экспериментально)
 
-Одно из основных различий между временем разработки и сборки заключается в том, как Vite обрабатывает зависимости. Во время сборки используется [`@rollup/plugin-commonjs`](https://github.com/rollup/plugins/tree/master/packages/commonjs), чтобы разрешить импорт только зависимостей CJS (например, React). При использовании сервера разработки вместо этого используется esbuild для предварительной сборки и оптимизации зависимостей, а встроенная схема взаимодействия применяется при преобразовании пользовательского кода, импортирующего CJS-отложения. Во время разработки Vite 3 мы внесли изменения, необходимые для того, чтобы разрешить использование [esbuild для оптимизации зависимостей во время сборки](/guide/migration.html#using-esbuild-deps-optimization-at-build-time). [`@rollup/plugin-commonjs`](https://github.com/rollup/plugins/tree/master/packages/commonjs) можно избежать, заставив время разработки и сборки работать одинаково.
+Одно из основных различий между временем разработки и сборки заключается в том, как Vite обрабатывает зависимости. Во время сборки [`@rollup/plugin-commonjs`](https://github.com/rollup/plugins/tree/master/packages/commonjs) используется для импорта зависимостей только CJS (например, React). При использовании сервера разработки вместо этого используется esbuild для предварительного объединения и оптимизации зависимостей, а встроенная схема взаимодействия применяется при преобразовании пользовательского кода, импортирующего данные CJS. Во время разработки Vite 3 мы внесли изменения, необходимые для того, чтобы разрешить использование [esbuild для оптимизации зависимостей во время сборки](https://v3.vitejs.dev/guide/migration.html#using-esbuild-deps-optimization-at-build-time). Тогда можно избежать использования [`@rollup/plugin-commonjs`](https://github.com/rollup/plugins/tree/master/packages/commonjs), благодаря чему время разработки и сборки будет работать одинаково.
 
 Учитывая, что Rollup v3 выйдет в ближайшие месяцы, и мы собираемся выпустить еще один основной Vite, мы решили сделать этот режим необязательным, чтобы уменьшить объем v3 и дать Vite и экосистеме больше времени для работы. проблемы с новым подходом к взаимодействию CJS во время сборки. Фреймворки могут переключаться на использование оптимизации esbuild deps во время сборки по умолчанию в своем собственном темпе до Vite 4.
 
@@ -211,7 +213,7 @@ Vite заботится о своих публикациях и установк
 | Vite 3.0.0  |    3.05MB    |    17.8MB    |
 | Reduction   |     -30%     |     -7%      |
 
-Частично это сокращение стало возможным благодаря тому, что некоторые зависимости, которые не нужны большинству пользователей, стали необязательными. Во-первых, [Terser](https://github.com/terser/terser) больше не устанавливается по умолчанию. Эта зависимость больше не нужна, так как мы уже сделали esbuild минификатором по умолчанию как для JS, так и для CSS в Vite 2. Если вы используете `build.minify: 'terser'`, вам нужно будет установить его (`npm add -D terser`). Мы также перенесли [node-forge](https://github.com/digitalbazaar/forge) из монорепозитория, реализовав поддержку автоматического создания https-сертификатов в виде нового плагина: [`@vitejs/plugin-basic-ssl`](/guide/migration.html#automatic-https-certificate-generation). Поскольку эта функция создает только ненадежные сертификаты, которые не добавляются в локальное хранилище, она не оправдывает добавленный размер.
+Частично это сокращение стало возможным благодаря тому, что некоторые зависимости, которые большинству пользователей не нужны, стали необязательными. Во-первых, [Terser](https://github.com/terser/terser) больше не устанавливается по умолчанию. Эта зависимость больше не нужна, так как мы уже сделали esbuild минификатором по умолчанию для JS и CSS в Vite 2. Если вы используете `build.minify: 'terser'`, вам нужно будет установить его (`npm add -D terser`). Мы также переместили [node-forge](https://github.com/digitalbazaar/forge) из монорепозитория, реализовав поддержку автоматической генерации https-сертификатов в виде нового плагина: [`@vitejs/plugin-basic-ssl`](https://v3.vitejs.dev/guide/migration.html#automatic-https-certificate-generation). Поскольку эта функция создает только ненадежные сертификаты, которые не добавляются в локальное хранилище, добавленный размер не оправдан.
 
 ## Исправление ошибок
 
@@ -228,7 +230,7 @@ Vite заботится о своих публикациях и установк
 - Базовая версия современного браузера теперь предназначена для браузеров, которые поддерживают функции [нативные модули ES](https://caniuse.com/es6-module), [нативный динамический импорт ESM](https://caniuse.com/es6-module-dynamic-import) и [`import.meta`](https://caniuse.com/mdn-javascript_operators_import_meta).
 - Расширения файлов JS в режиме SSR и библиотеки теперь используют допустимое расширение (`js`, `mjs` или `cjs`) для выходных записей и фрагментов JS в зависимости от их формата и типа пакета.
 
-Узнайте больше в [Руководстве по миграции](/guide/migration).
+Узнайте больше в [Руководстве по миграции](https://v3.vitejs.ru/guide/migration.html).
 
 ## Обновления до Vite Core
 

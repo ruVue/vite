@@ -34,6 +34,13 @@ export default defineConfig({
 
 :::
 
+::: tip Accessing the server on WSL2 from your LAN
+
+When running Vite on WSL2, it is not sufficient to set `host: true` to access the server from your LAN.
+See [the WSL document](https://learn.microsoft.com/en-us/windows/wsl/networking#accessing-a-wsl-2-distribution-from-your-local-area-network-lan) for more details.
+
+:::
+
 ## server.port
 
 - **Тип:** `number`
@@ -61,7 +68,9 @@ export default defineConfig({
 
 - **Тип:** `boolean | string`
 
-Автоматически открывать приложение в браузере при запуске сервера. Когда значение представляет собой строку, оно будет использоваться в качестве имени пути URL-адреса. Если вы хотите открыть сервер в определенном браузере, который вам нравится, вы можете установить env `process.env.BROWSER` (например, `firefox`). Подробнее смотрите [пакет `open`](https://github.com/sindresorhus/open#app).
+Автоматически открывать приложение в браузере при запуске сервера. Если значение представляет собой строку, оно будет использоваться в качестве пути URL-адреса. Если вы хотите открыть сервер в конкретном браузере, который вам нравится, вы можете установить env `process.env.BROWSER` (например, `firefox`). Вы также можете установить `process.env.BROWSER_ARGS` для передачи дополнительных аргументов (например, `--incognito`).
+
+`BROWSER` и `BROWSER_ARGS` также являются специальными переменными среды, которые вы можете установить в файле `.env` для его настройки. Дополнительную информацию смотрите в [пакете `open`](https://github.com/sindresorhus/open#app).
 
 **Пример:**
 
@@ -81,7 +90,7 @@ export default defineConfig({
 
 Обратите внимание, что если вы используете не относительную [`base`](/config/shared-options.md#base), вы должны добавлять префикс на каждый ключ это `base`.
 
-Использует [`http-proxy`](https://github.com/http-party/node-http-proxy). Полные параметры [здесь](https://github.com/http-party/node-http-proxy#options).
+Расширяет [`http-proxy`](https://github.com/http-party/node-http-proxy#options). Дополнительные параметры находятся [здесь](https://github.com/vitejs/vite/blob/main/packages/vite/src/node/server/middlewares/proxy.ts#L13).
 
 В некоторых случаях вы также можете настроить базовый сервер разработки (например, чтобы добавить настраиваемый мидлвар во внутреннее приложение [connect](https://github.com/senchalabs/connect)). Для этого вам нужно написать свой собственный [плагин](/guide/using-plugins.html) и использовать функцию [configureServer](/guide/api-plugin.html#configureserver).
 
@@ -127,7 +136,7 @@ export default defineConfig({
 
 - **Тип:** `boolean | CorsOptions`
 
-Настройте CORS для сервера разработки. Это включено по умолчанию и позволяет любое происхождение. Передайте [объект опций](https://github.com/expressjs/cors), чтобы точно настроить поведение, или `false`, чтобы отключить.
+Настройте CORS для сервера разработки. Это включено по умолчанию и допускает любой источник. Передайте [объект параметров](https://github.com/expressjs/cors#configuration-options), чтобы точно настроить поведение, или `false`, чтобы отключить.
 
 ## server.headers
 
@@ -238,12 +247,6 @@ async function createServer() {
 createServer()
 ```
 
-## server.base
-
-- **Тип:** `string | undefined`
-
-Добавляйте эту папку в HTTP-запросы для использования при проксировании vite в качестве подпапки. Должен начинаться с символа `/`.
-
 ## server.fs.strict
 
 - **Тип:** `boolean`
@@ -257,7 +260,9 @@ createServer()
 
 Ограничить файлы, которые можно обслуживать через `/@fs/`. Когда для `server.fs.strict` установлено значение `true`, доступ к файлам за пределами этого списка каталогов, которые не импортированы из разрешенного файла, приведет к ошибке 403.
 
-Vite будет искать корень потенциального рабочего пространства и использовать его по умолчанию. Действительная рабочая область соответствует следующим условиям, в противном случае будет использоваться [корень проекта](/guide/#index-html-and-project-root).
+Могут быть предоставлены как каталоги, так и файлы.
+
+Vite выполнит поиск корня потенциального рабочего пространства и будет использовать его по умолчанию. Действительная рабочая область соответствует следующим условиям, в противном случае произойдет возврат к [project root](/guide/#index-html-and-project-root).
 
 - содержит поле `workspaces` в `package.json`
 - содержит один из следующих файлов
@@ -289,7 +294,8 @@ export default defineConfig({
         // search up for workspace root
         searchForWorkspaceRoot(process.cwd()),
         // your custom rules
-        '/path/to/custom/allow',
+        '/path/to/custom/allow_directory',
+        '/path/to/custom/allow_file.demo',
       ],
     },
   },
@@ -299,7 +305,7 @@ export default defineConfig({
 ## server.fs.deny
 
 - **Тип:** `string[]`
-- **По умолчанию:** `['.env', '.env.*', '*.{pem,crt}']`.
+- **По умолчанию:** `['.env', '.env.*', '*.{crt,pem}']`
 
 Черный список для конфиденциальных файлов, обслуживание которых ограничено сервером Vite dev. Это будет иметь более высокий приоритет, чем [`server.fs.allow`](#server-fs-allow). Поддерживаются [шаблоны picomatch](https://github.com/micromatch/picomatch#globbing-features).
 
@@ -316,3 +322,30 @@ export default defineConfig({
   },
 })
 ```
+
+## server.sourcemapIgnoreList
+
+- **Тип:** `false | (sourcePath: string, sourcemapPath: string) => boolean`
+- **По умолчанию:** `(sourcePath) => sourcePath.includes('node_modules')`
+
+Следует ли игнорировать исходные файлы в исходной карте сервера, используемой для заполнения [расширения исходной карты `x_google_ignoreList`](https://developer.chrome.com/articles/x-google-ignore-list/).
+
+`server.sourcemapIgnoreList` является эквивалентом [`build.rollupOptions.output.sourcemapIgnoreList`](https://rollupjs.org/configuration-options/#output-sourcemapignorelist) для сервера разработки. Разница между двумя параметрами конфигурации заключается в том, что функция свертки вызывается с относительным путем для `sourcePath`, а функция `server.sourcemapIgnoreList` вызывается с абсолютным путем. Во время разработки большинство модулей хранят карту и исходный код в одной папке, поэтому относительный путь для `sourcePath` — это само имя файла. В этих случаях вместо этого удобно использовать абсолютные пути.
+
+По умолчанию он исключает все пути, содержащие `node_modules`. Вы можете передать `false`, чтобы отключить это поведение, или, для полного контроля, функцию, которая принимает исходный путь и путь к исходной карте и возвращает, следует ли игнорировать исходный путь.
+
+```js
+export default defineConfig({
+  server: {
+    // This is the default value, and will add all files with node_modules
+    // in their paths to the ignore list.
+    sourcemapIgnoreList(sourcePath, sourcemapPath) {
+      return sourcePath.includes('node_modules')
+    }
+  }
+};
+```
+
+::: tip Примечание
+[`server.sourcemapIgnoreList`](#server-sourcemapignorelist) и [`build.rollupOptions.output.sourcemapIgnoreList`](https://rollupjs.org/configuration-options/#output-sourcemapignorelist) необходимо устанавливать независимо. `server.sourcemapIgnoreList` — это конфигурация, предназначенная только для сервера, и она не получает значение по умолчанию из определенных параметров объединения.
+:::

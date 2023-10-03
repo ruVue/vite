@@ -1,9 +1,7 @@
-const { resolve } = require('node:path')
+import { resolve } from 'node:path'
+import { defineConfig } from 'vite'
 
-/**
- * @type {import('vite').UserConfig}
- */
-module.exports = {
+export default defineConfig({
   base: './',
   build: {
     rollupOptions: {
@@ -28,8 +26,20 @@ module.exports = {
         ),
         linkProps: resolve(__dirname, 'link-props/index.html'),
         valid: resolve(__dirname, 'valid.html'),
+        importmapOrder: resolve(__dirname, 'importmapOrder.html'),
+        env: resolve(__dirname, 'env.html'),
+        sideEffects: resolve(__dirname, 'side-effects/index.html'),
+        'a á': resolve(__dirname, 'a á.html'),
       },
     },
+  },
+
+  define: {
+    'import.meta.env.VITE_NUMBER': 5173,
+    'import.meta.env.VITE_STRING': JSON.stringify('string'),
+    'import.meta.env.VITE_OBJECT_STRING': '{ "foo": "bar" }',
+    'import.meta.env.VITE_TEMPLATE_LITERAL': '`template literal`',
+    'import.meta.env.VITE_NULL_STRING': 'null',
   },
 
   plugins: [
@@ -41,6 +51,10 @@ module.exports = {
           if (html.includes('/@vite/client')) {
             throw new Error('pre transform applied at wrong time!')
           }
+
+          const doctypeRE = /<!doctype html>/i
+          if (doctypeRE.test(html)) return
+
           const head = `
   <head lang="en">
     <meta charset="UTF-8">
@@ -164,7 +178,9 @@ ${
     },
     {
       name: 'head-prepend-importmap',
-      transformIndexHtml() {
+      transformIndexHtml(_, ctx) {
+        if (ctx.path.includes('importmapOrder')) return
+
         return [
           {
             tag: 'script',
@@ -182,4 +198,4 @@ ${
       },
     },
   ],
-}
+})

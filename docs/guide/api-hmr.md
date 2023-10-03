@@ -51,6 +51,14 @@ if (import.meta.hot) {
 }
 ```
 
+## IntelliSense for TypeScript
+
+Vite provides type definitions for `import.meta.hot` in [`vite/client.d.ts`](https://github.com/vitejs/vite/blob/main/packages/vite/client.d.ts). You can create an `env.d.ts` in the `src` directory so TypeScript picks up the type definitions:
+
+```ts
+/// <reference types="vite/client" />
+```
+
 ## `hot.accept(cb)`
 
 Чтобы модуль принимался самостоятельно, используйте `import.meta.hot.accept` с обратным вызовом, который получает обновленный модуль:
@@ -70,9 +78,9 @@ if (import.meta.hot) {
 
 Модуль, который «принимает» горячие обновления, считается **границей HMR**.
 
-Обратите внимание, что HMR Vite на самом деле не меняет исходно импортированный модуль: если граничный модуль HMR реэкспортирует импорт из dep, то он отвечает за обновление этих реэкспортов (и эти экспорты должны использовать `let`). Кроме того, импортеры вверх по цепочке от пограничного модуля не будут уведомлены об изменении.
+HMR Vite фактически не заменяет первоначально импортированный модуль: если граничный модуль HMR реэкспортирует импорт из хранилища, то он отвечает за обновление этого реэкспорта (и этот экспорт должен использовать `let`). Кроме того, импортеры, находящиеся выше по цепочке от пограничного модуля, не будут уведомлены об изменении. Этой упрощенной реализации HMR достаточно для большинства случаев использования разработчиками, позволяя нам пропустить дорогостоящую работу по созданию прокси-модулей.
 
-Эта упрощенная реализация HMR достаточна для большинства случаев использования разработчиками, позволяя нам пропустить дорогостоящую работу по созданию прокси-модулей.
+Vite требует, чтобы вызов этой функции отображался как `import.meta.hot.accept(` (с учетом пробелов) в исходном коде, чтобы модуль мог принять обновление. Это требование статического анализа, который Vite выполняет для включить поддержку HMR для модуля.
 
 ## `hot.accept(deps, cb)`
 
@@ -93,8 +101,9 @@ if (import.meta.hot) {
   import.meta.hot.accept(
     ['./foo.js', './bar.js'],
     ([newFooModule, newBarModule]) => {
-      // The callback receives an array where only the updated module is non null
-      // If the update was not succeful (syntax error for ex.), the array is empty
+      // The callback receives an array where only the updated module is
+      // non null. If the update was not successful (syntax error for ex.),
+      // the array is empty
     },
   )
 }
@@ -161,12 +170,14 @@ import.meta.hot.accept((module) => {
 
 Следующие события HMR автоматически отправляются Vite:
 
-- `'vite:beforeUpdate', когда должно быть применено обновление (например, модуль будет заменен)
-- `'vite:afterUpdate'`, когда только что было применено обновление (например, модуль был заменен)
+- `'vite:beforeUpdate'`, когда должно быть применено обновление (например, модуль будет заменен)
+- `'vite:afterUpdate'`, когда обновление только что было применено (например, был заменен модуль)
 - `'vite:beforeFullReload'`, когда должна произойти полная перезагрузка
-- `'vite:beforePrune'`, когда модули, которые больше не нужны, собираются удалить
+- `'vite:beforePrune'`, когда модули, которые больше не нужны, собираются быть удалены
 - `'vite:invalidate'`, когда модуль становится недействительным с помощью `import.meta.hot.invalidate()`
 - `'vite:error'` при возникновении ошибки (например, синтаксической ошибки)
+- `'vite:ws:disconnect'`, когда соединение WebSocket потеряно
+- `'vite:ws:connect'`, когда соединение WebSocket (повторно) установлено
 
 Пользовательские события HMR также можно отправлять из плагинов. Дополнительные сведения смотрите в разделе [handleHotUpdate](./api-plugin#handlehotupdate).
 

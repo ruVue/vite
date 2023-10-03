@@ -62,45 +62,63 @@ $ npm run preview
 
    Если вы выполняете развертывание на `https://<USERNAME>.github.io/<REPO>/`, например, ваш репозиторий находится в `https://github.com/<USERNAME>/<REPO>`, установите `base` в `'/<REPO>/'`.
 
-2. Внутри вашего проекта создайте `deploy.sh` со следующим содержимым (с выделенными строками, раскомментированными соответствующим образом) и запустите его для развертывания:
+2. Перейдите к конфигурации своих страниц GitHub на странице настроек репозитория и выберите источник развертывания как "GitHub Actions", это позволит вам создать рабочий процесс, который собирает и развертывает ваш проект, пример рабочего процесса, который устанавливает зависимости и выполняет сборку с использованием npm. предоставлен:
 
-   ```bash{13,21,24}
-   #!/usr/bin/env sh
+   ```yml
+   # Simple workflow for deploying static content to GitHub Pages
+   name: Deploy static content to Pages
 
-   # abort on errors
-   set -e
+   on:
+     # Runs on pushes targeting the default branch
+     push:
+       branches: ['main']
 
-   # build
-   npm run build
+     # Allows you to run this workflow manually from the Actions tab
+     workflow_dispatch:
 
-   # navigate into the build output directory
-   cd dist
+   # Sets the GITHUB_TOKEN permissions to allow deployment to GitHub Pages
+   permissions:
+     contents: read
+     pages: write
+     id-token: write
 
-   # place .nojekyll to bypass Jekyll processing
-   echo > .nojekyll
+   # Allow one concurrent deployment
+   concurrency:
+     group: 'pages'
+     cancel-in-progress: true
 
-   # if you are deploying to a custom domain
-   # echo 'www.example.com' > CNAME
-
-   git init
-   git checkout -И main
-   git add -A
-   git commit -m 'deploy'
-
-   # if you are deploying to https://<USERNAME>.github.io
-   # git push -f git@github.com:<USERNAME>/<USERNAME>.github.io.git main
-
-   # if you are deploying to https://<USERNAME>.github.io/<REPO>
-   # git push -f git@github.com:<USERNAME>/<REPO>.git main:gh-pages
-
-   cd -
+   jobs:
+     # Single deploy job since we're just deploying
+     deploy:
+       environment:
+         name: github-pages
+         url: ${{ steps.deployment.outputs.page_url }}
+       runs-on: ubuntu-latest
+       steps:
+         - name: Checkout
+           uses: actions/checkout@v3
+         - name: Set up Node
+           uses: actions/setup-node@v3
+           with:
+             node-version: 18
+             cache: 'npm'
+         - name: Install dependencies
+           run: npm install
+         - name: Build
+           run: npm run build
+         - name: Setup Pages
+           uses: actions/configure-pages@v3
+         - name: Upload artifact
+           uses: actions/upload-pages-artifact@v1
+           with:
+             # Upload dist repository
+             path: './dist'
+         - name: Deploy to GitHub Pages
+           id: deployment
+           uses: actions/deploy-pages@v1
    ```
 
-::: tip
-Вы также можете запустить приведенный выше сценарий в настройках CI, чтобы включить автоматическое развертывание при каждом нажатии.
-:::
-
-## GitLab Pages и GitLab CI
+## GitLab Pages and GitLab CI
 
 1. Установите правильный `base` в `vite.config.js`.
 
@@ -315,3 +333,11 @@ $ npx wrangler pages publish dist
 По умолчанию любая новая фиксация, отправленная в указанную ветку, автоматически запускает новое развертывание. [Авторазвертывание](https://render.com/docs/deploys#toggling-auto-deploy-for-a-service) можно настроить в настройках проекта.
 
 Вы также можете добавить в свой проект [пользовательский домен](https://render.com/docs/custom-domains).
+
+## Flightcontrol
+
+Разверните свой статический сайт с помощью [Flightcontrol](https://www.flightcontrol.dev/?ref=docs-vite), следуя этим [инструкциям](https://www.flightcontrol.dev/docs/reference/examples/vite?ref=docs-vite)
+
+## AWS Amplify Hosting
+
+Разверните свой статический сайт с помощью [AWS Amplify Hosting](https://aws.amazon.com/amplify/hosting/), следуя этим [инструкциям](https://docs.amplify.aws/guides/hosting/vite/q/platform/js/)

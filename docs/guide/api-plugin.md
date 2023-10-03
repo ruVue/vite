@@ -2,7 +2,7 @@
 
 Плагины Vite расширяют хорошо разработанный интерфейс плагинов Rollup несколькими дополнительными опциями, специфичными для Vite. В результате вы можете написать плагин Vite один раз, и он будет работать как для разработки, так и для сборки.
 
-**Рекомендуется сначала ознакомиться с [документацией по подключаемым модулям Rollup](https://rollupjs.org/guide/en/#plugin-development), прежде чем читать следующие разделы.**
+**Рекомендуется сначала просмотреть [документацию плагина Rollup](https://rollupjs.org/plugin-development/), прежде чем читать разделы ниже.**
 
 ## Создание плагина
 
@@ -17,7 +17,7 @@ Vite стремится предлагать установленные шабл
 
 ## Соглашения
 
-Если плагин не использует специальные хуки Vite и может быть реализован как [Совместимый подключаемый модуль Rollup](#rollup-plugin-compatibility), рекомендуется использовать [соглашения об именах подключаемых модулей Rollup](https://rollupjs.org/guide/en/#conventions).
+Если плагин не использует специальные перехватчики Vite и может быть реализован как [Совместимый плагин Rollup](#rollup-plugin-compatibility), то рекомендуется использовать [Соглашение об именах плагина Rollup](https://rollupjs.org/plugin-development/#conventions).
 
 - Rollup плагины должны иметь четкое имя с префиксом `rollup-plugin-`.
 - Включите ключевые слова `rollup-plugin` и `vite-plugin` в package.json.
@@ -146,27 +146,31 @@ console.log(msg)
 
 ## Универсальные крючки
 
-Во время разработки сервер разработки Vite создает контейнер плагинов, который вызывает [перехватчики сборки Rollup](https://rollupjs.org/guide/en/#build-hooks) так же, как это делает Rollup.
+Во время разработки сервер разработки Vite создает контейнер плагинов, который вызывает [Rollup Build Hooks](https://rollupjs.org/plugin-development/#build-hooks) так же, как это делает Rollup.
 
 Следующие хуки вызываются один раз при запуске сервера:
 
-- [`options`](https://rollupjs.org/guide/en/#options)
-- [`buildStart`](https://rollupjs.org/guide/en/#buildstart)
+- [`options`](https://rollupjs.org/plugin-development/#options)
+- [`buildStart`](https://rollupjs.org/plugin-development/#buildstart)
 
 Следующие хуки вызываются при каждом входящем запросе модуля:
 
-- [`resolveId`](https://rollupjs.org/guide/en/#resolveid)
-- [`load`](https://rollupjs.org/guide/en/#load)
-- [`transform`](https://rollupjs.org/guide/en/#transform)
+- [`resolveId`](https://rollupjs.org/plugin-development/#resolveid)
+- [`load`](https://rollupjs.org/plugin-development/#load)
+- [`transform`](https://rollupjs.org/plugin-development/#transform)
+
+These hooks also have an extended `options` parameter with additional Vite-specific properties. You can read more in the [SSR documentation](/guide/ssr#ssr-specific-plugin-logic).
+
+Some `resolveId` calls' `importer` value may be an absolute path for a generic `index.html` at root as it's not always possible to derive the actual importer due to Vite's unbundled dev server pattern. For imports handled within Vite's resolve pipeline, the importer can be tracked during the import analysis phase, providing the correct `importer` value.
 
 При закрытии сервера вызываются следующие хуки:
 
-- [`buildEnd`](https://rollupjs.org/guide/en/#buildend)
-- [`closeBundle`](https://rollupjs.org/guide/en/#closebundle)
+- [`buildEnd`](https://rollupjs.org/plugin-development/#buildend)
+- [`closeBundle`](https://rollupjs.org/plugin-development/#closebundle)
 
-Обратите внимание, что хук [`moduleParsed`](https://rollupjs.org/guide/en/#moduleparsed) **не** вызывается во время разработки, потому что Vite избегает полного разбора AST для повышения производительности.
+Обратите внимание, что хук [`moduleParsed`](https://rollupjs.org/plugin-development/#moduleparsed) **не** вызывается во время разработки, поскольку Vite избегает полного анализа AST для повышения производительности.
 
-[Перехватчики генерации вывода](https://rollupjs.org/guide/en/#output-generation-hooks) (кроме `closeBundle`) **не** вызываются во время разработки. Вы можете думать о сервере разработки Vite только как о вызове `rollup.rollup()` без вызова `bundle.generate()`.
+[Перехватчики генерации вывода](https://rollupjs.org/plugin-development/#output-generation-hooks) (кроме `closeBundle`) **не** вызываются во время разработки. Вы можете думать о сервере разработки Vite как о вызове `rollup.rollup()` без вызова `bundle.generate()`.
 
 ## Специальные крючки Vite
 
@@ -307,32 +311,11 @@ console.log(msg)
 
 ### `configurePreviewServer`
 
-- **Тип:** `(server: { middlewares: Connect.Server, httpServer: http.Server }) => (() => void) | void | Promise<(() => void) | void>`
+- **Тип:** `(server: PreviewServerForHook) => (() => void) | void | Promise<(() => void) | void>`
 - **Вид:** `async`, `sequential`
+- **Смотрите также:** [PreviewServerForHook](./api-javascript#previewserverforhook)
 
-  То же, что [`configureServer`](/guide/api-plugin.html#configureserver), но для сервера предварительного просмотра. Он предоставляет сервер [connect](https://github.com/senchalabs/connect) и лежащий в его основе [http server](https://nodejs.org/api/http.html). Подобно `configureServer`, хук `configurePreviewServer` вызывается перед установкой других мидлваров. Если вы хотите внедрить мидлвар **после** других мидлваров, вы можете вернуть функцию из `configurePreviewServer`, которая будет вызываться после установки внутренних мидлваров:
-
-  ```js
-  const myPlugin = () => ({
-    name: 'configure-preview-server',
-    configurePreviewServer(server) {
-      // return a post hook that is called after other middlewares are
-      // installed
-      return () => {
-        server.middlewares.use((req, res, next) => {
-          // custom handle request...
-        })
-      }
-    },
-  })
-  ```
-
-### `configurePreviewServer`
-
-- **Тип:** `(server: { middlewares: Connect.Server, httpServer: http.Server }) => (() => void) | void | Promise<(() => void) | void>`
-- **Вид:** `async`, `sequential`
-
-  То же, что [`configureServer`](/guide/api-plugin.html#configureserver), но для сервера предварительного просмотра. Он предоставляет сервер [connect](https://github.com/senchalabs/connect) и лежащий в его основе [http server](https://nodejs.org/api/http.html). Подобно `configureServer`, хук `configurePreviewServer` вызывается перед установкой других промежуточных программ. Если вы хотите внедрить промежуточное программное обеспечение **после** других промежуточных программ, вы можете вернуть функцию из `configurePreviewServer`, которая будет вызываться после установки внутренних промежуточных программ:
+  То же, что и [`configureServer`](/guide/api-plugin.html#configureserver), но для сервера предварительного просмотра. Как и в случае с `configureServer`, ловушка `configurePreviewServer` вызывается перед установкой других промежуточных программ. Если вы хотите внедрить промежуточное программное обеспечение **после** других промежуточных программ, вы можете вернуть функцию из `configurePreviewServer`, которая будет вызываться после установки внутреннего мидлвара:
 
   ```js
   const myPlugin = () => ({
@@ -361,6 +344,8 @@ console.log(msg)
   - Преобразованная строка HTML
   - Массив объектов дескриптора тега (`{ tag, attrs, children }`) для внедрения в существующий HTML. Каждый тег также может указывать, куда он должен быть введен (по умолчанию добавляется перед `<head>`)
   - Объект, содержащий как `{ html, tags }`
+
+  По умолчанию `order` имеет значение `undefined`, при этом этот крючок применяется после преобразования HTML. Чтобы внедрить скрипт, который должен пройти через конвейер плагинов Vite, `order: 'pre'` применит перехват перед обработкой HTML. `order: 'post'` применяет хук после того, как будут применены все хуки с `order` неопределенным.
 
   **Простой Пример:**
 
@@ -501,8 +486,8 @@ apply(config, { command }) {
 
 В общем, если плагин Rollup соответствует следующим критериям, он должен работать просто как плагин Vite:
 
-- Он не использует хук [`moduleParsed`](https://rollupjs.org/guide/en/#moduleparsed).
-- Он не имеет сильной связи между хуками фазы пакета и хуками фазы вывода.
+- Он не использует хук [`moduleParsed`](https://rollupjs.org/plugin-development/#moduleparsed) hook.
+- Он не имеет сильной связи между перехватчиками фазы пакета и перехватчиками фазы вывода.
 
 Если подключаемый модуль Rollup имеет смысл только для этапа сборки, то вместо этого его можно указать в разделе `build.rollupOptions.plugins`. Он будет работать так же, как плагин Vite с `enforce: 'post'` и `apply: 'build'`.
 
@@ -558,7 +543,10 @@ export default defineConfig({
     {
       // ...
       configureServer(server) {
-        server.ws.send('my:greetings', { msg: 'hello' })
+        // Example: wait for a client to connect before sending a message
+        server.ws.on('connection', () => {
+          server.ws.send('my:greetings', { msg: 'hello' })
+        })
       },
     },
   ],
