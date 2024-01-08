@@ -1,126 +1,126 @@
-# Command Line Interface
+# Интерфейс командной строки
 
-## Dev server
+## Сервер разработки
 
 ### `vite`
 
-Start Vite dev server in the current directory.
+Запустите сервер разработки Vite в текущем каталоге.
 
-#### Usage
+#### Использование
 
 ```bash
 vite [root]
 ```
 
-#### Options
+#### Опции
 
-| Options                  |                                                                                                                    |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------ |
-| `--host [host]`          | Specify hostname (`string`)                                                                                        |
-| `--port <port>`          | Specify port (`number`)                                                                                            |
-| `--open [path]`          | Open browser on startup (`boolean \| string`)                                                                      |
-| `--cors`                 | Enable CORS (`boolean`)                                                                                            |
-| `--strictPort`           | Exit if specified port is already in use (`boolean`)                                                               |
-| `--force`                | Force the optimizer to ignore the cache and re-bundle (`boolean`)                                                  |
-| `-c, --config <file>`    | Use specified config file (`string`)                                                                               |
-| `--base <path>`          | Public base path (default: `/`) (`string`)                                                                         |
-| `-l, --logLevel <level>` | info \| warn \| error \| silent (`string`)                                                                         |
-| `--clearScreen`          | Allow/disable clear screen when logging (`boolean`)                                                                |
-| `--profile`              | Start built-in Node.js inspector (check [Performance bottlenecks](/guide/troubleshooting#performance-bottlenecks)) |
-| `-d, --debug [feat]`     | Show debug logs (`string \| boolean`)                                                                              |
-| `-f, --filter <filter>`  | Filter debug logs (`string`)                                                                                       |
-| `-m, --mode <mode>`      | Set env mode (`string`)                                                                                            |
-| `-h, --help`             | Display available CLI options                                                                                      |
-| `-v, --version`          | Display version number                                                                                             |
+| Опции                    |                                                                                                                                     |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `--host [host]`          | Укажите имя хоста (`string`)                                                                                                        |
+| `--port <port>`          | Укажите порт (`number`)                                                                                                             |
+| `--open [path]`          | Открыть браузер при запуске (`boolean \| string`)                                                                                   |
+| `--cors`                 | Включить CORS (`boolean`)                                                                                                           |
+| `--strictPort`           | Выйти, если указанный порт уже используется (`boolean`)                                                                             |
+| `--force`                | Заставить оптимизатор игнорировать кеш и выполнить повторную сборку (`boolean`)                                                     |
+| `-c, --config <file>`    | Использовать указанный файл конфигурации (`string`)                                                                                 |
+| `--base <path>`          | Публичный базовый путь (по умолчанию: `/`) (`string`)                                                                               |
+| `-l, --logLevel <level>` | info \| warn \| error \| silent (`string`)                                                                                          |
+| `--clearScreen`          | Разрешить/отключить очистку экрана при входе в систему (`boolean`)                                                                  |
+| `--profile`              | Запустите встроенный инспектор Node.js (проверьте [Узкие места производительности](/guide/troubleshooting#performance-bottlenecks)) |
+| `-d, --debug [feat]`     | Показать журналы отладки (`string \| boolean`)                                                                                      |
+| `-f, --filter <filter>`  | Фильтрация журналов отладки (`string`)                                                                                              |
+| `-m, --mode <mode>`      | Установить режим окружения (`string`)                                                                                               |
+| `-h, --help`             | тобразить доступные параметры CLI                                                                                                   |
+| `-v, --version`          | Отображение номера версии                                                                                                           |
 
-## Build
+## Сборка
 
 ### `vite build`
 
-Build for production.
+Сборка для продакшена.
 
-#### Usage
+#### Использование
 
 ```bash
 vite build [root]
 ```
 
-#### Options
+#### Опции
 
-| Options                        |                                                                                                                     |
-| ------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
-| `--target <target>`            | Transpile target (default: `"modules"`) (`string`)                                                                  |
-| `--outDir <dir>`               | Output directory (default: `dist`) (`string`)                                                                       |
-| `--assetsDir <dir>`            | Directory under outDir to place assets in (default: `"assets"`) (`string`)                                          |
-| `--assetsInlineLimit <number>` | Static asset base64 inline threshold in bytes (default: `4096`) (`number`)                                          |
-| `--ssr [entry]`                | Build specified entry for server-side rendering (`string`)                                                          |
-| `--sourcemap [output]`         | Output source maps for build (default: `false`) (`boolean \| "inline" \| "hidden"`)                                 |
-| `--minify [minifier]`          | Enable/disable minification, or specify minifier to use (default: `"esbuild"`) (`boolean \| "terser" \| "esbuild"`) |
-| `--manifest [name]`            | Emit build manifest json (`boolean \| string`)                                                                      |
-| `--ssrManifest [name]`         | Emit ssr manifest json (`boolean \| string`)                                                                        |
-| `--force`                      | Force the optimizer to ignore the cache and re-bundle (experimental)(`boolean`)                                     |
-| `--emptyOutDir`                | Force empty outDir when it's outside of root (`boolean`)                                                            |
-| `-w, --watch`                  | Rebuilds when modules have changed on disk (`boolean`)                                                              |
-| `-c, --config <file>`          | Use specified config file (`string`)                                                                                |
-| `--base <path>`                | Public base path (default: `/`) (`string`)                                                                          |
-| `-l, --logLevel <level>`       | Info \| warn \| error \| silent (`string`)                                                                          |
-| `--clearScreen`                | Allow/disable clear screen when logging (`boolean`)                                                                 |
-| `--profile`                    | Start built-in Node.js inspector (check [Performance bottlenecks](/guide/troubleshooting#performance-bottlenecks))  |
-| `-d, --debug [feat]`           | Show debug logs (`string \| boolean`)                                                                               |
-| `-f, --filter <filter>`        | Filter debug logs (`string`)                                                                                        |
-| `-m, --mode <mode>`            | Set env mode (`string`)                                                                                             |
-| `-h, --help`                   | Display available CLI options                                                                                       |
+| Опции                          |                                                                                                                                      |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `--target <target>`            | Цель транспиляции (по умолчанию: `"modules"`) (`string`)                                                                             |
+| `--outDir <dir>`               | Выходной каталог (по умолчанию: `dist`) (`string`)                                                                                   |
+| `--assetsDir <dir>`            | Каталог в outDir для размещения ресурсов (по умолчанию: `"assets"`) (`string`)                                                       |
+| `--assetsInlineLimit <number>` | Статический встроенный порог актива base64 в байтах (по умолчанию: `4096`) (`number`)                                                |
+| `--ssr [entry]`                | Создайте указанную запись для рендеринга на стороне сервера (`string`)                                                               |
+| `--sourcemap [output]`         | Выходные исходные карты для сборки (по умолчанию: `false`) (`boolean \| "inline" \| "hidden"`)                                       |
+| `--minify [minifier]`          | Включить/отключить минификацию или указать используемый минификатор (по умолчанию: `"esbuild"`) (`boolean \| "terser" \| "esbuild"`) |
+| `--manifest [name]`            | Выдать манифест сборки в формате JSON (`boolean \| string`)                                                                          |
+| `--ssrManifest [name]`         | Создать манифест SSR в формате JSON (`boolean \| string`)                                                                            |
+| `--force`                      | Заставить оптимизатор игнорировать кеш и выполнить повторную сборку (экспериментально)(`boolean`)                                    |
+| `--emptyOutDir`                | Принудительно очистить outDir, если он находится за пределами корня (`boolean`)                                                      |
+| `-w, --watch`                  | Перестраивается при изменении модулей на диске (`boolean`)                                                                           |
+| `-c, --config <file>`          | Использовать указанный файл конфигурации (`string`)                                                                                  |
+| `--base <path>`                | Публичный базовый путь (по умолчанию: `/`) (`string`)                                                                                |
+| `-l, --logLevel <level>`       | Info \| warn \| error \| silent (`string`)                                                                                           |
+| `--clearScreen`                | Разрешить/отключить очистку экрана при входе в систему (`boolean`)                                                                   |
+| `--profile`                    | Запустите встроенный инспектор Node.js (проверьте [Узкие места производительности](/guide/troubleshooting#performance-bottlenecks))  |
+| `-d, --debug [feat]`           | Показать журналы отладки (`string \| boolean`)                                                                                       |
+| `-f, --filter <filter>`        | Фильтрация журналов отладки (`string`)                                                                                               |
+| `-m, --mode <mode>`            | Установить режим окружения (`string`)                                                                                                |
+| `-h, --help`                   | Отобразить доступные параметры CLI                                                                                                   |
 
-## Others
+## Другие
 
 ### `vite optimize`
 
-Pre-bundle dependencies.
+Предварительные зависимости.
 
-#### Usage
+#### Использование
 
 ```bash
 vite optimize [root]
 ```
 
-#### Options
+#### Опции
 
-| Options                  |                                                                   |
-| ------------------------ | ----------------------------------------------------------------- |
-| `--force`                | Force the optimizer to ignore the cache and re-bundle (`boolean`) |
-| `-c, --config <file>`    | Use specified config file (`string`)                              |
-| `--base <path>`          | Public base path (default: `/`) (`string`)                        |
-| `-l, --logLevel <level>` | Info \| warn \| error \| silent (`string`)                        |
-| `--clearScreen`          | Allow/disable clear screen when logging (`boolean`)               |
-| `-d, --debug [feat]`     | Show debug logs (`string \| boolean`)                             |
-| `-f, --filter <filter>`  | Filter debug logs (`string`)                                      |
-| `-m, --mode <mode>`      | Set env mode (`string`)                                           |
-| `-h, --help`             | Display available CLI options                                     |
+| Опции                    |                                                                                 |
+| ------------------------ | ------------------------------------------------------------------------------- |
+| `--force`                | Заставить оптимизатор игнорировать кеш и выполнить повторную сборку (`boolean`) |
+| `-c, --config <file>`    | Использовать указанный файл конфигурации (`string`)                             |
+| `--base <path>`          | Публичный базовый путь (по умолчанию: `/`) (`string`)                           |
+| `-l, --logLevel <level>` | Info \| warn \| error \| silent (`string`)                                      |
+| `--clearScreen`          | Разрешить/отключить очистку экрана при входе в систему (`boolean`)              |
+| `-d, --debug [feat]`     | Показать журналы отладки (`string \| boolean`)                                  |
+| `-f, --filter <filter>`  | Фильтрация журналов отладки (`string`)                                          |
+| `-m, --mode <mode>`      | Установить режим окружения (`string`)                                           |
+| `-h, --help`             | Отобразить доступные параметры CLI                                              |
 
 ### `vite preview`
 
-Locally preview the production build. Do not use this as a production server as it's not designed for it.
+Локально просмотрите производственную сборку. Не используйте его в качестве рабочего сервера, поскольку он не предназначен для этого.
 
-#### Usage
+#### Использование
 
 ```bash
 vite preview [root]
 ```
 
-#### Options
+#### Опции
 
-| Options                  |                                                      |
-| ------------------------ | ---------------------------------------------------- |
-| `--host [host]`          | Specify hostname (`string`)                          |
-| `--port <port>`          | Specify port (`number`)                              |
-| `--strictPort`           | Exit if specified port is already in use (`boolean`) |
-| `--open [path]`          | Open browser on startup (`boolean \| string`)        |
-| `--outDir <dir>`         | Output directory (default: `dist`)(`string`)         |
-| `-c, --config <file>`    | Use specified config file (`string`)                 |
-| `--base <path>`          | Public base path (default: `/`) (`string`)           |
-| `-l, --logLevel <level>` | Info \| warn \| error \| silent (`string`)           |
-| `--clearScreen`          | Allow/disable clear screen when logging (`boolean`)  |
-| `-d, --debug [feat]`     | Show debug logs (`string \| boolean`)                |
-| `-f, --filter <filter>`  | Filter debug logs (`string`)                         |
-| `-m, --mode <mode>`      | Set env mode (`string`)                              |
-| `-h, --help`             | Display available CLI options                        |
+| Опции                    |                                                                    |
+| ------------------------ | ------------------------------------------------------------------ |
+| `--host [host]`          | Укажите имя хоста (`string`)                                       |
+| `--port <port>`          | Укажите порт (`number`)                                            |
+| `--strictPort`           | Выйти, если указанный порт уже используется (`boolean`)            |
+| `--open [path]`          | Открыть браузер при запуске (`boolean \| string`)                  |
+| `--outDir <dir>`         | Выходной каталог (по умолчанию: `dist`)(`string`)                  |
+| `-c, --config <file>`    | Использовать указанный файл конфигурации (`string`)                |
+| `--base <path>`          | Публичный базовый путь (по умолчанию: `/`) (`string`)              |
+| `-l, --logLevel <level>` | Info \| warn \| error \| silent (`string`)                         |
+| `--clearScreen`          | Разрешить/отключить очистку экрана при входе в систему (`boolean`) |
+| `-d, --debug [feat]`     | Показать журналы отладки (`string \| boolean`)                     |
+| `-f, --filter <filter>`  | Фильтрация журналов отладки (`string`)                             |
+| `-m, --mode <mode>`      | Установить режим окружения (`string`)                              |
+| `-h, --help`             | Отобразить доступные параметры CLI                                 |
