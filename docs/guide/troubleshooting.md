@@ -4,6 +4,37 @@
 
 Если приведенные здесь предложения не работают, попробуйте опубликовать вопросы в [Обсуждения GitHub](https://github.com/vitejs/vite/discussions) или на канале `#help` в [Vite Land Discord](https://chat.vitejs.dev).
 
+## CJS
+
+### Vite CJS Node API deprecated
+
+The CJS build of Vite's Node API is deprecated and will be removed in Vite 6. See the [GitHub discussion](https://github.com/vitejs/vite/discussions/13928) for more context. You should update your files or frameworks to import the ESM build of Vite instead.
+
+In a basic Vite project, make sure:
+
+1. The `vite.config.js` file content is using the ESM syntax.
+2. The closest `package.json` file has `"type": "module"`, or use the `.mjs`/`.mts` extension, e.g. `vite.config.mjs` or `vite.config.mts`.
+
+For other projects, there are a few general approaches:
+
+- **Configure ESM as default, opt-in to CJS if needed:** Add `"type": "module"` in the project `package.json`. All `*.js` files are now interpreted as ESM and needs to use the ESM syntax. You can rename a file with the `.cjs` extension to keep using CJS instead.
+- **Keep CJS as default, opt-in to ESM if needed:** If the project `package.json` does not have `"type": "module"`, all `*.js` files are interpreted as CJS. You can rename a file with the `.mjs` extension to use ESM instead.
+- **Dynamically import Vite:** If you need to keep using CJS, you can dynamically import Vite using `import('vite')` instead. This requires your code to be written in an `async` context, but should still be manageable as Vite's API is mostly asynchronous.
+
+If you're unsure where the warning is coming from, you can run your script with the `VITE_CJS_TRACE=true` flag to log the stack trace:
+
+```bash
+VITE_CJS_TRACE=true vite dev
+```
+
+If you'd like to temporarily ignore the warning, you can run your script with the `VITE_CJS_IGNORE_WARNING=true` flag:
+
+```bash
+VITE_CJS_IGNORE_WARNING=true vite dev
+```
+
+Note that postcss config files does not support ESM + TypeScript (`.mts` or `.ts` in `"type": "module"`) yet. If you have postcss configs with `.ts` and added `"type": "module"` to package.json, you'll also need to rename the postcss config to use `.cts`.
+
 ## CLI
 
 ### `Error: Cannot find module 'C:\foo\bar&baz\vite\bin\vite.js'`
@@ -116,13 +147,9 @@ import './Foo.js' // should be './foo.js'
 
 ### Происходит полная перезагрузка вместо HMR
 
-Если HMR не обрабатывается Vite или плагином, произойдет полная перезагрузка.
+Если HMR не обрабатывается Vite или плагином, произойдет полная перезагрузка, поскольку это единственный способ обновить состояние.
 
-Также, если есть цикл зависимости, произойдет полная перезагрузка. Чтобы решить эту проблему, попробуйте удалить цикл.
-
-### Большое количество обновлений HMR в консоли
-
-Это может быть вызвано циклической зависимостью. Чтобы решить эту проблему, попробуйте разорвать цикл.
+Если HMR обрабатывается, но находится в циклической зависимости, также произойдет полная перезагрузка для восстановления порядка выполнения. Чтобы решить эту проблему, попробуйте разорвать цикл. Вы можете запустить `vite --debug hmr`, чтобы зарегистрировать циклический путь зависимости, если его вызвало изменение файла.
 
 ## Сборка
 
@@ -143,6 +170,30 @@ import './Foo.js' // should be './foo.js'
 ### Устаревшие предустановленные пакеты при ссылке на локальный пакет
 
 Хэш-ключ, используемый для аннулирования оптимизированных зависимостей, зависит от содержимого блокировки пакета, исправлений, примененных к зависимостям, и параметров в файле конфигурации Vite, которые влияют на объединение узловых модулей. Это означает, что Vite обнаружит переопределение зависимости с помощью функции [npm overrides](https://docs.npmjs.com/cli/v9/configuring-npm/package-json#overrides) и повторно свяжет ваши зависимости от следующего запуска сервера. Vite не аннулирует зависимости, если вы используете такую функцию, как [ссылка npm](https://docs.npmjs.com/cli/v9/commands/npm-link). В случае, если вы связываете или отключаете зависимость, вам нужно будет принудительно выполнить повторную оптимизацию при следующем запуске сервера, используя `vite --force`. Вместо этого мы рекомендуем использовать переопределения, которые сейчас поддерживаются всеми менеджерами пакетов (см. также [переопределения pnpm](https://pnpm.io/package_json#pnpmoverrides) и [yarn резолюции](https://yarnpkg.com/configuration/manifest/#resolutions)).
+
+## Узкие места производительности
+
+Если у вас возникли узкие места в производительности приложения, приводящие к медленной загрузке, вы можете запустить встроенный инспектор Node.js на сервере разработки Vite или при создании приложения, чтобы создать профиль ЦП:
+
+::: code-group
+
+```bash [dev server]
+vite --profile --open
+```
+
+```bash [build]
+vite build --profile
+```
+
+:::
+
+::: tip Vite Dev Server
+Как только ваше приложение откроется в браузере, просто дождитесь завершения его загрузки, а затем вернитесь к терминалу и нажмите клавишу `p` (останавливает инспектор Node.js), затем нажмите клавишу `q`, чтобы остановить сервер разработки.
+:::
+
+Инспектор Node.js сгенерирует `vite-profile-0.cpuprofile` в корневой папке, перейдите на https://www.speedscope.app/ и загрузите профиль ЦП с помощью кнопки `BROWSE`, чтобы проверить результат.
+
+Вы можете установить [vite-plugin-inspect](https://github.com/antfu/vite-plugin-inspect), который позволяет вам проверять промежуточное состояние плагинов Vite, а также может помочь вам определить, какие плагины или мидлвара являются узкое место в ваших приложениях. Плагин можно использовать как в режиме разработки, так и в режиме сборки. Более подробную информацию можно найти в файле readme.
 
 ## Другие
 

@@ -30,11 +30,47 @@ const __dirname = fileURLToPath(new URL('.', import.meta.url))
   await server.listen()
 
   server.printUrls()
+  server.bindCLIShortcuts({ print: true })
 })()
 ```
 
 ::: tip ПРИМЕЧАНИЕ
 При использовании `createServer` и `build` в одном и том же процессе Node.js обе функции полагаются на `process.env.NODE_ENV` для правильной работы, что также зависит от параметра конфигурации `mode`. Чтобы предотвратить конфликтное поведение, установите для `process.env.NODE_ENV` или `mode` двух API значение `development`. В противном случае вы можете создать дочерний процесс для отдельного запуска API.
+:::
+
+::: tip NOTE
+When using [middleware mode](/config/server-options.html#server-middlewaremode) combined with [proxy config for WebSocket](/config/server-options.html#server-proxy), the parent http server should be provided in `middlewareMode` to bind the proxy correctly.
+
+<details>
+<summary>Example</summary>
+
+```ts
+import http from 'http'
+import { createServer } from 'vite'
+
+const parentServer = http.createServer() // or express, koa, etc.
+
+const vite = await createServer({
+  server: {
+    // Enable middleware mode
+    middlewareMode: {
+      // Provide the parent http server for proxy WebSocket
+      server: parentServer,
+    },
+  },
+  proxy: {
+    '/ws': {
+      target: 'ws://localhost:3000',
+      // Proxying WebSocket
+      ws: true,
+    },
+  },
+})
+
+parentServer.use(vite.middlewares)
+```
+
+</details>
 :::
 
 ## `InlineConfig`
@@ -81,7 +117,8 @@ interface ViteDevServer {
    */
   httpServer: http.Server | null
   /**
-   * Chokidar watcher instance.
+   * Chokidar watcher instance. If `config.server.watch` is set to `null`,
+   * returns a noop event emitter.
    * https://github.com/paulmillr/chokidar#api
    */
   watcher: FSWatcher
@@ -145,6 +182,10 @@ interface ViteDevServer {
    * Stop the server.
    */
   close(): Promise<void>
+  /**
+   * Bind CLI shortcuts
+   */
+  bindCLIShortcuts(options?: BindCLIShortcutsOptions<ViteDevServer>): void
 }
 ```
 
@@ -202,21 +243,14 @@ import { preview } from 'vite'
   })
 
   previewServer.printUrls()
+  previewServer.bindCLIShortcuts({ print: true })
 })()
 ```
 
 ## `PreviewServer`
 
 ```ts
-interface PreviewServer extends PreviewServerForHook {
-  resolvedUrls: ResolvedServerUrls
-}
-```
-
-## `PreviewServerForHook`
-
-```ts
-interface PreviewServerForHook {
+interface PreviewServer {
   /**
    * The resolved vite config object
    */
@@ -235,13 +269,18 @@ interface PreviewServerForHook {
    */
   httpServer: http.Server
   /**
-   * The resolved urls Vite prints on the CLI
+   * The resolved urls Vite prints on the CLI.
+   * null before server is listening.
    */
   resolvedUrls: ResolvedServerUrls | null
   /**
    * Print server urls
    */
   printUrls(): void
+  /**
+   * Bind CLI shortcuts
+   */
+  bindCLIShortcuts(options?: BindCLIShortcutsOptions<PreviewServer>): void
 }
 ```
 
@@ -254,10 +293,12 @@ async function resolveConfig(
   inlineConfig: InlineConfig,
   command: 'build' | 'serve',
   defaultMode = 'development',
+  defaultNodeEnv = 'development',
+  isPreview = false,
 ): Promise<ResolvedConfig>
 ```
 
-Значение `command` равно `serve` в dev (в cli `vite`, `vite dev` и `vite serve` являются псевдонимами).
+Значением `command` является `serve` в разработке и предварительной версии и `build` в сборке.
 
 ## `mergeConfig`
 
@@ -274,7 +315,16 @@ function mergeConfig(
 Глубоко объедините две конфигурации Vite. `isRoot` представляет уровень в конфигурации Vite, который объединяется. Например, установите `false`, если вы объединяете две опции `build`.
 
 ::: tip NOTE
-`mergeConfig` accepts only config in object form. If you have a config in callback form, you should call it before passing into `mergeConfig`.
+`mergeConfig` принимает только конфигурацию в объектной форме. Если у вас есть конфигурация в форме обратного вызова, вам следует вызвать ее перед переходом в `mergeConfig`.
+
+Вы можете использовать помощник `defineConfig` для объединения конфигурации в форме обратного вызова с другой конфигурацией:
+
+```ts
+export default defineConfig((configEnv) =>
+  mergeConfig(configAsCallback(configEnv), configAsObject),
+)
+```
+
 :::
 
 ## `searchForWorkspaceRoot`

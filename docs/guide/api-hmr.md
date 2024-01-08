@@ -37,6 +37,10 @@ interface ViteHotContext {
     event: T,
     cb: (payload: InferCustomEventPayload<T>) => void,
   ): void
+  off<T extends string>(
+    event: T,
+    cb: (payload: InferCustomEventPayload<T>) => void,
+  ): void
   send<T extends string>(event: T, data?: InferCustomEventPayload<T>): void
 }
 ```
@@ -145,6 +149,16 @@ if (import.meta.hot) {
 
 Объект `import.meta.hot.data` сохраняется в разных экземплярах одного и того же обновленного модуля. Его можно использовать для передачи информации от предыдущей версии модуля к следующей.
 
+Note that re-assignment of `data` itself is not supported. Instead, you should mutate properties of the `data` object so information added from other handlers are preserved.
+
+```js
+// ok
+import.meta.hot.data.someValue = 'hello'
+
+// not supported
+import.meta.hot.data = { someValue: 'hello' }
+```
+
 ## `hot.decline()`
 
 В настоящее время это noop и существует для обратной совместимости. Это может измениться в будущем, если для него появится новое использование. Чтобы указать, что модуль не поддерживает горячее обновление, используйте `hot.invalidate()`.
@@ -180,6 +194,10 @@ import.meta.hot.accept((module) => {
 - `'vite:ws:connect'`, когда соединение WebSocket (повторно) установлено
 
 Пользовательские события HMR также можно отправлять из плагинов. Дополнительные сведения смотрите в разделе [handleHotUpdate](./api-plugin#handlehotupdate).
+
+## `hot.off(event, cb)`
+
+Remove callback from the event listeners
 
 ## `hot.send(event, data)`
 

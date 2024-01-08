@@ -11,13 +11,14 @@
 
 ## base
 
-- **Тип:** `string`
+- **Type:** `string`
 - **По умолчанию:** `/`
+- **Связанный:** [`server.origin`](/config/server-options.md#server-origin)
 
 Базовый общедоступный путь при использовании в разработке или рабочей среде. Допустимые значения включают:
 
-- Абсолютный URL-адрес, например, `/foo/`
-- Полный URL, например, `https://foo.com/`
+- Абсолютный путь к URL-адресу, например, `/foo/`
+- Полный URL-адрес, например, `https://foo.com/` (исходная часть не будет использоваться в разработке)
 - Пустая строка или `./` (для встроенного развертывания)
 
 Дополнительные сведения смотрите в разделе [Общедоступный базовый путь](/guide/build#public-base-path).
@@ -37,17 +38,18 @@
 
 Определить глобальные замены констант. Записи будут определены как глобальные во время разработки и статически заменены во время сборки.
 
-- Строковые значения будут использоваться как необработанные выражения, поэтому при определении строковой константы **ее необходимо явно заключить в кавычки** (например, с помощью `JSON.stringify`).
+Vite использует [esbuild defines](https://esbuild.github.io/api/#define) для выполнения замен, поэтому выражения значений должны быть строкой, содержащей сериализуемое значение JSON (нулевое, логическое, число, строка, массив или объект) или одиночный идентификатор. Для нестроковых значений Vite автоматически преобразует их в строку с помощью `JSON.stringify`.
 
-- Чтобы соответствовать [поведению esbuild](https://esbuild.github.io/api/#define), выражения должны быть либо объектом JSON (пустым, логическим, числом, строкой, массивом или объектом), либо одним идентификатор.
+**Example:**
 
-- Замены выполняются только тогда, когда совпадение не окружено другими буквами, цифрами, `_` или `$`.
-
-::: warning
-Поскольку он реализован как простая замена текста без какого-либо синтаксического анализа, мы рекомендуем использовать `define` только для КОНСТАНТ.
-
-Например, хорошо подходят `process.env.FOO` и `__APP_VERSION__`. Но `process` или `global` не следует указывать в этой опции. Вместо этого переменные могут быть заполнены оболочкой или заполнены полифиллом.
-:::
+```js
+export default defineConfig({
+  define: {
+    __APP_VERSION__: JSON.stringify('v1.0.0'),
+    __API_URL__: 'window.__backend_api_url',
+  },
+})
+```
 
 ::: tip ПРИМЕЧАНИЕ
 Для пользователей TypeScript обязательно добавьте объявления типов в файл `env.d.ts` или `vite-env.d.ts`, чтобы получить проверки типов и Intellisense.
@@ -57,20 +59,6 @@
 ```ts
 // vite-env.d.ts
 declare const __APP_VERSION__: string
-```
-
-:::
-
-::: tip ПРИМЕЧАНИЕ
-Поскольку dev и build реализуют `define` по-разному, нам следует избегать некоторых вариантов использования, чтобы избежать несогласованности.
-
-Пример:
-
-```js
-const obj = {
-  __NAME__, // Don't define object shorthand property names
-  __KEY__: value, // Don't define object key
-}
 ```
 
 :::
@@ -153,20 +141,10 @@ Vite имеет список «разрешенных условий» и буд
 
 ## resolve.mainFields
 
-- **Тип:** `string[]`
-- **По умолчанию:** `['module', 'jsnext:main', 'jsnext']`
+- **Type:** `string[]`
+- **По умолчанию:** `['browser', 'module', 'jsnext:main', 'jsnext']`
 
 Список полей в `package.json`, которые нужно попробовать при разрешении точки входа пакета. Обратите внимание, что это имеет более низкий приоритет, чем условный экспорт, разрешенный из поля `exports`: если точка входа успешно разрешена из `exports`, основное поле будет проигнорировано.
-
-## resolve.browserField
-
-- **Тип:** `boolean`
-- **По умолчанию:** `true`
-- **Устарело**
-
-Включить ли разрешение в поле `browser`.
-
-В будущем, значением по умолчанию для `resolve.mainFields` будет `['browser', 'module', 'jsnext:main', 'jsnext']`, и эта опция будет удалена.
 
 ## resolve.extensions
 
@@ -190,27 +168,37 @@ Vite имеет список «разрешенных условий» и буд
 - **Тип:**
   ```ts
   interface CSSModulesOptions {
+    getJSON?: (
+      cssFileName: string,
+      json: Record<string, string>,
+      outputFileName: string,
+    ) => void
     scopeBehaviour?: 'global' | 'local'
     globalModulePaths?: RegExp[]
+    exportGlobals?: boolean
     generateScopedName?:
       | string
       | ((name: string, filename: string, css: string) => string)
     hashPrefix?: string
     /**
-     * По умолчанию: null
+     * По умолчанию: undefined
      */
     localsConvention?:
       | 'camelCase'
       | 'camelCaseOnly'
       | 'dashes'
       | 'dashesOnly'
-      | null
+      | ((
+          originalClassName: string,
+          generatedClassName: string,
+          inputFile: string,
+        ) => string)
   }
   ```
 
 Настройте поведение модулей CSS. Параметры передаются [postcss-modules](https://github.com/css-modules/postcss-modules).
 
-This option doesn't have any effect when using [Lightning CSS](../guide/features.md#lightning-css). If enabled, [`css.lightningcss.cssModules`](https://lightningcss.dev/css-modules.html) should be used instead.
+Эта опция не имеет никакого эффекта при использовании [Lightning CSS](../guide/features.md#lightning-css). Если этот параметр включен, вместо него следует использовать [`css.lightningcss.cssModules`](https://lightningcss.dev/css-modules.html).
 
 ## css.postcss
 
@@ -236,7 +224,7 @@ This option doesn't have any effect when using [Lightning CSS](../guide/features
 
 Все параметры препроцессора также поддерживают параметр `additionalData`, который можно использовать для внедрения дополнительного кода для каждого содержимого стиля. Обратите внимание: если вы включаете реальные стили, а не только переменные, эти стили будут дублироваться в окончательном пакете.
 
-Example:
+Пример:
 
 ```js
 export default defineConfig({
@@ -304,7 +292,7 @@ import type {
 }
 ```
 
-Configures Lightning CSS. Full transform options can be found in [the Lightning CSS repo](https://github.com/parcel-bundler/lightningcss/blob/master/node/index.d.ts).
+Настраивает CSS Lightning. Полные параметры преобразования можно найти в [репозитории Lightning CSS](https://github.com/parcel-bundler/lightningcss/blob/master/node/index.d.ts).
 
 ## json.namedExports
 
@@ -326,7 +314,7 @@ Configures Lightning CSS. Full transform options can be found in [the Lightning 
 
 - **Тип:** `ESBuildOptions | false`
 
-`ESBuildOptions` расширяет [собственные параметры преобразования esbuild](https://esbuild.github.io/api/#transform-api). Наиболее распространенный вариант использования — настройка JSX:
+`ESBuildOptions` extends [esbuild's own transform options](https://esbuild.github.io/api/#transform). The most common use case is customizing JSX:
 
 ```js
 export default defineConfig({
@@ -395,7 +383,7 @@ export default defineConfig({
   }
   ```
 
-Use a custom logger to log messages. You can use Vite's `createLogger` API to get the default logger and customize it to, for example, change the message or filter out certain warnings.
+Используйте специальный регистратор для регистрации сообщений. Вы можете использовать API `createLogger` от Vite, чтобы получить регистратор по умолчанию и настроить его, например, для изменения сообщения или фильтрации определенных предупреждений.
 
 ```js
 import { createLogger, defineConfig } from 'vite'

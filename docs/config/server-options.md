@@ -56,7 +56,7 @@ See [the WSL document](https://learn.microsoft.com/en-us/windows/wsl/networking#
 
 ## server.https
 
-- **Тип:** `boolean | https.ServerOptions`
+- **Тип:** `https.ServerOptions`
 
 Включите TLS + HTTP/2. Обратите внимание, что переход на TLS происходит только в том случае, если также используется [опция `server.proxy`](#server-proxy).
 
@@ -90,7 +90,7 @@ export default defineConfig({
 
 Обратите внимание, что если вы используете не относительную [`base`](/config/shared-options.md#base), вы должны добавлять префикс на каждый ключ это `base`.
 
-Расширяет [`http-proxy`](https://github.com/http-party/node-http-proxy#options). Дополнительные параметры находятся [здесь](https://github.com/vitejs/vite/blob/main/packages/vite/src/node/server/middlewares/proxy.ts#L13).
+Расширяет [`http-proxy`](https://github.com/http-party/node-http-proxy#options). Дополнительные параметры находятся [здесь](https://github.com/vitejs/vite/blob/main/packages/vite/src/node/server/middlewares/proxy.ts#L12).
 
 В некоторых случаях вы также можете настроить базовый сервер разработки (например, чтобы добавить настраиваемый мидлвар во внутреннее приложение [connect](https://github.com/senchalabs/connect)). Для этого вам нужно написать свой собственный [плагин](/guide/using-plugins.html) и использовать функцию [configureServer](/guide/api-plugin.html#configureserver).
 
@@ -174,28 +174,43 @@ export default defineConfig({
 
 :::
 
-## server.watch
+## server.warmup
 
-- **Тип:** `object`
+- **Тип:** `{ clientFiles?: string[], ssrFiles?: string[] }`
+- **Связанный:** [Разминка часто используемых файлов](/guide/performance.html#warm-up-frequently-used-files)
 
-Параметры наблюдателя файловой системы для передачи [chokidar](https://github.com/paulmillr/chokidar#api).
+Предварительно прогрейте файлы для преобразования и кэширования результатов. Это улучшает начальную загрузку страницы во время запуска сервера и предотвращает водопады преобразований.
 
-Наблюдатель сервера Vite по умолчанию пропускает каталоги `.git/` и `node_modules/`. Если вы хотите просмотреть пакет внутри `node_modules/`, вы можете передать отрицательный шаблон glob в `server.watch.ignored`. То есть:
+`clientFiles` — это файлы, которые используются только в клиенте, а `ssrFiles` — это файлы, которые используются только в SSR. Они принимают массив путей к файлам или шаблоны [`fast-glob`](https://github.com/mrmlnc/fast-glob) относительно `root`.
+
+Обязательно добавляйте только те файлы, которые часто используются, чтобы не перегружать сервер разработки Vite при запуске.
 
 ```js
 export default defineConfig({
   server: {
-    watch: {
-      ignored: ['!**/node_modules/your-package-name/**'],
+    warmup: {
+      clientFiles: ['./src/components/*.vue', './src/utils/big-utils.js'],
+      ssrFiles: ['./src/server/modules/*.js'],
     },
-  },
-  // The watched package must be excluded from optimization,
-  // so that it can appear in the dependency graph and trigger hot reload.
-  optimizeDeps: {
-    exclude: ['your-package-name'],
   },
 })
 ```
+
+## server.watch
+
+- **Тип:** `object | null`
+
+Параметры средства наблюдения за файловой системой необходимо передать [chokidar](https://github.com/paulmillr/chokidar#api).
+
+Наблюдатель сервера Vite по умолчанию отслеживает `root` и пропускает каталоги `.git/` и `node_modules/`. При обновлении просматриваемого файла Vite применит HMR и обновит страницу только при необходимости.
+
+Если установлено значение `null`, файлы просматриваться не будут. `server.watcher` предоставит совместимый генератор событий, но вызов `add` или `unwatch` не будет иметь никакого эффекта.
+
+::: warning Наблюдение файлов в `node_modules`
+
+В настоящее время невозможно просматривать файлы и пакеты в `node_modules`. Для дальнейшего прогресса и обходных путей вы можете следить за [проблемой #8619](https://github.com/vitejs/vite/issues/8619).
+
+:::
 
 ::: warning Использование Vite в подсистеме Windows для Linux (WSL) 2
 

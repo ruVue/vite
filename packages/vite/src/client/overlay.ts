@@ -2,7 +2,9 @@ import type { ErrorPayload } from 'types/hmrPayload'
 
 // injected by the hmr plugin when served
 declare const __BASE__: string
+declare const __HMR_CONFIG_NAME__: string
 
+const hmrConfigName = __HMR_CONFIG_NAME__
 const base = __BASE__ || '/'
 
 // set :host styles to make playwright detect the element as visible
@@ -67,6 +69,20 @@ pre {
 
 pre::-webkit-scrollbar {
   display: none;
+}
+
+pre.frame::-webkit-scrollbar {
+  display: block;
+  height: 5px;
+}
+
+pre.frame::-webkit-scrollbar-thumb {
+  background: #999;
+  border-radius: 5px;
+}
+
+pre.frame {
+  scrollbar-width: thin;
 }
 
 .message {
@@ -142,14 +158,14 @@ kbd {
     <div class="tip" part="tip">
       Click outside, press <kbd>Esc</kbd> key, or fix the code to dismiss.<br>
       You can also disable this overlay by setting
-      <code part="config-option-name">server.hmr.overlay</code> to <code part="config-option-value">false</code> in <code part="config-file-name">vite.config.js.</code>
+      <code part="config-option-name">server.hmr.overlay</code> to <code part="config-option-value">false</code> in <code part="config-file-name">${hmrConfigName}.</code>
     </div>
   </div>
 </div>
 `
 
 const fileRE = /(?:[a-zA-Z]:\\|\/).*?:\d+:\d+/g
-const codeframeRE = /^(?:>?\s+\d+\s+\|.*|\s+\|\s*\^.*)\r?\n/gm
+const codeframeRE = /^(?:>?\s*\d+\s+\|.*|\s+\|\s*\^.*)\r?\n/gm
 
 // Allow `ErrorOverlay` to extend `HTMLElement` even in environments where
 // `HTMLElement` was not originally defined.
@@ -219,7 +235,12 @@ export class ErrorOverlay extends HTMLElement {
           link.textContent = file
           link.className = 'file-link'
           link.onclick = () => {
-            fetch(`${base}__open-in-editor?file=` + encodeURIComponent(file))
+            fetch(
+              new URL(
+                `${base}__open-in-editor?file=${encodeURIComponent(file)}`,
+                import.meta.url,
+              ),
+            )
           }
           el.appendChild(link)
           curIndex += frag.length + file.length

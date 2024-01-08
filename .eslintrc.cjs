@@ -1,6 +1,10 @@
 // @ts-check
 const { builtinModules } = require('node:module')
 const { defineConfig } = require('eslint-define-config')
+const pkg = require('./package.json')
+
+/// <reference types="@eslint-types/typescript-eslint" />
+/// <reference types="@eslint-types/import" />
 
 module.exports = defineConfig({
   root: true,
@@ -16,7 +20,7 @@ module.exports = defineConfig({
   parser: '@typescript-eslint/parser',
   parserOptions: {
     sourceType: 'module',
-    ecmaVersion: 2021,
+    ecmaVersion: 2022,
   },
   rules: {
     eqeqeq: ['warn', 'always', { null: 'never' }],
@@ -107,6 +111,8 @@ module.exports = defineConfig({
     ],
 
     'regexp/no-contradiction-with-assertion': 'error',
+    // in some cases using explicit letter-casing is more performant than the `i` flag
+    'regexp/use-ignore-case': 'off',
   },
   overrides: [
     {
@@ -173,13 +179,13 @@ module.exports = defineConfig({
         'n/no-unsupported-features/es-builtins': [
           'error',
           {
-            version: '^14.18.0 || >=16.0.0',
+            version: pkg.engines.node,
           },
         ],
         'n/no-unsupported-features/node-builtins': [
           'error',
           {
-            version: '^14.18.0 || >=16.0.0',
+            version: pkg.engines.node,
           },
         ],
         '@typescript-eslint/explicit-module-boundary-types': 'off',

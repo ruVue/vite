@@ -47,7 +47,7 @@ type ResolveModulePreloadDependenciesFn = (
   context: {
     importer: string
   },
-) => (string | { runtime?: string })[]
+) => string[]
 ```
 
 Функция `resolveDependencies` будет вызываться для каждого динамического импорта со списком фрагментов, от которых он зависит, а также будет вызываться для каждого фрагмента, импортируемого в входных HTML-файлах. Новый массив зависимостей может быть возвращен с этими отфильтрованными или несколькими введенными зависимостями и измененными путями к ним. Пути `deps` относятся к `build.outDir`. Возврат относительного пути к `hostId` для `hostType === 'js'` разрешен, и в этом случае `new URL(dep, import.meta.url)` используется для получения абсолютного пути при внедрении предварительной загрузки этого модуля. в заголовке HTML.
@@ -86,7 +86,7 @@ modulePreload: {
 ## build.assetsInlineLimit
 
 - **Тип:** `number`
-- **По умолчанию:** `4096` (4kb)
+- **По умолчанию:** `4096` (4 KiB)
 
 Импортированные ресурсы или ресурсы, на которые есть ссылки, размер которых меньше этого порога, будут встроены как URL-адреса base64, чтобы избежать дополнительных HTTP-запросов. Установите `0`, чтобы полностью отключить встраивание.
 
@@ -122,8 +122,8 @@ modulePreload: {
 
 ## build.cssMinify
 
-- **Type:** `boolean | 'esbuild' | 'lightningcss'`
-- **Default:** the same as [`build.minify`](#build-minify)
+- **Тип:** `boolean | 'esbuild' | 'lightningcss'`
+- **По умолчанию:** the same as [`build.minify`](#build-minify)
 
 This option allows users to override CSS minification specifically instead of defaulting to `build.minify`, so you can configure minification for JS and CSS separately. Vite uses `esbuild` by default to minify CSS. Set the option to `'lightningcss'` to use [Lightning CSS](https://lightningcss.dev/minification.html) instead. If selected, it can be configured using [`css.lightningcss`](./shared-options.md#css-lightningcss).
 
@@ -166,7 +166,7 @@ This option allows users to override CSS minification specifically instead of de
 - **По умолчанию:** `false`
 - **Связанный:** [Backend Integration](/guide/backend-integration)
 
-Если установлено значение `true`, сборка также создаст файл `manifest.json`, который содержит сопоставление нехэшированных имен файлов ресурсов с их хэшированными версиями, которые затем могут использоваться серверной структурой для отображения правильных ссылок на ресурсы. Если значение представляет собой строку, оно будет использоваться в качестве имени файла манифеста.
+Если установлено значение `true`, сборка также создаст файл `.vite/manifest.json`, содержащий сопоставление имен файлов нехешированных ресурсов с их хешированными версиями, которые затем могут использоваться серверной платформой для отображения правильных ссылки на активы. Если значение представляет собой строку, оно будет использоваться в качестве имени файла манифеста.
 
 ## build.ssrManifest
 
@@ -185,6 +185,13 @@ This option allows users to override CSS minification specifically instead of de
 - **Связанный:** [Server-Side Rendering](/guide/ssr)
 
 Создание сборки, ориентированной на SSR. Значение может быть строкой для прямого указания записи SSR или `true`, что требует указания записи SSR через `rollupOptions.input`.
+
+## build.ssrEmitAssets
+
+- **Тип:** `boolean`
+- **По умолчанию:** `false`
+
+During the SSR build, static assets aren't emitted as it is assumed they would be emitted as part of the client build. This option allows frameworks to force emitting them in both the client and SSR build. It is responsibility of the framework to merge the assets with a post build step.
 
 ## build.minify
 
@@ -209,6 +216,8 @@ npm add -D terser
 
 Дополнительные [опции минимизации](https://terser.org/docs/api-reference#minify-options) для передачи в Terser.
 
+In addition, you can also pass a `maxWorkers: number` option to specify the max number of workers to spawn. Defaults to the number of CPUs minus 1.
+
 ## build.write
 
 - **Тип:** `boolean`
@@ -225,7 +234,6 @@ npm add -D terser
 
 ## build.copyPublicDir
 
-- **Экспериментальный:** [Дать обратную связь](https://github.com/vitejs/vite/discussions/13807)
 - **Тип:** `boolean`
 - **По умолчанию:** `true`
 
@@ -243,7 +251,7 @@ npm add -D terser
 - **Тип:** `number`
 - **По умолчанию:** `500`
 
-Ограничение для предупреждений о размере фрагмента (в килобайтах). Он сравнивается с размером несжатого фрагмента, поскольку [размер JavaScript сам по себе связан со временем выполнения](https://v8.dev/blog/cost-of-javascript-2019).
+Ограничение для предупреждений о размере фрагмента (в КБ). Он сравнивается с размером несжатого фрагмента, поскольку [размер JavaScript сам по себе связан со временем выполнения](https://v8.dev/blog/cost-of-javascript-2019).
 
 ## build.watch
 

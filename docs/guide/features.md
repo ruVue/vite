@@ -1,6 +1,6 @@
 # Функции
 
-На самом базовом уровне разработка с использованием Vite не сильно отличается от использования статического файлового сервера. Тем не менее, Vite предоставляет множество улучшений по сравнению с собственным импортом ESM для поддержки различных функций, которые обычно используются в настройках на основе сборщиков.
+На самом базовом уровне разработка с использованием Vite не сильно отличается от использования статического файлового сервера. Тем не менее, Vite предоставляет множество улучшений по сравнению с собственным импортом ESM для поддержки различных функций, которые обычно встречаются в установках на основе сборщиков.
 
 ## Разрешение зависимостей NPM и предварительное связывание
 
@@ -57,6 +57,8 @@ export type { T }
 
 #### `isolatedModules`
 
+- [Документация TypeScript](https://www.typescriptlang.org/tsconfig#isolatedModules)
+
 Должно быть установлено значение `true`.
 
 Это связано с тем, что `esbuild` выполняет транспиляцию только без информации о типе, он не поддерживает некоторые функции, такие как const enum и неявный импорт только типов.
@@ -67,9 +69,13 @@ export type { T }
 
 #### `useDefineForClassFields`
 
-Начиная с Vite 2.5.0, значением по умолчанию будет `true`, если целью TypeScript является `ESNext` или `ES2022` или новее. Это соответствует [поведению `tsc` 4.3.2 и более поздних версий](https://github.com/microsoft/TypeScript/pull/42663). Это также стандартное поведение среды выполнения ECMAScript.
+- [Документация TypeScript](https://www.typescriptlang.org/tsconfig#useDefineForClassFields)
 
-Но это может быть нелогичным для тех, кто работает с другими языками программирования или более старыми версиями TypeScript.
+Начиная с Vite 2.5.0, значением по умолчанию будет `true` , если целью TypeScript является `ESNext` или `ES2022` или новее. Это соответствует [поведению `tsc` 4.3.2 и более поздних версий](https://github.com/microsoft/TypeScript/pull/42663). Это также стандартное поведение среды выполнения ECMAScript.
+
+Другие цели TypeScript по умолчанию будут иметь значение `false`.
+
+Но это может показаться нелогичным для тех, кто работает с другими языками программирования или более старыми версиями TypeScript.
 Подробнее о переходе можно прочитать в [примечаниях к выпуску TypeScript 3.7](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-7.html#the-usedefineforclassfields-flag-and-the-declare-property-modifier).
 
 Если вы используете библиотеку, которая сильно зависит от полей класса, будьте осторожны с ее предполагаемым использованием библиотекой.
@@ -78,15 +84,36 @@ export type { T }
 
 Но несколько библиотек еще не перешли на это новое значение по умолчанию, в том числе [`lit-element`](https://github.com/lit/lit-element/issues/1030). В этих случаях явно установите для `useDefineForClassFields` значение `false`.
 
+#### `target`
+
+- [Документация TypeScript](https://www.typescriptlang.org/tsconfig#target)
+
+Vite не транспилирует TypeScript с настроенным значением `target` по умолчанию, следуя тому же поведению, что и `esbuild`.
+
+Вместо этого можно использовать параметр [`esbuild.target`](/config/shared-options.html#esbuild), который по умолчанию имеет значение `esnext` для минимальной транспиляции. В сборках параметр [`build.target`](/config/build-options.html#build-target) имеет более высокий приоритет и также может быть установлен при необходимости.
+
+::: warning `useDefineForClassFields`
+Если `target` не `ESNext` или `ES2022` или новее, или если файл `tsconfig.json` отсутствует, для `useDefineForClassFields` по умолчанию будет установлено значение `false`, что может быть проблематичным со значением `esbuild.target` по умолчанию `esnext`. Он может передаваться в [статические блоки инициализации](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/Static_initialization_blocks#browser_compatibility), которые могут не поддерживаться вашим браузером.
+
+Таким образом, рекомендуется установить для параметра `target` значением `ESNext` или `ES2022` или новее или явно установить для `useDefineForClassFields` значение `true` при настройке `tsconfig.json`.
+:::
+
 #### Другие параметры компилятора, влияющие на результат сборки
 
 - [`extends`](https://www.typescriptlang.org/tsconfig#extends)
 - [`importsNotUsedAsValues`](https://www.typescriptlang.org/tsconfig#importsNotUsedAsValues)
 - [`preserveValueImports`](https://www.typescriptlang.org/tsconfig#preserveValueImports)
+- [`verbatimModuleSyntax`](https://www.typescriptlang.org/tsconfig#verbatimModuleSyntax)
+- [`jsx`](https://www.typescriptlang.org/tsconfig#jsx)
 - [`jsxFactory`](https://www.typescriptlang.org/tsconfig#jsxFactory)
 - [`jsxFragmentFactory`](https://www.typescriptlang.org/tsconfig#jsxFragmentFactory)
+- [`jsxImportSource`](https://www.typescriptlang.org/tsconfig#jsxImportSource)
+- [`experimentalDecorators`](https://www.typescriptlang.org/tsconfig#experimentalDecorators)
+- [`alwaysStrict`](https://www.typescriptlang.org/tsconfig#alwaysStrict)
 
-Если миграция вашей кодовой базы на `"isolatedModules": true` является непреодолимой задачей, вы можете обойти ее с помощью стороннего плагина, такого как [rollup-plugin-friendly-type-imports](https://www.npmjs.com/package/rollup-plugin-friendly-type-imports). Однако этот подход официально не поддерживается Vite.
+::: tip `skipLibCheck`
+Стартовые шаблоны Vite по умолчанию имеют `"skipLibCheck": "true"`, чтобы избежать зависимостей проверки типов, поскольку они могут поддерживать только определенные версии и конфигурации TypeScript. Вы можете узнать больше по адресу [vuejs/vue-cli#5688](https://github.com/vuejs/vue-cli/pull/5688).
+:::
 
 ### Клиентские типы
 
@@ -178,7 +205,7 @@ export default defineConfig({
 
 ## CSS
 
-При импорте файлов `.css` их содержимое будет внедрено на страницу с помощью тега `<style>` с поддержкой HMR. Вы также можете получить обработанный CSS в виде строки в качестве экспорта модуля по умолчанию.
+При импорте файлов `.css` их содержимое будет добавлено на страницу через тег `<style>` с поддержкой HMR.
 
 ### `@import` Inlining и Rebasing
 
@@ -253,7 +280,7 @@ import otherStyles from './bar.css?inline' // will not be injected
 ```
 
 ::: tip ПРИМЕЧАНИЕ
-Импорт по умолчанию и именованный импорт из файлов CSS (например, `import style from './foo.css'`) устарел, начиная с Vite 4. Вместо этого используйте запрос `?inline`.
+Импорт по умолчанию и именованный импорт из файлов CSS (например, `import style from './foo.css'`) удален, начиная с Vite 5. Вместо этого используйте запрос `?inline`.
 :::
 
 ### Lightning CSS
@@ -264,7 +291,7 @@ import otherStyles from './bar.css?inline' // will not be injected
 npm add -D lightningcss
 ```
 
-Если этот параметр включен, файлы CSS будут обрабатываться с помощью Lightning CSS вместо PostCSS. Чтобы настроить его, вы можете передать параметры CSS Lightning в параметр конфигурации [`css.lightingcss`](../config/shared-options.md#css-lightningcss).
+Если этот параметр включен, файлы CSS будут обрабатываться с помощью Lightning CSS вместо PostCSS. Чтобы настроить его, вы можете передать параметры Lightning CSS в параметр конфигурации [`css.lightningcss`](../config/shared-options.md#css-lightningcss).
 
 Чтобы настроить модули CSS, вы будете использовать [`css.lightningcss.cssModules`](https://lightningcss.dev/css-modules.html) вместо [`css.modules`](../config/shared-options.md#css-modules) (который настраивает способ обработки PostCSS модулей CSS).
 
@@ -541,9 +568,8 @@ import wasmUrl from 'foo.wasm?url'
 
 const main = async () => {
   const responsePromise = fetch(wasmUrl)
-  const { module, instance } = await WebAssembly.instantiateStreaming(
-    responsePromise,
-  )
+  const { module, instance } =
+    await WebAssembly.instantiateStreaming(responsePromise)
   /* ... */
 }
 
@@ -601,7 +627,7 @@ import MyWorker from './worker?worker'
 const worker = new MyWorker()
 ```
 
-Рабочий скрипт также может использовать операторы `import` ESM вместо `importScripts()`. **Примечание**: Во время разработки это зависит от [встроенной поддержки браузера](https://caniuse.com/?search=module%20worker), но для производственной сборки она компилируется отдельно.
+Рабочий скрипт также может использовать операторы `import` ESM вместо `importScripts()`. **Примечание**: Во время разработки это зависит от [встроенной поддержки браузера](https://caniuse.com/?search=module%20worker), но для производственной сборки он компилируется.
 
 По умолчанию рабочий скрипт будет выпущен как отдельный блок в производственной сборке. Если вы хотите встроить worker в виде строк base64, добавьте запрос `inline`:
 

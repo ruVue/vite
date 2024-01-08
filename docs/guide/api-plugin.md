@@ -311,11 +311,11 @@ Some `resolveId` calls' `importer` value may be an absolute path for a generic `
 
 ### `configurePreviewServer`
 
-- **Тип:** `(server: PreviewServerForHook) => (() => void) | void | Promise<(() => void) | void>`
+- **Тип:** `(server: PreviewServer) => (() => void) | void | Promise<(() => void) | void>`
 - **Вид:** `async`, `sequential`
-- **Смотрите также:** [PreviewServerForHook](./api-javascript#previewserverforhook)
+- **Смотрите также:** [PreviewServer](./api-javascript#previewserver)
 
-  То же, что и [`configureServer`](/guide/api-plugin.html#configureserver), но для сервера предварительного просмотра. Как и в случае с `configureServer`, ловушка `configurePreviewServer` вызывается перед установкой других промежуточных программ. Если вы хотите внедрить промежуточное программное обеспечение **после** других промежуточных программ, вы можете вернуть функцию из `configurePreviewServer`, которая будет вызываться после установки внутреннего мидлвара:
+  То же, что и [`configureServer`](/guide/api-plugin.html#configureserver), но для сервера предварительного просмотра. Как и в случае с `configureServer`, ловушка `configurePreviewServer` вызывается перед установкой других мидлваров. Если вы хотите внедрить мидлвар **после** других мидлваров, вы можете вернуть функцию из `configurePreviewServer`, которая будет вызываться после установки внутреннего мидлвара:
 
   ```js
   const myPlugin = () => ({

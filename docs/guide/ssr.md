@@ -16,10 +16,16 @@ SSR конкретно относится к интерфейсным платф
 
 ## Примеры проектов
 
-Vite предоставляет встроенную поддержку рендеринга на стороне сервера (SSR). Игровая площадка Vite содержит примеры настроек SSR для Vue 3 и React, которые можно использовать в качестве справочных материалов для этого руководства:
+Vite предоставляет встроенную поддержку рендеринга на стороне сервера (SSR). [`create-vite-extra`](https://github.com/bluwy/create-vite-extra) содержит примеры настроек SSR, которые вы можете использовать в качестве ссылок для этого руководства:
 
-- [Vue 3](https://github.com/vitejs/vite-plugin-vue/tree/main/playground/ssr-vue)
-- [React](https://github.com/vitejs/vite-plugin-react/tree/main/playground/ssr-react)
+- [Vanilla](https://github.com/bluwy/create-vite-extra/tree/master/template-ssr-vanilla)
+- [Vue](https://github.com/bluwy/create-vite-extra/tree/master/template-ssr-vue)
+- [React](https://github.com/bluwy/create-vite-extra/tree/master/template-ssr-react)
+- [Preact](https://github.com/bluwy/create-vite-extra/tree/master/template-ssr-preact)
+- [Svelte](https://github.com/bluwy/create-vite-extra/tree/master/template-ssr-svelte)
+- [Solid](https://github.com/bluwy/create-vite-extra/tree/master/template-ssr-solid)
+
+You can also scaffold these projects locally by [running `create-vite`](./index.md#scaffolding-your-first-vite-project) and choose `Others > create-vite-extra` under the framework option.
 
 ## Исходная структура
 
@@ -83,6 +89,10 @@ async function createServer() {
 
   // Use vite's connect instance as middleware. If you use your own
   // express router (express.Router()), you should use router.use
+  // When the server restarts (for example after the user modifies
+  // vite.config.js), `vite.middlewares` is still going to be the same
+  // reference (with a new internal stack of Vite and plugin-injected
+  // middlewares). The following is valid even after restarts.
   app.use(vite.middlewares)
 
   app.use('*', async (req, res) => {
@@ -177,18 +187,18 @@ app.use('*', async (req, res, next) => {
 
 - Переместите создание и все использование сервера разработки `vite` за условные ветки только для разработки, затем добавьте мидлвар для обслуживания статических файлов для обслуживания файлов из `dist/client`.
 
-Обратитесь к демонстрациям [Vue](https://github.com/vitejs/vite-plugin-vue/tree/main/playground/ssr-vue) и [React](https://github.com/vitejs/vite-plugin-react/tree/main/playground/ssr-react) для рабочей конфигурации.
+Смотрите [примеры проектов](#example-projects) для рабочей настройки.
 
 ## Создание директив предварительной загрузки
 
-`vite build` поддерживает флаг `--ssrManifest`, который будет генерировать `ssr-manifest.json` в выходном каталоге сборки:
+`vite build` поддерживает флаг `--ssrManifest`, который будет генерировать `.vite/ssr-manifest.json` в выходном каталоге сборки:
 
 ```diff
 - "build:client": "vite build --outDir dist/client",
 + "build:client": "vite build --outDir dist/client --ssrManifest",
 ```
 
-Приведенный выше скрипт теперь сгенерирует `dist/client/ssr-manifest.json` для сборки клиента (да, манифест SSR создается из сборки клиента, потому что мы хотим сопоставить идентификаторы модулей с файлами клиента). Манифест содержит сопоставления идентификаторов модулей с соответствующими фрагментами и файлами активов.
+Приведенный выше сценарий теперь сгенерирует `dist/client/.vite/ssr-manifest.json` для сборки клиента (да, манифест SSR генерируется из сборки клиента, поскольку мы хотим сопоставить идентификаторы модулей с файлами клиента). Манифест содержит сопоставления идентификаторов модулей с соответствующими фрагментами и файлами ресурсов.
 
 Чтобы использовать манифест, фреймворки должны предоставить способ сбора идентификаторов модулей компонентов, которые использовались во время вызова рендеринга сервера.
 
@@ -259,18 +269,14 @@ export function mySSRPlugin() {
 - Рассматривать все зависимости как `noExternal`
 - Выдавать ошибку, если какие-либо встроенные модули Node.js импортированы
 
+## SSR Resolve Conditions
+
+By default package entry resolution will use the conditions set in [`resolve.conditions`](../config/shared-options.md#resolve-conditions) for the SSR build. You can use [`ssr.resolve.conditions`](../config/ssr-options.md#ssr-resolve-conditions) and [`ssr.resolve.externalConditions`](../config/ssr-options.md#ssr-resolve-externalconditions) to customize this behavior.
+
 ## Vite CLI
 
 Команды CLI `$ vite dev` и `$ vite preview` также можно использовать для приложений SSR. Вы можете добавить слой мидлваров SSR на сервер разработки с помощью [`configureServer`](/guide/api-plugin#configureserver) и на сервер предварительного просмотра с помощью [`configurePreviewServer`](/guide/api-plugin#configurepreviewserver).
 
 :::tip Примечание
 Используйте пост-хук, чтобы ваше мидлвар SSR запускал мидлвар _после_ Vite.
-:::
-
-## Формат SSR
-
-By default, Vite generates the SSR bundle in ESM. There is experimental support for configuring `ssr.format`, but it isn't recommended. Future efforts around SSR development will be based on ESM, and CommonJS remains available for backward compatibility. If using ESM for SSR isn't possible in your project, you can set `legacy.buildSsrCjsExternalHeuristics: true` to generate a CJS bundle using the same [externalization heuristics of Vite v2](https://v2.vitejs.dev/guide/ssr.html#ssr-externals).
-
-:::warning Предупреждение
-Экспериментальные `legacy.buildSsrCjsExternalHeuristics` и `ssr.format: 'cjs'` будут удалены в Vite 5. Найдите дополнительную информацию и оставьте отзыв [в этом обсуждении](https://github.com/vitejs/vite/discussions/13816).
 :::

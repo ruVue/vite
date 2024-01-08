@@ -58,9 +58,9 @@ $ npm run preview
 
 1. Установите правильный `base` в `vite.config.js`.
 
-   Если вы выполняете развертывание на `https://<USERNAME>.github.io/`, вы можете опустить `base`, так как по умолчанию это `'/'`.
+   Если вы выполняете развертывание на `https://<USERNAME>.github.io/` или на личном домене через страницы GitHub (например, `www.example.com`), установите для `base` значение `'/'`. В качестве альтернативы вы можете удалить `base` из конфигурации, поскольку по умолчанию он равен `'/'`.
 
-   Если вы выполняете развертывание на `https://<USERNAME>.github.io/<REPO>/`, например, ваш репозиторий находится в `https://github.com/<USERNAME>/<REPO>`, установите `base` в `'/<REPO>/'`.
+   Если вы выполняете развертывание на `https://<USERNAME>.github.io/<REPO>/` (например, ваш репозиторий находится по адресу `https://github.com/<USERNAME>/<REPO>`), установите для `base` значение `'/<REPO>/'`.
 
 2. Перейдите к конфигурации своих страниц GitHub на странице настроек репозитория и выберите источник развертывания как "GitHub Actions", это позволит вам создать рабочий процесс, который собирает и развертывает ваш проект, пример рабочего процесса, который устанавливает зависимости и выполняет сборку с использованием npm. предоставлен:
 
@@ -96,7 +96,7 @@ $ npm run preview
        runs-on: ubuntu-latest
        steps:
          - name: Checkout
-           uses: actions/checkout@v3
+           uses: actions/checkout@v4
          - name: Set up Node
            uses: actions/setup-node@v3
            with:
@@ -109,13 +109,13 @@ $ npm run preview
          - name: Setup Pages
            uses: actions/configure-pages@v3
          - name: Upload artifact
-           uses: actions/upload-pages-artifact@v1
+           uses: actions/upload-pages-artifact@v2
            with:
              # Upload dist repository
              path: './dist'
          - name: Deploy to GitHub Pages
            id: deployment
-           uses: actions/deploy-pages@v1
+           uses: actions/deploy-pages@v2
    ```
 
 ## GitLab Pages and GitLab CI
@@ -220,7 +220,7 @@ Vercel CLI
 1. Установите [Wrangler CLI](https://developers.cloudflare.com/workers/wrangler/get-started/).
 2. Аутентифицируйте Wrangler с помощью своей учетной записи Cloudflare, используя `wrangler login`.
 3. Запустите команду сборки.
-4. Разверните с помощью `npx wrangler pages publish dist`.
+4. Разверните с помощью `npx wrangler pages deploy dist`.
 
 ```bash
 # Install Wrangler CLI
@@ -233,7 +233,7 @@ $ wrangler login
 $ npm run build
 
 # Create new deployment
-$ npx wrangler pages publish dist
+$ npx wrangler pages deploy dist
 ```
 
 После того, как ваши ресурсы будут загружены, Wrangler предоставит вам URL-адрес предварительного просмотра для проверки вашего сайта. Когда вы войдете в панель инструментов Cloudflare Pages, вы увидите свой новый проект.
@@ -340,4 +340,8 @@ $ npx wrangler pages publish dist
 
 ## AWS Amplify Hosting
 
-Разверните свой статический сайт с помощью [AWS Amplify Hosting](https://aws.amazon.com/amplify/hosting/), следуя этим [инструкциям](https://docs.amplify.aws/guides/hosting/vite/q/platform/js/)
+Разверните свой статический сайт с помощью [хостинга AWS Amplify](https://aws.amazon.com/amplify/hosting/), следуя этим [инструкциям](https://docs.amplify.aws/guides/hosting/vite/q/platform/js/)
+
+## Kinsta Static Site Hosting
+
+Вы можете развернуть свое приложение Vite в качестве статического сайта на [Kinsta](https://kinsta.com/static-site-hosting/), следуя этим [инструкциям](https://kinsta.com/docs/react-vite-example/).

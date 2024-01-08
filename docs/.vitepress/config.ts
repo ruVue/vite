@@ -1,4 +1,5 @@
 import { defineConfig, DefaultTheme } from 'vitepress'
+import { buildEnd } from './buildEnd.config'
 
 const ogDescription = 'Интерфейсные инструменты нового поколения'
 const ogImage = 'https://vitejs.ru/og-image.png'
@@ -30,26 +31,29 @@ const additionalTitle = ((): string => {
   }
 })()
 const versionLinks = ((): DefaultTheme.NavItemWithLink[] => {
+  const oldVersions: DefaultTheme.NavItemWithLink[] = [
+    {
+      text: 'Документация Vite 4',
+      link: 'https://v4.vitejs.ru',
+    },
+    {
+      text: 'Документация Vite 3',
+      link: 'https://v3.vitejs.ru',
+    },
+  ]
+
   switch (deployType) {
     case 'main':
     case 'local':
       return [
         {
-          text: 'Vite 3 Docs (release)',
-          link: 'https://vitejs.dev',
+          text: 'Документация Vite 5 (релиз)',
+          link: 'https://vitejs.ru',
         },
-        {
-          text: 'Документация Vite 3',
-          link: 'https://v3.vitejs.ru',
-        },
+        ...oldVersions,
       ]
     case 'release':
-      return [
-        {
-          text: 'Документация Vite 3',
-          link: 'https://v3.vitejs.ru',
-        },
-      ]
+      return oldVersions
   }
 })()
 
@@ -59,6 +63,11 @@ export default defineConfig({
 
   head: [
     ['link', { rel: 'icon', type: 'image/svg+xml', href: '/logo.svg' }],
+    [
+      'link',
+      { rel: 'alternate', type: 'application/rss+xml', href: '/blog.rss' },
+    ],
+    ['link', { rel: 'me', href: 'https://m.webtoo.ls/@vite' }],
     ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:title', content: ogTitle }],
     ['meta', { property: 'og:image', content: ogImage }],
@@ -89,12 +98,8 @@ export default defineConfig({
   ],
 
   locales: {
-    root: { label: 'English' },
-    zh: { label: '简体中文', link: 'https://cn.vitejs.dev' },
-    ja: { label: '日本語', link: 'https://ja.vitejs.dev' },
-    es: { label: 'Español', link: 'https://es.vitejs.dev' },
-    pt: { label: 'Português', link: 'https://pt.vitejs.dev' },
-    ko: { label: '한국어', link: 'https://ko.vitejs.dev' },
+    root: { label: 'Русский' },
+    ут: { label: 'English', link: 'https://vitejs.dev' },
   },
 
   themeConfig: {
@@ -142,6 +147,7 @@ export default defineConfig({
         text: 'Ресурсы',
         items: [
           { text: 'Команда', link: '/team' },
+          { text: 'Блог', link: '/blog' },
           { text: 'Релизы', link: '/releases' },
           {
             items: [
@@ -158,6 +164,10 @@ export default defineConfig({
                 link: 'https://github.com/vitejs/awesome-vite',
               },
               {
+                text: 'ViteConf',
+                link: 'https://viteconf.org',
+              },
+              {
                 text: 'Сообщество разработчиков',
                 link: 'https://dev.to/t/vite',
               },
@@ -168,6 +178,10 @@ export default defineConfig({
               {
                 text: 'Журнал изменений',
                 link: 'https://github.com/vitejs/vite/blob/main/packages/vite/CHANGELOG.md',
+              },
+              {
+                text: 'Contributing',
+                link: 'https://github.com/vitejs/vite/blob/main/CONTRIBUTING.md',
               },
             ],
           },
@@ -241,11 +255,15 @@ export default defineConfig({
               link: '/guide/troubleshooting',
             },
             {
+              text: 'Производительность',
+              link: '/guide/performance',
+            },
+            {
               text: 'Философия',
               link: '/guide/philosophy',
             },
             {
-              text: 'Миграция с v3',
+              text: 'Миграция с v4',
               link: '/guide/migration',
             },
           ],
@@ -312,5 +330,10 @@ export default defineConfig({
         },
       ],
     },
+
+    outline: {
+      level: [2, 3],
+    },
   },
+  buildEnd,
 })

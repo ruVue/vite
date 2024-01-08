@@ -53,15 +53,12 @@ export function assetImportMetaUrlPlugin(config: ResolvedConfig): Plugin {
       ) {
         let s: MagicString | undefined
         const assetImportMetaUrlRE =
-          /\bnew\s+URL\s*\(\s*('[^']+'|"[^"]+"|`[^`]+`)\s*,\s*import\.meta\.url\s*(?:,\s*)?\)/g
+          /\bnew\s+URL\s*\(\s*('[^']+'|"[^"]+"|`[^`]+`)\s*,\s*import\.meta\.url\s*(?:,\s*)?\)/dg
         const cleanString = stripLiteral(code)
 
         let match: RegExpExecArray | null
         while ((match = assetImportMetaUrlRE.exec(cleanString))) {
-          const { 0: exp, 1: emptyUrl, index } = match
-
-          const urlStart = cleanString.indexOf(emptyUrl, index)
-          const urlEnd = urlStart + emptyUrl.length
+          const [[startIndex, endIndex], [urlStart, urlEnd]] = match.indices!
           const rawUrl = code.slice(urlStart, urlEnd)
 
           if (!s) s = new MagicString(code)
@@ -92,18 +89,14 @@ export function assetImportMetaUrlPlugin(config: ResolvedConfig): Plugin {
                 // A hack to allow 'as' & 'query' exist at the same time
                 query: injectQuery(queryString, 'url'),
               }
-              // Note: native import.meta.url is not supported in the baseline
-              // target so we use the global location here. It can be
-              // window.location or self.location in case it is used in a Web Worker.
-              // @see https://developer.mozilla.org/en-US/docs/Web/API/Window/self
               s.update(
-                index,
-                index + exp.length,
+                startIndex,
+                endIndex,
                 `new URL((import.meta.glob(${JSON.stringify(
                   pattern,
                 )}, ${JSON.stringify(
                   globOptions,
-                )}))[${pureUrl}], self.location)`,
+                )}))[${pureUrl}], import.meta.url)`,
               )
               continue
             }
@@ -145,16 +138,16 @@ export function assetImportMetaUrlPlugin(config: ResolvedConfig): Plugin {
             }
           }
           if (!builtUrl) {
-            const rawExp = code.slice(index, index + exp.length)
+            const rawExp = code.slice(startIndex, endIndex)
             config.logger.warnOnce(
               `\n${rawExp} doesn't exist at build time, it will remain unchanged to be resolved at runtime`,
             )
             builtUrl = url
           }
           s.update(
-            index,
-            index + exp.length,
-            `new URL(${JSON.stringify(builtUrl)}, self.location)`,
+            startIndex,
+            endIndex,
+            `new URL(${JSON.stringify(builtUrl)}, import.meta.url)`,
           )
         }
         if (s) {
