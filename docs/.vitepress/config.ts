@@ -58,6 +58,7 @@ const versionLinks = ((): DefaultTheme.NavItemWithLink[] => {
 })()
 
 export default defineConfig({
+  lang: 'ru',
   title: `Vite${additionalTitle}`,
   description: 'Интерфейсные инструменты нового поколения',
 
@@ -99,7 +100,7 @@ export default defineConfig({
 
   locales: {
     root: { label: 'Русский' },
-    ут: { label: 'English', link: 'https://vitejs.dev' },
+    en: { label: 'English', link: 'https://vitejs.dev' },
   },
 
   themeConfig: {
@@ -126,11 +127,6 @@ export default defineConfig({
       searchParameters: {
         facetFilters: ['tags:ru'],
       },
-    },
-
-    localeLinks: {
-      text: 'Русский',
-      items: [{ text: 'English', link: 'https://vitejs.dev' }],
     },
 
     footer: {
