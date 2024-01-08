@@ -153,34 +153,34 @@ VITE_APP_TITLE=My App (staging)
 NODE_ENV=development
 ```
 
-## NODE_ENV and Modes
+## NODE_ENV и Режимы
 
-It's important to note that `NODE_ENV` (`process.env.NODE_ENV`) and modes are two different concepts. Here's how different commands affect the `NODE_ENV` and mode:
+Важно отметить, что `NODE_ENV` (`process.env.NODE_ENV`) и режимы — это два разных понятия. Вот как разные команды влияют на `NODE_ENV` и режим:
 
-| Command                                              | NODE_ENV        | Mode            |
+| Команда                                              | NODE_ENV        | Режим           |
 | ---------------------------------------------------- | --------------- | --------------- |
 | `vite build`                                         | `"production"`  | `"production"`  |
 | `vite build --mode development`                      | `"production"`  | `"development"` |
 | `NODE_ENV=development vite build`                    | `"development"` | `"production"`  |
 | `NODE_ENV=development vite build --mode development` | `"development"` | `"development"` |
 
-The different values of `NODE_ENV` and mode also reflect on its corresponding `import.meta.env` properties:
+Различные значения `NODE_ENV` и mode также отражаются на соответствующих свойствах `import.meta.env`:
 
-| Command                | `import.meta.env.PROD` | `import.meta.env.DEV` |
+| Команда                | `import.meta.env.PROD` | `import.meta.env.DEV` |
 | ---------------------- | ---------------------- | --------------------- |
 | `NODE_ENV=production`  | `true`                 | `false`               |
 | `NODE_ENV=development` | `false`                | `true`                |
 | `NODE_ENV=other`       | `false`                | `true`                |
 
-| Command              | `import.meta.env.MODE` |
+| Команда              | `import.meta.env.MODE` |
 | -------------------- | ---------------------- |
 | `--mode production`  | `"production"`         |
 | `--mode development` | `"development"`        |
 | `--mode staging`     | `"staging"`            |
 
-:::tip `NODE_ENV` in `.env` files
+:::tip `NODE_ENV` в файлах `.env`
 
-`NODE_ENV=...` can be set in the command, and also in your `.env` file. If `NODE_ENV` is specified in a `.env.[mode]` file, the mode can be used to control its value. However, both `NODE_ENV` and modes remain as two different concepts.
+`NODE_ENV=...` можно установить в команде, а также в вашем файле `.env`. Если `NODE_ENV` указан в файле `.env.[mode]`, режим можно использовать для управления его значением. Однако и `NODE_ENV`, и режимы остаются двумя разными понятиями.
 
-The main benefit with `NODE_ENV=...` in the command is that it allows Vite to detect the value early. It also allows you to read `process.env.NODE_ENV` in your Vite config as Vite can only load the env files once the config is evaluated.
+Основное преимущество команды `NODE_ENV=...` заключается в том, что она позволяет Vite обнаружить значение на ранней стадии. Это также позволяет вам читать `process.env.NODE_ENV` в вашей конфигурации Vite, поскольку Vite может загружать файлы env только после оценки конфигурации.
 :::

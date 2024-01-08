@@ -12,8 +12,8 @@
 
 ::: tip ПРИМЕЧАНИЕ
 
-There are cases when other servers might respond instead of Vite.
-See [`server.host`](./server-options#server-host) for more details.
+Бывают случаи, когда вместо Vite могут отвечать другие серверы.
+Дополнительную информацию смотрите в [`server.host`](./server-options#server-host).
 
 :::
 

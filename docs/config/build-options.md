@@ -191,7 +191,7 @@ This option allows users to override CSS minification specifically instead of de
 - **Тип:** `boolean`
 - **По умолчанию:** `false`
 
-During the SSR build, static assets aren't emitted as it is assumed they would be emitted as part of the client build. This option allows frameworks to force emitting them in both the client and SSR build. It is responsibility of the framework to merge the assets with a post build step.
+Во время сборки SSR статические ресурсы не создаются, поскольку предполагается, что они будут созданы как часть сборки клиента. Эта опция позволяет платформам принудительно выдавать их как в клиенте, так и в сборке SSR. Платформа несет ответственность за объединение ресурсов на этапе после сборки.
 
 ## build.minify
 
@@ -200,9 +200,9 @@ During the SSR build, static assets aren't emitted as it is assumed they would b
 
 Установите значение `false`, чтобы отключить минимизацию, или укажите минимизатор для использования. По умолчанию используется [esbuild](https://github.com/evanw/esbuild), который в 20–40 раз быстрее, чем краткий, и только на 1–2% хуже сжатие. [Тесты](https://github.com/privatenumber/minification-benchmarks)
 
-Note the `build.minify` option does not minify whitespaces when using the `'es'` format in lib mode, as it removes pure annotations and breaks tree-shaking.
+Обратите внимание, что опция `build.minify` не уменьшает пробелы при использовании формата `'es'` в режиме библиотеки, поскольку она удаляет чистые аннотации и предотвращает tree-shaking.
 
-Обратите внимание, что опция `build.minify` не минимизирует пробелы при использовании формата `'es'` в режиме lib, поскольку она удаляет чистые аннотации и прерывает встряхивание дерева.
+Обратите внимание, что опция `build.minify` не минимизирует пробелы при использовании формата `'es'` в режиме lib, поскольку она удаляет чистые аннотации и прерывает tree-shaking.
 
 Terser должен быть установлен, если для него задано значение `'terser'`.
 
@@ -216,7 +216,7 @@ npm add -D terser
 
 Дополнительные [опции минимизации](https://terser.org/docs/api-reference#minify-options) для передачи в Terser.
 
-In addition, you can also pass a `maxWorkers: number` option to specify the max number of workers to spawn. Defaults to the number of CPUs minus 1.
+Кроме того, вы также можете передать параметр `maxWorkers: number`, чтобы указать максимальное количество создаваемых рабочих. По умолчанию количество процессоров минус 1.
 
 ## build.write
 

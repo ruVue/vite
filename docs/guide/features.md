@@ -142,16 +142,16 @@ Vite не транспилирует TypeScript с настроенным зна
 ::: tip
 Чтобы переопределить типизацию по умолчанию, добавьте файл определения типа, содержащий ваши типизации. Затем добавьте ссылку на тип перед `vite/client`.
 
-For example, to make the default import of `*.svg` a React component:
+Например, чтобы сделать импорт `*.svg` по умолчанию компонентом React:
 
-- `vite-env-override.d.ts` (the file that contains your typings):
+- `vite-env-override.d.ts` (файл, содержащий ваши наборы текста):
   ```ts
   declare module '*.svg' {
     const content: React.FC<React.SVGProps<SVGElement>>
     export default content
   }
   ```
-- The file containing the reference to `vite/client`:
+- Файл, содержащий ссылку на `vite/client`:
   ```ts
   /// <reference types="./vite-env-override.d.ts" />
   /// <reference types="vite/client" />
@@ -576,12 +576,12 @@ const main = async () => {
 main()
 ```
 
-### Fetching the module in Node.js
+### Получение модуля в Node.js
 
-In SSR, the `fetch()` happening as part of the `?init` import, may fail with `TypeError: Invalid URL`.
-See the issue [Support wasm in SSR](https://github.com/vitejs/vite/issues/8882).
+В SSR функция `fetch()`, выполняемая как часть импорта `?init`, может завершиться неудачно с сообщением `TypeError: Invalid URL`.
+Смотрите проблему [Поддержка Wasm в SSR](https://github.com/vitejs/vite/issues/8882).
 
-Here is an alternative, assuming the project base is the current directory:
+Вот альтернатива, предполагающая, что базой проекта является текущий каталог:
 
 ```js
 import wasmUrl from 'foo.wasm?url'

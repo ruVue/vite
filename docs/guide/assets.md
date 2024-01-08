@@ -1,7 +1,7 @@
 # Обработка статических ресурсов
 
-- Related: [Общедоступный базовый путь](./build#public-base-path)
-- Related: [Параметр конфигурации `assetsInclude`](/config/shared-options.md#assetsinclude)
+- Связанный: [Общедоступный базовый путь](./build#public-base-path)
+- Связанный: [Параметр конфигурации `assetsInclude`](/config/shared-options.md#assetsinclude)
 
 ## Импорт объекта как URL
 

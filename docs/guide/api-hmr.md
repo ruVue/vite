@@ -55,9 +55,9 @@ if (import.meta.hot) {
 }
 ```
 
-## IntelliSense for TypeScript
+## IntelliSense для TypeScript
 
-Vite provides type definitions for `import.meta.hot` in [`vite/client.d.ts`](https://github.com/vitejs/vite/blob/main/packages/vite/client.d.ts). You can create an `env.d.ts` in the `src` directory so TypeScript picks up the type definitions:
+Vite предоставляет определения типов для `import.meta.hot` в [`vite/client.d.ts`](https://github.com/vitejs/vite/blob/main/packages/vite/client.d.ts). Вы можете создать `env.d.ts` в каталоге `src`, чтобы TypeScript подбирал определения типов:
 
 ```ts
 /// <reference types="vite/client" />

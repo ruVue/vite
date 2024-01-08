@@ -35,7 +35,7 @@ export default defineConfig({
 
 По умолчанию связанные пакеты не внутри `node_modules` предварительно не объединяются. Используйте этот параметр, чтобы предварительно объединить связанный пакет.
 
-**Experimental:** If you're using a library with many deep imports, you can also specify a trailing glob pattern to pre-bundle all deep imports at once. This will avoid constantly pre-bundling whenever a new deep import is used. For example:
+**Экспериментально:** Если вы используете библиотеку с большим количеством глубоких импортов, вы также можете указать завершающий шаблон glob, чтобы предварительно объединить все глубокие импорты одновременно. Это позволит избежать постоянного предварительного объединения при использовании нового глубокого импорта. Например:
 
 ```js
 export default defineConfig({

@@ -118,7 +118,7 @@ $ npm run preview
            uses: actions/deploy-pages@v2
    ```
 
-## GitLab Pages and GitLab CI
+## GitLab Pages и GitLab CI
 
 1. Установите правильный `base` в `vite.config.js`.
 

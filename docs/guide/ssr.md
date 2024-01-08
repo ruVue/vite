@@ -33,11 +33,11 @@ You can also scaffold these projects locally by [running `create-vite`](./index.
 
 ```
 - index.html
-- server.js # main application server
+- server.js # главный сервер приложений
 - src/
-  - main.js          # exports env-agnostic (universal) app code
-  - entry-client.js  # mounts the app to a DOM element
-  - entry-server.js  # renders the app using the framework's SSR API
+  - main.js          # экспортирует код приложения, независимый от env (универсальный)
+  - entry-client.js  # монтирует приложение к элементу DOM
+  - entry-server.js  # визуализирует приложение с помощью API SSR платформы
 ```
 
 `index.html` должен будет ссылаться на `entry-client.js` и включать заполнитель, где должна быть введена разметка, отображаемая сервером:
@@ -237,7 +237,7 @@ const html = await vueServerRenderer.renderToString(app, ctx)
 - `load`
 - `transform`
 
-**Example:**
+**Пример:**
 
 ```js
 export function mySSRPlugin() {
@@ -269,9 +269,9 @@ export function mySSRPlugin() {
 - Рассматривать все зависимости как `noExternal`
 - Выдавать ошибку, если какие-либо встроенные модули Node.js импортированы
 
-## SSR Resolve Conditions
+## Условия решения SSR
 
-By default package entry resolution will use the conditions set in [`resolve.conditions`](../config/shared-options.md#resolve-conditions) for the SSR build. You can use [`ssr.resolve.conditions`](../config/ssr-options.md#ssr-resolve-conditions) and [`ssr.resolve.externalConditions`](../config/ssr-options.md#ssr-resolve-externalconditions) to customize this behavior.
+По умолчанию разрешение записи пакета будет использовать условия, установленные в [`resolve.conditions`](../config/shared-options.md#resolve-conditions) для сборки SSR. Вы можете использовать [`ssr.resolve.conditions`](../config/ssr-options.md#ssr-resolve-conditions) и [`ssr.resolve.externalConditions`](../config/ssr-options.md#ssr-resolve-externalconditions), чтобы настроить это поведение.
 
 ## Vite CLI
 

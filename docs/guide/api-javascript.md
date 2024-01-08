@@ -38,11 +38,11 @@ const __dirname = fileURLToPath(new URL('.', import.meta.url))
 При использовании `createServer` и `build` в одном и том же процессе Node.js обе функции полагаются на `process.env.NODE_ENV` для правильной работы, что также зависит от параметра конфигурации `mode`. Чтобы предотвратить конфликтное поведение, установите для `process.env.NODE_ENV` или `mode` двух API значение `development`. В противном случае вы можете создать дочерний процесс для отдельного запуска API.
 :::
 
-::: tip NOTE
-When using [middleware mode](/config/server-options.html#server-middlewaremode) combined with [proxy config for WebSocket](/config/server-options.html#server-proxy), the parent http server should be provided in `middlewareMode` to bind the proxy correctly.
+::: tip ПРИМЕЧАНИЕ
+При использовании [режима мидлвара](/config/server-options.html#server-middlewaremode) в сочетании с [конфигурацией прокси-сервера для WebSocket](/config/server-options.html#server-proxy), необходимо указать родительский http-сервер в `middlewareMode`, чтобы правильно привязать прокси.
 
 <details>
-<summary>Example</summary>
+<summary>Пример</summary>
 
 ```ts
 import http from 'http'
@@ -314,7 +314,7 @@ function mergeConfig(
 
 Глубоко объедините две конфигурации Vite. `isRoot` представляет уровень в конфигурации Vite, который объединяется. Например, установите `false`, если вы объединяете две опции `build`.
 
-::: tip NOTE
+::: tip ПРИМЕЧАНИЕ
 `mergeConfig` принимает только конфигурацию в объектной форме. Если у вас есть конфигурация в форме обратного вызова, вам следует вызвать ее перед переходом в `mergeConfig`.
 
 Вы можете использовать помощник `defineConfig` для объединения конфигурации в форме обратного вызова с другой конфигурацией:

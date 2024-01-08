@@ -260,7 +260,7 @@ export default defineConfig({
 - **Тип:** `'postcss' | 'lightningcss'`
 - **По умолчанию:** `'postcss'`
 
-Selects the engine used for CSS processing. Check out [Lightning CSS](../guide/features.md#lightning-css) for more information.
+Выбирает механизм, используемый для обработки CSS. Посетите [Lightning CSS](../guide/features.md#lightning-css) для получения дополнительной информации.
 
 ## css.lightningcss
 
@@ -314,7 +314,7 @@ import type {
 
 - **Тип:** `ESBuildOptions | false`
 
-`ESBuildOptions` extends [esbuild's own transform options](https://esbuild.github.io/api/#transform). The most common use case is customizing JSX:
+`ESBuildOptions` расширяет [собственные параметры преобразования esbuild](https://esbuild.github.io/api/#transform). Самый распространенный вариант использования — настройка JSX:
 
 ```js
 export default defineConfig({

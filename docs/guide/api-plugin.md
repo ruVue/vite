@@ -159,9 +159,9 @@ console.log(msg)
 - [`load`](https://rollupjs.org/plugin-development/#load)
 - [`transform`](https://rollupjs.org/plugin-development/#transform)
 
-These hooks also have an extended `options` parameter with additional Vite-specific properties. You can read more in the [SSR documentation](/guide/ssr#ssr-specific-plugin-logic).
+Эти хуки также имеют расширенный параметр `options` с дополнительными свойствами, специфичными для Vite. Дополнительную информацию можно прочитать в [документации по SSR](/guide/ssr#ssr-specific-plugin-logic).
 
-Some `resolveId` calls' `importer` value may be an absolute path for a generic `index.html` at root as it's not always possible to derive the actual importer due to Vite's unbundled dev server pattern. For imports handled within Vite's resolve pipeline, the importer can be tracked during the import analysis phase, providing the correct `importer` value.
+Некоторые значения `importer`, вызываемые `resolveId`, могут быть абсолютным путем к общему `index.html` в корне, поскольку не всегда возможно получить фактический импортер из-за отдельного шаблона сервера разработки Vite. Для импорта, обрабатываемого в конвейере разрешения Vite, импортера можно отследить на этапе анализа импорта, указав правильное значение `importer`.
 
 При закрытии сервера вызываются следующие хуки:
 
