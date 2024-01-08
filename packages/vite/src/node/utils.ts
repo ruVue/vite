@@ -150,7 +150,7 @@ export function isOptimizable(
   )
 }
 
-export const bareImportRE = /^(?![a-zA-Z]:)[\w@](?!.*:\/\/)/
+export const bareImportRE = /^(?![a-z]:)[\w@](?!.*:\/\/)/i
 export const deepImportRE = /^([^@][^/]*)\/|^(@[^/]+\/[^/]+)\//
 
 // TODO: use import()
@@ -290,7 +290,8 @@ export const isDataUrl = (url: string): boolean => dataUrlRE.test(url)
 export const virtualModuleRE = /^virtual-module:.*/
 export const virtualModulePrefix = 'virtual-module:'
 
-const knownJsSrcRE = /\.(?:[jt]sx?|m[jt]s|vue|marko|svelte|astro|imba)(?:$|\?)/
+const knownJsSrcRE =
+  /\.(?:[jt]sx?|m[jt]s|vue|marko|svelte|astro|imba|mdx)(?:$|\?)/
 export const isJSRequest = (url: string): boolean => {
   url = cleanUrl(url)
   if (knownJsSrcRE.test(url)) {
@@ -1181,7 +1182,7 @@ export function stripBomTag(content: string): string {
   return content
 }
 
-const windowsDrivePathPrefixRE = /^[A-Za-z]:[/\\]/
+const windowsDrivePathPrefixRE = /^[A-Z]:[/\\]/i
 
 /**
  * path.isAbsolute also returns true for drive relative paths on windows (e.g. /something)

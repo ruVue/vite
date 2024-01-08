@@ -259,6 +259,10 @@ export function mySSRPlugin() {
 - Рассматривать все зависимости как `noExternal`
 - Выдавать ошибку, если какие-либо встроенные модули Node.js импортированы
 
+## SSR Resolve Conditions
+
+By default package entry resolution will use the conditions set in [`resolve.conditions`](../config/shared-options.md#resolve-conditions) for the SSR build. You can use [`ssr.resolve.conditions`](../config/ssr-options.md#ssr-resolve-conditions) and [`ssr.resolve.externalConditions`](../config/ssr-options.md#ssr-resolve-externalconditions) to customize this behavior.
+
 ## Vite CLI
 
 Команды CLI `$ vite dev` и `$ vite preview` также можно использовать для приложений SSR. Вы можете добавить слой мидлваров SSR на сервер разработки с помощью [`configureServer`](/guide/api-plugin#configureserver) и на сервер предварительного просмотра с помощью [`configurePreviewServer`](/guide/api-plugin#configurepreviewserver).
