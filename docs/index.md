@@ -22,8 +22,8 @@ hero:
       text: Посмотреть на GitHub
       link: https://github.com/vitejs/vite
     - theme: brand
-      text: 🎉 ViteConf 23!
-      link: https://viteconf.org/23/replay?utm=vite-homepage
+      text: ⚡ ViteConf 24!
+      link: https://viteconf.org/?utm=vite-homepage
 
 features:
   - icon: 💡
@@ -45,3 +45,16 @@ features:
     title: Полностью типизированные API
     details: Гибкие программные API с полной типизацией TypeScript.
 ---
+
+<script setup>
+import { onMounted } from 'vue'
+
+onMounted(() => {
+  const urlParams = new URLSearchParams(window.location.search)
+  if (urlParams.get('uwu') != null) {
+    const img = document.querySelector('.VPHero .VPImage.image-src')
+    img.src = '/logo-uwu.png'
+    img.alt = 'Vite Kawaii Logo by @icarusgkx'
+  }
+})
+</script>

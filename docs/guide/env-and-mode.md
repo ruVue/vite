@@ -2,7 +2,7 @@
 
 ## Переменные окружения
 
-Vite предоставляет переменные env для специального объекта **`import.meta.env`**. Некоторые встроенные переменные доступны во всех случаях:
+Vite выставляет переменные env на специальном объекте **`import.meta.env`**, которые статически заменяются во время сборки. Некоторые встроенные переменные доступны во всех случаях:
 
 - **`import.meta.env.MODE`**: {string} [режим](#modes), в котором работает приложение.
 
@@ -94,7 +94,7 @@ interface ImportMeta {
 }
 ```
 
-Если ваш код использует типы из сред браузера, таких как [DOM](https://github.com/microsoft/TypeScript/blob/main/lib/lib.dom.d.ts) и [WebWorker](https://github.com/microsoft/TypeScript/blob/main/lib/lib.webworker.d.ts), вы можете обновить поле [lib](https://www.typescriptlang.org/tsconfig#lib) в `tsconfig.json`.
+Если ваш код использует типы из сред браузера, таких как [DOM](https://github.com/microsoft/TypeScript/blob/main/src/lib/dom.generated.d.ts) и [WebWorker](https://github.com/microsoft/TypeScript/blob/main/src/lib/webworker.generated.d.ts), вы можете обновить поле [lib](https://www.typescriptlang.org/tsconfig#lib) в `tsconfig.json`.
 
 ```json
 {

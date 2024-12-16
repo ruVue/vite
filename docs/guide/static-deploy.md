@@ -36,7 +36,6 @@ $ npm run build
 После того, как вы создали приложение, вы можете протестировать его локально, выполнив команду `npm run preview`.
 
 ```bash
-$ npm run build
 $ npm run preview
 ```
 
@@ -98,24 +97,24 @@ $ npm run preview
          - name: Checkout
            uses: actions/checkout@v4
          - name: Set up Node
-           uses: actions/setup-node@v3
+           uses: actions/setup-node@v4
            with:
-             node-version: 18
+             node-version: 20
              cache: 'npm'
          - name: Install dependencies
-           run: npm install
+           run: npm ci
          - name: Build
            run: npm run build
          - name: Setup Pages
-           uses: actions/configure-pages@v3
+           uses: actions/configure-pages@v4
          - name: Upload artifact
-           uses: actions/upload-pages-artifact@v2
+           uses: actions/upload-pages-artifact@v3
            with:
-             # Upload dist repository
+             # Upload dist folder
              path: './dist'
          - name: Deploy to GitHub Pages
            id: deployment
-           uses: actions/deploy-pages@v2
+           uses: actions/deploy-pages@v4
    ```
 
 ## GitLab Pages и GitLab CI
@@ -334,14 +333,28 @@ $ npx wrangler pages deploy dist
 
 Вы также можете добавить в свой проект [пользовательский домен](https://render.com/docs/custom-domains).
 
+<!--
+  NOTE: The sections below are reserved for more deployment platforms not listed above.
+  Feel free to submit a PR that adds a new section with a link to your platform's
+  deployment guide, as long as it meets these criteria:
+
+  1. Users should be able to deploy their site for free.
+  2. Free tier offerings should host the site indefinitely and are not time-bound.
+     Offering a limited number of computation resource or site counts in exchange is fine.
+  3. The linked guides should not contain any malicious content.
+
+  The Vite team may change the criteria and audit the current list from time to time.
+  If a section is removed, we will ping the original PR authors before doing so.
+-->
+
 ## Flightcontrol
 
-Разверните свой статический сайт с помощью [Flightcontrol](https://www.flightcontrol.dev/?ref=docs-vite), следуя этим [инструкциям](https://www.flightcontrol.dev/docs/reference/examples/vite?ref=docs-vite)
-
-## AWS Amplify Hosting
-
-Разверните свой статический сайт с помощью [хостинга AWS Amplify](https://aws.amazon.com/amplify/hosting/), следуя этим [инструкциям](https://docs.amplify.aws/guides/hosting/vite/q/platform/js/)
+Разверните свой статический сайт с помощью [Flightcontrol](https://www.flightcontrol.dev/?ref=docs-vite), следуя этим [инструкциям](https://www.flightcontrol.dev/docs/reference/examples/vite?ref=docs-vite).
 
 ## Kinsta Static Site Hosting
 
-Вы можете развернуть свое приложение Vite в качестве статического сайта на [Kinsta](https://kinsta.com/static-site-hosting/), следуя этим [инструкциям](https://kinsta.com/docs/react-vite-example/).
+Разверните свой статический сайт с помощью [Kinsta](https://kinsta.com/static-site-hosting/), следуя этим [инструкциям](https://kinsta.com/docs/react-vite-example/).
+
+## xmit Static Site Hosting
+
+Разверните свой статический сайт с помощью [xmit](https://xmit.co), следуя этому [руководству](https://xmit.dev/posts/vite-quickstart/).

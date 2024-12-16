@@ -8,6 +8,8 @@ SSR конкретно относится к интерфейсным платф
 
 :::warning API низкого уровня
 Это низкоуровневый API, предназначенный для авторов библиотек и фреймворков. Если ваша цель — создать приложение, обязательно сначала ознакомьтесь с плагинами и инструментами SSR более высокого уровня в [разделе Awesome Vite SSR](https://github.com/vitejs/awesome-vite#ssr). Тем не менее, многие приложения успешно создаются непосредственно поверх собственного низкоуровневого API Vite.
+
+В настоящее время Vite работает над улучшенным API SSR с [Environment API](https://github.com/vitejs/vite/discussions/16358). Ознакомьтесь со ссылкой для получения более подробной информации.
 :::
 
 :::tip Помощь
@@ -53,7 +55,9 @@ You can also scaffold these projects locally by [running `create-vite`](./index.
 
 Если вам нужно выполнить условную логику на основе SSR и клиента, вы можете использовать
 
-```js
+```js twoslash
+import 'vite/client'
+// ---cut---
 if (import.meta.env.SSR) {
   // ... server only logic
 }
@@ -67,10 +71,10 @@ if (import.meta.env.SSR) {
 
 **server.js**
 
-```js{15-18}
-import fs from 'fs'
-import path from 'path'
-import { fileURLToPath } from 'url'
+```js{15-18} twoslash
+import fs from 'node:fs'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import express from 'express'
 import { createServer as createViteServer } from 'vite'
 
@@ -109,7 +113,18 @@ createServer()
 
 Следующим шагом является реализация обработчика `*` для обслуживания отображаемого сервером HTML:
 
-```js
+```js twoslash
+// @noErrors
+import fs from 'node:fs'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+/** @type {import('express').Express} */
+var app
+/** @type {import('vite').ViteDevServer}  */
+var vite
+
+// ---cut---
 app.use('*', async (req, res, next) => {
   const url = req.originalUrl
 
@@ -181,9 +196,9 @@ app.use('*', async (req, res, next) => {
 
 Затем в `server.js` нам нужно добавить некоторую логику, специфичную для продакшена, проверив `process.env.NODE_ENV`:
 
-- Вместо того, чтобы читать корень `index.html`, используйте `dist/client/index.html` в качестве шаблона, так как он содержит правильные ссылки ресурсов на сборку клиента.
+- Вместо чтения корневого `index.html` используйте `dist/client/index.html` в качестве шаблона, так как он содержит правильные ссылки на ресурсы для сборки клиента.
 
-- Вместо `await vite.ssrLoadModule('/src/entry-server.js')`, используйте `import('./dist/server/entry-server.js')` (этот файл является результатом сборки SSR).
+- Вместо `await vite.ssrLoadModule('/src/entry-server.js')` используйте `import('./dist/server/entry-server.js')` (этот файл является результатом сборки SSR).
 
 - Переместите создание и все использование сервера разработки `vite` за условные ветки только для разработки, затем добавьте мидлвар для обслуживания статических файлов для обслуживания файлов из `dist/client`.
 
@@ -239,7 +254,9 @@ const html = await vueServerRenderer.renderToString(app, ctx)
 
 **Пример:**
 
-```js
+```js twoslash
+/** @type {() => import('vite').Plugin} */
+// ---cut---
 export function mySSRPlugin() {
   return {
     name: 'my-ssr',

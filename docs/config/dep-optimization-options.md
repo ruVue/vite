@@ -8,7 +8,7 @@
 
 По умолчанию Vite будет сканировать все ваши файлы `.html`, чтобы обнаружить зависимости, которые необходимо предварительно связать (игнорируя `node_modules`, `build.outDir`, `__tests__` и `coverage`). Если указан `build.rollupOptions.input`, Vite вместо этого будет сканировать эти точки входа.
 
-Если ни один из них не соответствует вашим потребностям, вы можете указать пользовательские записи с помощью этой опции — значение должно быть [шаблон fast-glob](https://github.com/mrmlnc/fast-glob#basic-syntax) или массивом шаблоны, которые являются относительными от корня проекта Vite. Это перезапишет вывод записей по умолчанию. Только папки `node_modules` и `build.outDir` будут игнорироваться по умолчанию, если `optimizeDeps.entries` определен явно. Если необходимо игнорировать другие папки, вы можете использовать шаблон игнорирования как часть списка записей, помеченный начальным `!`.
+Если ни один из этих вариантов вам не подходит, вы можете указать пользовательские записи с помощью этой опции — значение должно быть [шаблоном fast-glob](https://github.com/mrmlnc/fast-glob#basic-syntax) или массивом шаблонов, которые являются относительными от корня проекта Vite. Это перезапишет вывод записей по умолчанию. Только папки `node_modules` и `build.outDir` будут игнорироваться по умолчанию, если `optimizeDeps.entries` явно определен. Если необходимо игнорировать другие папки, вы можете использовать шаблон игнорирования как часть списка записей, помеченный начальным `!`. Если вы не хотите игнорировать `node_modules` и `build.outDir`, вы можете указать, используя литеральные строковые пути (без шаблонов fast-glob).
 
 ## optimizeDeps.exclude
 
@@ -19,7 +19,9 @@
 :::warning CommonJS
 Зависимости CommonJS не следует исключать из оптимизации. Если зависимость ESM исключена из оптимизации, но имеет вложенную зависимость CommonJS, зависимость CommonJS должна быть добавлена в `optimizeDeps.include`. Пример:
 
-```js
+```js twoslash
+import { defineConfig } from 'vite'
+// ---cut---
 export default defineConfig({
   optimizeDeps: {
     include: ['esm-dep > cjs-dep'],
@@ -35,9 +37,11 @@ export default defineConfig({
 
 По умолчанию связанные пакеты не внутри `node_modules` предварительно не объединяются. Используйте этот параметр, чтобы предварительно объединить связанный пакет.
 
-**Экспериментально:** Если вы используете библиотеку с большим количеством глубоких импортов, вы также можете указать завершающий шаблон glob, чтобы предварительно объединить все глубокие импорты одновременно. Это позволит избежать постоянного предварительного объединения при использовании нового глубокого импорта. Например:
+**Экспериментально:** Если вы используете библиотеку с большим количеством глубоких импортов, вы также можете указать завершающий шаблон glob для предварительной упаковки всех глубоких импортов одновременно. Это позволит избежать постоянной предварительной упаковки при каждом использовании нового глубокого импорта. [Оставьте отзыв](https://github.com/vitejs/vite/discussions/15833). Например:
 
-```js
+```js twoslash
+import { defineConfig } from 'vite'
+// ---cut---
 export default defineConfig({
   optimizeDeps: {
     include: ['my-lib/components/**/*.vue'],
@@ -47,7 +51,17 @@ export default defineConfig({
 
 ## optimizeDeps.esbuildOptions
 
-- **Тип:** [`EsbuildBuildOptions`](https://esbuild.github.io/api/#simple-options)
+- **Тип:** [`Omit`](https://www.typescriptlang.org/docs/handbook/utility-types.html#omittype-keys)`<`[`EsbuildBuildOptions`](https://esbuild.github.io/api/#simple-options)`,
+| 'bundle'
+| 'entryPoints'
+| 'external'
+| 'write'
+| 'watch'
+| 'outdir'
+| 'outfile'
+| 'outbase'
+| 'outExtension'
+| 'metafile'>`
 
 Параметры для передачи в esbuild во время сканирования и оптимизации.
 
@@ -62,18 +76,27 @@ export default defineConfig({
 
 Установите значение `true`, чтобы принудительно выполнить предварительное объединение зависимостей, игнорируя ранее кэшированные оптимизированные зависимости.
 
+## optimizeDeps.holdUntilCrawlEnd
+
+- **Experimental:** [Give Feedback](https://github.com/vitejs/vite/discussions/15834)
+- **Type:** `boolean`
+- **Default:** `true`
+
+When enabled, it will hold the first optimized deps results until all static imports are crawled on cold start. This avoids the need for full-page reloads when new dependencies are discovered and they trigger the generation of new common chunks. If all dependencies are found by the scanner plus the explicitly defined ones in `include`, it is better to disable this option to let the browser process more requests in parallel.
+
 ## optimizeDeps.disabled
 
-- **Экспериментальный:** [Give Feedback](https://github.com/vitejs/vite/discussions/13839)
+- **Deprecated**
+- **Экспериментальный:** [Дать отзыв](https://github.com/vitejs/vite/discussions/13839)
 - **Тип:** `boolean | 'build' | 'dev'`
 - **По умолчанию:** `'build'`
 
-Отключает оптимизацию зависимостей, `true` отключает оптимизатор во время сборки и разработки. Передайте `'build'` или `'dev'` to only disable the optimizer in one of the modes. Dependency optimization is enabled by default in dev only.
+Эта опция устарела. Начиная с Vite 5.1 предварительная сборка зависимостей во время сборки была удалена. Установка `optimizeDeps.disabled` в `true` или `'dev'` отключает оптимизатор, а настройка в `false` или `'build'` оставляет оптимизатор во время разработки включенным.
+
+Чтобы полностью отключить оптимизатор, используйте `optimizeDeps.noDiscovery: true`, чтобы запретить автоматическое обнаружение зависимостей, и оставьте `optimizeDeps.include` неопределенным или пустым.
 
 :::warning
-Оптимизация зависимостей в режиме сборки носит **экспериментальный** характер. Если этот параметр включен, он устраняет одно из наиболее существенных различий между dev и prod. [`@rollup/plugin-commonjs`](https://github.com/rollup/plugins/tree/master/packages/commonjs) в этом случае больше не нужен, поскольку esbuild преобразует зависимости только для CJS в ESM.
-
-Если вы хотите попробовать эту стратегию сборки, вы можете использовать `optimizeDeps.disabled: false`. `@rollup/plugin-commonjs` можно удалить, передав `build.commonjsOptions: { include: [] }`.
+Оптимизация зависимостей во время сборки была **экспериментальной** функцией. Проекты, пробующие эту стратегию, также удалили `@rollup/plugin-commonjs` с помощью `build.commonjsOptions: { include: [] }`. Если вы это сделали, предупреждение поможет вам повторно включить его для поддержки пакетов только CJS во время сборки.
 :::
 
 ## optimizeDeps.needsInterop

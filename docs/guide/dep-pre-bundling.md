@@ -37,7 +37,9 @@
 
 Однако для этого необходимо, чтобы связанное отложение было экспортировано как ESM. Если нет, вы можете добавить зависимость в [`optimizeDeps.include`](/config/dep-optimization-options.md#optimizedeps-include) и [`build.commonjsOptions.include`](/config/build-options.md#build-commonjsoptions) в вашей конфигурации.
 
-```js
+```js twoslash
+import { defineConfig } from 'vite'
+// ---cut---
 export default defineConfig({
   optimizeDeps: {
     include: ['linked-dep'],

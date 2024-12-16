@@ -8,13 +8,13 @@
 
 Vite предоставляет свой ручной HMR API через специальный объект `import.meta.hot`:
 
-```ts
+```ts twoslash
+import type { ModuleNamespace } from 'vite/types/hot.d.ts'
+import type { InferCustomEventPayload } from 'vite/types/customEvent.d.ts'
+
+// ---cut---
 interface ImportMeta {
   readonly hot?: ViteHotContext
-}
-
-type ModuleNamespace = Record<string, any> & {
-  [Symbol.toStringTag]: 'Module'
 }
 
 interface ViteHotContext {
@@ -32,7 +32,6 @@ interface ViteHotContext {
   prune(cb: (data: any) => void): void
   invalidate(message?: string): void
 
-  // `InferCustomEventPayload` provides types for built-in Vite events
   on<T extends string>(
     event: T,
     cb: (payload: InferCustomEventPayload<T>) => void,
@@ -67,7 +66,9 @@ Vite предоставляет определения типов для `import
 
 Чтобы модуль принимался самостоятельно, используйте `import.meta.hot.accept` с обратным вызовом, который получает обновленный модуль:
 
-```js
+```js twoslash
+import 'vite/client'
+// ---cut---
 export const count = 1
 
 if (import.meta.hot) {
@@ -90,7 +91,13 @@ Vite требует, чтобы вызов этой функции отобра�
 
 Модуль также может принимать обновления от прямых зависимостей без перезагрузки:
 
-```js
+```js twoslash
+// @filename: /foo.d.ts
+export declare const foo: () => void
+
+// @filename: /example.js
+import 'vite/client'
+// ---cut---
 import { foo } from './foo.js'
 
 foo()
@@ -117,7 +124,9 @@ if (import.meta.hot) {
 
 Самопринимающий модуль или модуль, который ожидает принятия другими, может использовать `hot.dispose` для очистки любых постоянных побочных эффектов, созданных его обновленной копией:
 
-```js
+```js twoslash
+import 'vite/client'
+// ---cut---
 function setupSideEffect() {}
 
 setupSideEffect()
@@ -133,7 +142,9 @@ if (import.meta.hot) {
 
 Зарегистрируйте обратный вызов, который будет вызываться, когда модуль больше не импортируется на страницу. По сравнению с `hot.dispose`, это можно использовать, если исходный код сам очищает побочные эффекты при обновлениях, и вам нужно очищать только тогда, когда он удаляется со страницы. В настоящее время Vite использует это для импорта `.css`.
 
-```js
+```js twoslash
+import 'vite/client'
+// ---cut---
 function setupOrReuseSideEffect() {}
 
 setupOrReuseSideEffect()
@@ -151,7 +162,9 @@ if (import.meta.hot) {
 
 Note that re-assignment of `data` itself is not supported. Instead, you should mutate properties of the `data` object so information added from other handlers are preserved.
 
-```js
+```js twoslash
+import 'vite/client'
+// ---cut---
 // ok
 import.meta.hot.data.someValue = 'hello'
 
@@ -169,7 +182,9 @@ import.meta.hot.data = { someValue: 'hello' }
 
 Обратите внимание, что вы всегда должны вызывать `import.meta.hot.accept`, даже если вы планируете вызывать `invalidate` сразу после этого, иначе клиент HMR не будет прослушивать будущие изменения в самопринимающемся модуле. Чтобы четко сообщить о ваших намерениях, мы рекомендуем вызывать `invalidate` в обратном вызове `accept` следующим образом:
 
-```js
+```js twoslash
+import 'vite/client'
+// ---cut---
 import.meta.hot.accept((module) => {
   // You may use the new module instance to decide whether to invalidate.
   if (cannotHandleUpdate(module)) {
@@ -197,7 +212,7 @@ import.meta.hot.accept((module) => {
 
 ## `hot.off(event, cb)`
 
-Remove callback from the event listeners
+Remove callback from the event listeners.
 
 ## `hot.send(event, data)`
 
@@ -205,4 +220,10 @@ Remove callback from the event listeners
 
 При вызове перед подключением данные будут помещены в буфер и отправлены после установления соединения.
 
-Дополнительные сведения см. в разделе [Связь клиент-сервер](/guide/api-plugin.html#client-server-communication).
+Более подробную информацию смотрите в разделе [Взаимодействие клиент-сервер](/guide/api-plugin.html#client-server-communication) включая раздел [Ввод пользовательских событий](/guide/api-plugin.html#typescript-for-custom-events).
+
+## Дальнейшее чтение
+
+Если вы хотите узнать больше о том, как использовать API HMR и как он работает изнутри. Ознакомьтесь со следующими ресурсами:
+
+- [Горячая замена модуля — это просто](https://bjornlu.com/blog/hot-module-replacement-is-easy)

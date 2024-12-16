@@ -399,9 +399,14 @@ console.log(msg)
   }
   ```
 
+  ::: warning Note
+  This hook won't be called if you are using a framework that has custom handling of entry files (for example [SvelteKit](https://github.com/sveltejs/kit/discussions/8269#discussioncomment-4509145)).
+  :::
+
 ### `handleHotUpdate`
 
 - **Тип:** `(ctx: HmrContext) => Array<ModuleNode> | void | Promise<Array<ModuleNode> | void>`
+- **Смотрите также:** [HMR API](./api-hmr)
 
   Выполнение пользовательской обработки обновлений HMR. Хук получает объект контекста со следующей сигнатурой:
 
@@ -423,7 +428,26 @@ console.log(msg)
 
   - Отфильтруйте и сузьте список затронутых модулей, чтобы HMR был более точным.
 
-  - Вернуть пустой массив и выполнить полную пользовательскую обработку HMR, отправив клиенту пользовательские события:
+  - Вернуть пустой массив и выполнить полную перезагрузку:
+
+    ```js
+    handleHotUpdate({ server, modules, timestamp }) {
+      server.ws.send({ type: 'full-reload' })
+      // Invalidate modules manually
+      const invalidatedModules = new Set()
+      for (const mod of modules) {
+        server.moduleGraph.invalidateModule(
+          mod,
+          invalidatedModules,
+          timestamp,
+          true
+        )
+      }
+      return []
+    }
+    ```
+
+  - Возвращает пустой массив и выполняет полную пользовательскую обработку HMR, отправляя клиенту пользовательские события:
 
     ```js
     handleHotUpdate({ server }) {
@@ -457,6 +481,8 @@ console.log(msg)
 - Плагины сборки Vite
 - Пользовательские плагины с `enforce: 'post'`
 - Плагины пост-сборки Vite (минификация, манифест, отчеты)
+
+Обратите внимание, что это не связано с порядком хуков, они по-прежнему подчиняются отдельному атрибуту `order` [как обычно для хуков Rollup](https://rollupjs.org/plugin-development/#build-hooks).
 
 ## Условное применение
 
@@ -509,8 +535,6 @@ export default defineConfig({
 })
 ```
 
-Ознакомьтесь с [Плагинами Vite Rollup](https://vite-rollup-plugins.patak.dev) для получения списка совместимых официальных плагинов Rollup с инструкциями по использованию.
-
 ## Нормализация пути
 
 Vite нормализует пути при разрешении идентификаторов для использования разделителей POSIX (/) при сохранении объема в Windows. С другой стороны, Rollup по умолчанию сохраняет разрешенные пути нетронутыми, поэтому разрешенные идентификаторы имеют разделители win32 ( \\ ) в Windows. Тем не менее, подключаемые модули Rollup используют [служебную функцию `normalizePath`](https://github.com/rollup/plugins/tree/master/packages/pluginutils#normalizepath) из `@rollup/pluginutils` внутри, которая преобразует разделители в POSIX. перед выполнением сравнений. Это означает, что когда эти плагины используются в Vite, шаблон конфигурации `include` и `exclude` и другие аналогичные пути для сопоставления разрешенных идентификаторов работают правильно.
@@ -534,7 +558,7 @@ Vite предоставляет функцию `createFilter` [`@rollup/pluginut
 
 ### Сервер к клиенту
 
-Со стороны плагина мы могли бы использовать `server.ws.send` для трансляции событий всем клиентам:
+Со стороны плагина мы могли бы использовать `server.ws.send` для трансляции событий клиенту:
 
 ```js
 // vite.config.js
@@ -543,7 +567,6 @@ export default defineConfig({
     {
       // ...
       configureServer(server) {
-        // Example: wait for a client to connect before sending a message
         server.ws.on('connection', () => {
           server.ws.send('my:greetings', { msg: 'hello' })
         })
@@ -559,7 +582,9 @@ export default defineConfig({
 
 На стороне клиента используйте [`hot.on`](/guide/api-hmr.html#hot-on-event-cb) для прослушивания событий:
 
-```ts
+```ts twoslash
+import 'vite/client'
+// ---cut---
 // client side
 if (import.meta.hot) {
   import.meta.hot.on('my:greetings', (data) => {
@@ -601,16 +626,40 @@ export default defineConfig({
 
 ### TypeScript для пользовательских событий
 
-Пользовательские события можно ввести, расширив интерфейс `CustomEventMap`:
+Внутри vite выводит тип полезной нагрузки из интерфейса `CustomEventMap`, можно вводить пользовательские события, расширяя интерфейс:
+
+:::tip Примечание
+Обязательно включите расширение `.d.ts` при указании файлов объявлений TypeScript. В противном случае TypeScript может не знать, какой файл модуль пытается расширить.
+:::
 
 ```ts
 // events.d.ts
-import 'vite/types/customEvent'
+import 'vite/types/customEvent.d.ts'
 
-declare module 'vite/types/customEvent' {
+declare module 'vite/types/customEvent.d.ts' {
   interface CustomEventMap {
     'custom:foo': { msg: string }
     // 'event-key': payload
   }
 }
+```
+
+Это расширение интерфейса используется `InferCustomEventPayload<T>` для вывода типа полезной нагрузки для события `T`. Для получения дополнительной информации о том, как используется этот интерфейс, обратитесь к [Документации HMR API](./api-hmr#hmr-api).
+
+```ts twoslash
+import 'vite/client'
+import type { InferCustomEventPayload } from 'vite/types/customEvent.d.ts'
+declare module 'vite/types/customEvent.d.ts' {
+  interface CustomEventMap {
+    'custom:foo': { msg: string }
+  }
+}
+// ---cut---
+type CustomFooPayload = InferCustomEventPayload<'custom:foo'>
+import.meta.hot?.on('custom:foo', (payload) => {
+  // The type of payload will be { msg: string }
+})
+import.meta.hot?.on('unknown:event', (payload) => {
+  // The type of payload will be any
+})
 ```

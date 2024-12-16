@@ -18,10 +18,10 @@
 
 Вы можете установить [`dns.setDefaultResultOrder('verbatim')`](https://nodejs.org/api/dns.html#dns_dns_setdefaultresultorder_order), чтобы отключить поведение переупорядочения. Затем Vite напечатает адрес как `localhost`.
 
-```js
+```js twoslash
 // vite.config.js
 import { defineConfig } from 'vite'
-import dns from 'dns'
+import dns from 'node:dns'
 
 dns.setDefaultResultOrder('verbatim')
 
@@ -90,7 +90,7 @@ export default defineConfig({
 
 Обратите внимание, что если вы используете не относительную [`base`](/config/shared-options.md#base), вы должны добавлять префикс на каждый ключ это `base`.
 
-Расширяет [`http-proxy`](https://github.com/http-party/node-http-proxy#options). Дополнительные параметры находятся [здесь](https://github.com/vitejs/vite/blob/main/packages/vite/src/node/server/middlewares/proxy.ts#L12).
+Расширяет [`http-proxy`](https://github.com/http-party/node-http-proxy#options). Дополнительные параметры находятся [здесь](https://github.com/vitejs/vite/blob/main/packages/vite/src/node/server/middlewares/proxy.ts#L13).
 
 В некоторых случаях вы также можете настроить базовый сервер разработки (например, чтобы добавить настраиваемый мидлвар во внутреннее приложение [connect](https://github.com/senchalabs/connect)). Для этого вам нужно написать свой собственный [плагин](/guide/using-plugins.html) и использовать функцию [configureServer](/guide/api-plugin.html#configureserver).
 
@@ -123,9 +123,11 @@ export default defineConfig({
         },
       },
       // Proxying websockets or socket.io: ws://localhost:5173/socket.io -> ws://localhost:5174/socket.io
+      // Exercise caution using `rewriteWsOrigin` as it can leave the proxying open to CSRF attacks.
       '/socket.io': {
         target: 'ws://localhost:5174',
         ws: true,
+        rewriteWsOrigin: true,
       },
     },
   },
@@ -152,7 +154,9 @@ export default defineConfig({
 
 Установите для `server.hmr.overlay` значение `false`, чтобы отключить наложение ошибок сервера.
 
-`clientPort` — это расширенный параметр, который переопределяет порт только на стороне клиента, позволяя вам обслуживать веб-сокет на порту, отличном от того, который ищет клиентский код.
+`protocol` устанавливает протокол WebSocket, используемый для соединения HMR: `ws` (WebSocket) или `wss` (WebSocket Secure).
+
+`clientPort` — это расширенный параметр, который переопределяет порт только на стороне клиента, позволяя обслуживать веб-сокет на порту, отличном от того, на котором его ищет клиентский код.
 
 Когда `server.hmr.server` определен, Vite будет обрабатывать запросы на подключение HMR через предоставленный сервер. Если не в режиме промежуточного программного обеспечения, Vite попытается обработать запросы на подключение HMR через существующий сервер. Это может быть полезно при использовании самозаверяющих сертификатов или когда вы хотите открыть Vite по сети на одном порту.
 
@@ -202,7 +206,7 @@ export default defineConfig({
 
 Параметры средства наблюдения за файловой системой необходимо передать [chokidar](https://github.com/paulmillr/chokidar#api).
 
-Наблюдатель сервера Vite по умолчанию отслеживает `root` и пропускает каталоги `.git/` и `node_modules/`. При обновлении просматриваемого файла Vite применит HMR и обновит страницу только при необходимости.
+Наблюдатель сервера Vite по умолчанию наблюдает за `root` и пропускает `.git/`, `node_modules/`, а также каталоги `cacheDir` и `build.outDir` Vite. При обновлении наблюдаемого файла Vite применит HMR и обновит страницу только при необходимости.
 
 Если установлено значение `null`, файлы просматриваться не будут. `server.watcher` предоставит совместимый генератор событий, но вызов `add` или `unwatch` не будет иметь никакого эффекта.
 
@@ -236,7 +240,7 @@ export default defineConfig({
 
 - **Пример:**
 
-```js
+```js twoslash
 import express from 'express'
 import { createServer as createViteServer } from 'vite'
 
@@ -356,9 +360,9 @@ export default defineConfig({
     // in their paths to the ignore list.
     sourcemapIgnoreList(sourcePath, sourcemapPath) {
       return sourcePath.includes('node_modules')
-    }
-  }
-};
+    },
+  },
+})
 ```
 
 ::: tip Примечание

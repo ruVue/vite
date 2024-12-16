@@ -7,7 +7,9 @@
 
 Импорт статического ресурса вернет разрешенный общедоступный URL-адрес при его обслуживании:
 
-```js
+```js twoslash
+import 'vite/client'
+// ---cut---
 import imgUrl from './img.png'
 document.getElementById('hero-img').src = imgUrl
 ```
@@ -30,11 +32,25 @@ document.getElementById('hero-img').src = imgUrl
 
 - TypeScript по умолчанию не распознает импорт статических ресурсов как допустимые модули. Чтобы это исправить, включите [`vite/client`](./features#client-types).
 
+::: tip Встраивание SVG через `url()`
+При передаче URL-адреса SVG в вручную созданный `url()` с помощью JS, переменную следует заключить в двойные кавычки.
+
+```js twoslash
+import 'vite/client'
+// ---cut---
+import imgUrl from './img.svg'
+document.getElementById('hero-img').style.background = `url("${imgUrl}")`
+```
+
+:::
+
 ### Явный импорт URL
 
 Ресурсы, которые не включены во внутренний список или в `assetsInclude`, могут быть явно импортированы как URL-адрес с использованием суффикса `?url`. Это полезно, например, для импорта [Houdini Paint Worklets](https://houdini.how/usage).
 
-```js
+```js twoslash
+import 'vite/client'
+// ---cut---
 import workletURL from 'extra-scalloped-border/worklet.js?url'
 CSS.paintWorklet.addModule(workletURL)
 ```
@@ -43,7 +59,9 @@ CSS.paintWorklet.addModule(workletURL)
 
 Ресурсы можно импортировать в виде строк, используя суффикс `?raw`.
 
-```js
+```js twoslash
+import 'vite/client'
+// ---cut---
 import shaderString from './shader.glsl?raw'
 ```
 
@@ -51,19 +69,25 @@ import shaderString from './shader.glsl?raw'
 
 Скрипты можно импортировать как веб-воркеры с суффиксом `?worker` или `?sharedworker`.
 
-```js
+```js twoslash
+import 'vite/client'
+// ---cut---
 // Separate chunk in the production build
 import Worker from './shader.js?worker'
 const worker = new Worker()
 ```
 
-```js
+```js twoslash
+import 'vite/client'
+// ---cut---
 // sharedworker
 import SharedWorker from './shader.js?sharedworker'
 const sharedWorker = new SharedWorker()
 ```
 
-```js
+```js twoslash
+import 'vite/client'
+// ---cut---
 // Inlined as base64 strings
 import InlineWorker from './shader.js?worker&inline'
 ```

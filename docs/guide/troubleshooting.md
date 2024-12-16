@@ -17,7 +17,7 @@ In a basic Vite project, make sure:
 
 For other projects, there are a few general approaches:
 
-- **Configure ESM as default, opt-in to CJS if needed:** Add `"type": "module"` in the project `package.json`. All `*.js` files are now interpreted as ESM and needs to use the ESM syntax. You can rename a file with the `.cjs` extension to keep using CJS instead.
+- **Configure ESM as default, opt-in to CJS if needed:** Add `"type": "module"` in the project `package.json`. All `*.js` files are now interpreted as ESM and need to use the ESM syntax. You can rename a file with the `.cjs` extension to keep using CJS instead.
 - **Keep CJS as default, opt-in to ESM if needed:** If the project `package.json` does not have `"type": "module"`, all `*.js` files are interpreted as CJS. You can rename a file with the `.mjs` extension to use ESM instead.
 - **Dynamically import Vite:** If you need to keep using CJS, you can dynamically import Vite using `import('vite')` instead. This requires your code to be written in an `async` context, but should still be manageable as Vite's API is mostly asynchronous.
 
@@ -33,7 +33,7 @@ If you'd like to temporarily ignore the warning, you can run your script with th
 VITE_CJS_IGNORE_WARNING=true vite dev
 ```
 
-Note that postcss config files does not support ESM + TypeScript (`.mts` or `.ts` in `"type": "module"`) yet. If you have postcss configs with `.ts` and added `"type": "module"` to package.json, you'll also need to rename the postcss config to use `.cts`.
+Note that postcss config files do not support ESM + TypeScript (`.mts` or `.ts` in `"type": "module"`) yet. If you have postcss configs with `.ts` and added `"type": "module"` to package.json, you'll also need to rename the postcss config to use `.cts`.
 
 ## CLI
 
@@ -169,7 +169,7 @@ import './Foo.js' // should be './foo.js'
 
 ### Устаревшие предустановленные пакеты при ссылке на локальный пакет
 
-Хэш-ключ, используемый для аннулирования оптимизированных зависимостей, зависит от содержимого блокировки пакета, исправлений, примененных к зависимостям, и параметров в файле конфигурации Vite, которые влияют на объединение узловых модулей. Это означает, что Vite обнаружит переопределение зависимости с помощью функции [npm overrides](https://docs.npmjs.com/cli/v9/configuring-npm/package-json#overrides) и повторно свяжет ваши зависимости от следующего запуска сервера. Vite не аннулирует зависимости, если вы используете такую функцию, как [ссылка npm](https://docs.npmjs.com/cli/v9/commands/npm-link). В случае, если вы связываете или отключаете зависимость, вам нужно будет принудительно выполнить повторную оптимизацию при следующем запуске сервера, используя `vite --force`. Вместо этого мы рекомендуем использовать переопределения, которые сейчас поддерживаются всеми менеджерами пакетов (см. также [переопределения pnpm](https://pnpm.io/package_json#pnpmoverrides) и [yarn резолюции](https://yarnpkg.com/configuration/manifest/#resolutions)).
+Хэш-ключ, используемый для аннулирования оптимизированных зависимостей, зависит от содержимого блокировки пакета, исправлений, примененных к зависимостям, и параметров в файле конфигурации Vite, которые влияют на связывание модулей узлов. Это означает, что Vite определит, когда зависимость переопределяется с помощью функции, такой как [npm overrides](https://docs.npmjs.com/cli/v9/configuring-npm/package-json#overrides), и повторно свяжет ваши зависимости при следующем запуске сервера. Vite не аннулирует зависимости, если вы используете функцию, такую ​​как [npm link](https://docs.npmjs.com/cli/v9/commands/npm-link). В случае, если вы связываете или отключаете зависимость, вам нужно будет принудительно выполнить повторную оптимизацию при следующем запуске сервера с помощью `vite --force`. Вместо этого мы рекомендуем использовать переопределения, которые теперь поддерживаются всеми менеджерами пакетов (см. также [переопределения pnpm](https://pnpm.io/package_json#pnpmoverrides) и [разрешения yarn](https://yarnpkg.com/configuration/manifest/#resolutions)).
 
 ## Узкие места производительности
 
@@ -217,7 +217,7 @@ Vite не может обрабатывать и не поддерживает �
 
 > Ошибка типа: невозможно создать свойство «foo» для логического значения «false».
 
-Если этот код используется внутри зависимостей, вы можете использовать [`patch-package`](https://github.com/ds300/patch-package) (или [`yarn patch`](https://yarnpkg.com/cli/patch) или [`pnpm patch`](https://pnpm.io/cli/patch)) для аварийного hatch.
+Если эти коды используются внутри зависимостей, вы можете использовать [`patch-package`](https://github.com/ds300/patch-package) (или [`yarn patch`](https://yarnpkg.com/cli/patch) или [`pnpm patch`](https://pnpm.io/cli/patch)) для аварийного выхода.
 
 ### Расширения браузера
 

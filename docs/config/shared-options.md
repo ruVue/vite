@@ -17,8 +17,8 @@
 
 Базовый общедоступный путь при использовании в разработке или рабочей среде. Допустимые значения включают:
 
-- Абсолютный путь к URL-адресу, например, `/foo/`
-- Полный URL-адрес, например, `https://foo.com/` (исходная часть не будет использоваться в разработке)
+- Абсолютный путь URL, например, `/foo/`
+- Полный URL, например, `https://bar.com/foo/` (Исходная часть не будет использоваться в разработке, поэтому значение такое же, как `/foo/`)
 - Пустая строка или `./` (для встроенного развертывания)
 
 Дополнительные сведения смотрите в разделе [Общедоступный базовый путь](/guide/build#public-base-path).
@@ -163,6 +163,13 @@ Vite имеет список «разрешенных условий» и буд
 - **Связанный:** [esbuild#preserve-symlinks](https://esbuild.github.io/api/#preserve-symlinks), [webpack#resolve.symlinks
   ](https://webpack.js.org/configuration/resolve/#resolvesymlinks)
 
+## html.cspNonce
+
+- **Type:** `string`
+- **Related:** [Content Security Policy (CSP)](/guide/features#content-security-policy-csp)
+
+A nonce value placeholder that will be used when generating script / style tags. Setting this value will also generate a meta tag with nonce value.
+
 ## css.modules
 
 - **Тип:**
@@ -222,17 +229,12 @@ Vite имеет список «разрешенных условий» и буд
 - `less` - [Параметры](https://lesscss.org/usage/#less-options).
 - `styl`/`stylus` - Only [`define`](https://stylus-lang.com/docs/js.html#define-name-node), который можно передать как объект.
 
-Все параметры препроцессора также поддерживают параметр `additionalData`, который можно использовать для внедрения дополнительного кода для каждого содержимого стиля. Обратите внимание: если вы включаете реальные стили, а не только переменные, эти стили будут дублироваться в окончательном пакете.
-
-Пример:
+**Пример:**
 
 ```js
 export default defineConfig({
   css: {
     preprocessorOptions: {
-      scss: {
-        additionalData: `$injectedColor: orange;`,
-      },
       less: {
         math: 'parens-division',
       },
@@ -245,6 +247,34 @@ export default defineConfig({
   },
 })
 ```
+
+### css.preprocessorOptions[extension].additionalData
+
+- **Type:** `string | ((source: string, filename: string) => (string | { content: string; map?: SourceMap }))`
+
+This option can be used to inject extra code for each style content. Note that if you include actual styles and not just variables, those styles will be duplicated in the final bundle.
+
+**Example:**
+
+```js
+export default defineConfig({
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData: `$injectedColor: orange;`,
+      },
+    },
+  },
+})
+```
+
+## css.preprocessorMaxWorkers
+
+- **Experimental:** [Give Feedback](https://github.com/vitejs/vite/discussions/15835)
+- **Type:** `number | true`
+- **Default:** `0` (does not create any workers and run in the main thread)
+
+If this option is set, CSS preprocessors will run in workers when possible. `true` means the number of CPUs minus 1.
 
 ## css.devSourcemap
 
@@ -261,6 +291,10 @@ export default defineConfig({
 - **По умолчанию:** `'postcss'`
 
 Выбирает механизм, используемый для обработки CSS. Посетите [Lightning CSS](../guide/features.md#lightning-css) для получения дополнительной информации.
+
+::: info Duplicate `@import`s
+Note that postcss (postcss-import) has a different behavior with duplicated `@import` from browsers. See [postcss/postcss-import#462](https://github.com/postcss/postcss-import/issues/462).
+:::
 
 ## css.lightningcss
 
@@ -385,7 +419,7 @@ export default defineConfig({
 
 Используйте специальный регистратор для регистрации сообщений. Вы можете использовать API `createLogger` от Vite, чтобы получить регистратор по умолчанию и настроить его, например, для изменения сообщения или фильтрации определенных предупреждений.
 
-```js
+```ts twoslash
 import { createLogger, defineConfig } from 'vite'
 
 const logger = createLogger()

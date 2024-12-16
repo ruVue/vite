@@ -6,8 +6,10 @@ import {
   getColor,
   isBuild,
   isServe,
+  listAssets,
   page,
   readManifest,
+  serverLogs,
   untilBrowserLogAfter,
   untilUpdated,
 } from '~utils'
@@ -34,13 +36,19 @@ describe.runIf(isBuild)('build', () => {
   test('manifest', async () => {
     const manifest = readManifest('dev')
     const htmlEntry = manifest['index.html']
+    const mainTsEntry = manifest['main.ts']
     const cssAssetEntry = manifest['global.css']
     const pcssAssetEntry = manifest['foo.pcss']
     const scssAssetEntry = manifest['nested/blue.scss']
     const imgAssetEntry = manifest['../images/logo.png']
     const dirFooAssetEntry = manifest['../../dir/foo.css']
+    const iconEntrypointEntry = manifest['icon.png']
     expect(htmlEntry.css.length).toEqual(1)
     expect(htmlEntry.assets.length).toEqual(1)
+    expect(mainTsEntry.assets?.length ?? 0).toBeGreaterThanOrEqual(1)
+    expect(mainTsEntry.assets).toContainEqual(
+      expect.stringMatching(/assets\/url-[-\w]{8}\.css/),
+    )
     expect(cssAssetEntry?.file).not.toBeUndefined()
     expect(cssAssetEntry?.isEntry).toEqual(true)
     expect(pcssAssetEntry?.file).not.toBeUndefined()
@@ -53,6 +61,7 @@ describe.runIf(isBuild)('build', () => {
     expect(dirFooAssetEntry).not.toBeUndefined() // '\\' should not be used even on windows
     // use the entry name
     expect(dirFooAssetEntry.file).toMatch('assets/bar-')
+    expect(iconEntrypointEntry?.file).not.toBeUndefined()
   })
 
   test('CSS imported from JS entry should have a non-nested chunk name', () => {
@@ -60,6 +69,17 @@ describe.runIf(isBuild)('build', () => {
     const mainTsEntryCss = manifest['nested/sub.ts'].css
     expect(mainTsEntryCss.length).toBe(1)
     expect(mainTsEntryCss[0].replace('assets/', '')).not.toContain('/')
+  })
+
+  test('entrypoint assets should not generate empty JS file', () => {
+    expect(serverLogs).not.toContainEqual(
+      'Generated an empty chunk: "icon.png".',
+    )
+
+    const assets = listAssets('dev')
+    expect(assets).not.toContainEqual(
+      expect.stringMatching(/icon.png-[-\w]{8}\.js$/),
+    )
   })
 })
 
