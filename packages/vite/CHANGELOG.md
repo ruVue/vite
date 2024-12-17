@@ -1,3 +1,42 @@
+## <small>3.2.11 (2024-09-17)</small>
+
+* fix: backport #18112, fs raw query ([a6da450](https://github.com/vitejs/vite/commit/a6da450)), closes [#18112](https://github.com/vitejs/vite/issues/18112)
+* fix: backport #18115, DOM Clobbering in ([2ddd854](https://github.com/vitejs/vite/commit/2ddd854)), closes [#18115](https://github.com/vitejs/vite/issues/18115)
+* fix(importAnalysis): backport #13712, strip url base before passing as safeModulePaths ([5d1d81e](https://github.com/vitejs/vite/commit/5d1d81e)), closes [#13712](https://github.com/vitejs/vite/issues/13712)
+
+
+
+## <small>3.2.10 (2024-03-24)</small>
+
+
+
+
+## <small>3.2.9 (2024-03-24)</small>
+
+* fix: port #15653 to v3 (#15655) ([99080ca](https://github.com/vitejs/vite/commit/99080ca)), closes [#15653](https://github.com/vitejs/vite/issues/15653) [#15655](https://github.com/vitejs/vite/issues/15655)
+* fix: port #16250 to v3 (#16253) ([89c7c64](https://github.com/vitejs/vite/commit/89c7c64)), closes [#16250](https://github.com/vitejs/vite/issues/16250) [#16253](https://github.com/vitejs/vite/issues/16253)
+* release: v3.2.8 ([8352b75](https://github.com/vitejs/vite/commit/8352b75))
+
+
+
+## <small>3.2.8 (2024-01-19)</small>
+
+* fix: port #15653 to v3 (#15655) ([99080ca](https://github.com/vitejs/vite/commit/99080ca)), closes [#15653](https://github.com/vitejs/vite/issues/15653) [#15655](https://github.com/vitejs/vite/issues/15655)
+
+
+
+## <small>3.2.7 (2023-05-26)</small>
+
+* fix: port #13348 to v3, fs.deny with leading double slash (#13349) ([0574f80](https://github.com/vitejs/vite/commit/0574f80)), closes [#13348](https://github.com/vitejs/vite/issues/13348) [#13349](https://github.com/vitejs/vite/issues/13349)
+
+
+
+## <small>3.2.6 (2023-04-18)</small>
+
+* fix: escape msg in render restricted error html, backport (#12889) (#12892) ([b48ac2a](https://github.com/vitejs/vite/commit/b48ac2a)), closes [#12889](https://github.com/vitejs/vite/issues/12889) [#12892](https://github.com/vitejs/vite/issues/12892)
+
+
+
 ## <small>3.2.5 (2022-12-05)</small>
 
 * chore: cherry pick more v4 bug fixes to v3 (#11189) ([eba9b42](https://github.com/vitejs/vite/commit/eba9b42)), closes [#11189](https://github.com/vitejs/vite/issues/11189) [#10949](https://github.com/vitejs/vite/issues/10949) [#11056](https://github.com/vitejs/vite/issues/11056) [#8663](https://github.com/vitejs/vite/issues/8663) [#10958](https://github.com/vitejs/vite/issues/10958) [#11120](https://github.com/vitejs/vite/issues/11120) [#11122](https://github.com/vitejs/vite/issues/11122) [#11123](https://github.com/vitejs/vite/issues/11123) [#11132](https://github.com/vitejs/vite/issues/11132)
