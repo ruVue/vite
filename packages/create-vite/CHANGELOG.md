@@ -1,3 +1,97 @@
+## <small>6.0.1 (2024-11-27)</small>
+
+* feat(create-vite): bump vite-plugin-solid to `2.11.0` (#18792) ([32ac96f](https://github.com/vitejs/vite/commit/32ac96f54ca459d1a4c7ff7f4dbb4111eaea00f1)), closes [#18792](https://github.com/vitejs/vite/issues/18792)
+* feat(create-vite): change Remix to React Router v7 (#18785) ([31cc61b](https://github.com/vitejs/vite/commit/31cc61b7404b2b22d956856f97eeebd0a62f3b4d)), closes [#18785](https://github.com/vitejs/vite/issues/18785)
+* revert: update moduleResolution value casing (#18409) (#18774) ([b0fc6e3](https://github.com/vitejs/vite/commit/b0fc6e3c2591a30360d3714263cf7cc0e2acbfdf)), closes [#18409](https://github.com/vitejs/vite/issues/18409) [#18774](https://github.com/vitejs/vite/issues/18774)
+
+
+
+## 6.0.0 (2024-11-26)
+
+* chore(create-vite): change directory structure of `template-vanilla` for consistency (#18716) ([56a86ae](https://github.com/vitejs/vite/commit/56a86ae479b6aaf1c0a15bfedb0ee435e8ffcf3a)), closes [#18716](https://github.com/vitejs/vite/issues/18716)
+* chore(create-vite): update to vite 6 (#18770) ([80bf954](https://github.com/vitejs/vite/commit/80bf9549b48c66a47e5cc76a7540ce3e62e2f2da)), closes [#18770](https://github.com/vitejs/vite/issues/18770)
+* chore(deps): update all non-major dependencies (#18562) ([fb227ec](https://github.com/vitejs/vite/commit/fb227ec4402246b5a13e274c881d9de6dd8082dd)), closes [#18562](https://github.com/vitejs/vite/issues/18562)
+* chore(deps): update all non-major dependencies (#18634) ([e2231a9](https://github.com/vitejs/vite/commit/e2231a92af46db144b9c94fb57918ac683dc93cb)), closes [#18634](https://github.com/vitejs/vite/issues/18634)
+* chore(deps): update all non-major dependencies (#18746) ([0ad16e9](https://github.com/vitejs/vite/commit/0ad16e92d57453d9e5392c90fd06bda947be9de6)), closes [#18746](https://github.com/vitejs/vite/issues/18746)
+* feat!: drop node 21 support in version ranges (#18729) ([a384d8f](https://github.com/vitejs/vite/commit/a384d8fd39162190675abcfea31ba657383a3d03)), closes [#18729](https://github.com/vitejs/vite/issues/18729)
+* fix(create-vite): change create-app prompt to not remove existing files by default (#18710) ([c2b7529](https://github.com/vitejs/vite/commit/c2b75292f48be0371e337193c3b37a67b8212f97)), closes [#18710](https://github.com/vitejs/vite/issues/18710)
+* fix(create-vite): improve project name inference from path (#16490) ([8518113](https://github.com/vitejs/vite/commit/8518113dee2554401d23b2fba62ecab31d2b0541)), closes [#16490](https://github.com/vitejs/vite/issues/16490)
+* fix(deps): update all non-major dependencies (#18691) ([f005461](https://github.com/vitejs/vite/commit/f005461ecce89ada21cb0c021f7af460b5479736)), closes [#18691](https://github.com/vitejs/vite/issues/18691)
+
+
+
+## <small>5.5.5 (2024-10-30)</small>
+
+* chore: upgrade to unbuild v3 rc (#18502) ([ddd5c5d](https://github.com/vitejs/vite/commit/ddd5c5d00ff7894462a608841560883f9c771f22)), closes [#18502](https://github.com/vitejs/vite/issues/18502)
+* fix(create-vite): add tsBuildInfoFile option (#18435) ([0a4427f](https://github.com/vitejs/vite/commit/0a4427fc44b9b2075225bf8a9f1d88a8a428a217)), closes [#18435](https://github.com/vitejs/vite/issues/18435)
+* fix(deps): update all non-major dependencies (#18484) ([2ec12df](https://github.com/vitejs/vite/commit/2ec12df98d07eb4c986737e86a4a9f8066724658)), closes [#18484](https://github.com/vitejs/vite/issues/18484)
+
+
+
+## <small>5.5.4 (2024-10-23)</small>
+
+* chore: change Angular customCommand (#18425) ([b53db53](https://github.com/vitejs/vite/commit/b53db53df17c43602d61a24e9bf579267ee8eb6b)), closes [#18425](https://github.com/vitejs/vite/issues/18425)
+* chore: combine deps license with same text (#18356) ([b5d1a05](https://github.com/vitejs/vite/commit/b5d1a058f9dab6a6b1243c2a0b11d2c421dd3291)), closes [#18356](https://github.com/vitejs/vite/issues/18356)
+* chore: specify TypeScript version with `~` (#18406) ([70bb8de](https://github.com/vitejs/vite/commit/70bb8ded1d5d2f1323d0350a8ad9cb3954c0bd61)), closes [#18406](https://github.com/vitejs/vite/issues/18406)
+* chore: update all url references of vitejs.dev to vite.dev (#18276) ([7052c8f](https://github.com/vitejs/vite/commit/7052c8f6fc253f0a88ff04a4c18c108f3bfdaa78)), closes [#18276](https://github.com/vitejs/vite/issues/18276)
+* chore: update license copyright (#18278) ([56eb869](https://github.com/vitejs/vite/commit/56eb869a67551a257d20cba00016ea59b1e1a2c4)), closes [#18278](https://github.com/vitejs/vite/issues/18278)
+* chore: update moduleResolution value casing (#18409) ([ff018dc](https://github.com/vitejs/vite/commit/ff018dca959c73481ae5f8328cd77d3b02f02134)), closes [#18409](https://github.com/vitejs/vite/issues/18409)
+* chore(create-vite): mark template files as CC0 (#18366) ([f6b9074](https://github.com/vitejs/vite/commit/f6b90747eb2b1ad863e5f147a80c75b15e38a51b)), closes [#18366](https://github.com/vitejs/vite/issues/18366)
+* chore(deps): bump TypeScript to 5.6 (#18254) ([57a0e85](https://github.com/vitejs/vite/commit/57a0e85186b88118bf5f79dd53391676fb91afec)), closes [#18254](https://github.com/vitejs/vite/issues/18254)
+* chore(deps): update all non-major dependencies (#18404) ([802839d](https://github.com/vitejs/vite/commit/802839d48335a69eb15f71f2cd816d0b6e4d3556)), closes [#18404](https://github.com/vitejs/vite/issues/18404)
+* chore(deps): update eslint-plugin-react-hooks to stable v5 (#18335) ([0ddfb9f](https://github.com/vitejs/vite/commit/0ddfb9f31a74eea6d61bbedbda2a5c280c9bcc77)), closes [#18335](https://github.com/vitejs/vite/issues/18335)
+* feat: add custom Angular variants (#18410) ([ac1fd41](https://github.com/vitejs/vite/commit/ac1fd41059f5549922b9f1a93c2bc00fbfcca3e8)), closes [#18410](https://github.com/vitejs/vite/issues/18410)
+* feat(create-vite): update to svelte 5 (#18407) ([291830f](https://github.com/vitejs/vite/commit/291830fa632c756b2a0311142d1f25ca7b56a637)), closes [#18407](https://github.com/vitejs/vite/issues/18407)
+* fix(create-vite): update qwik URL (#18285) ([45c9b5c](https://github.com/vitejs/vite/commit/45c9b5cca160346b41dbddacf6f9000ab1b638bc)), closes [#18285](https://github.com/vitejs/vite/issues/18285)
+* fix(deps): update all non-major dependencies (#18292) ([5cac054](https://github.com/vitejs/vite/commit/5cac0544dca2764f0114aac38e9922a0c13d7ef4)), closes [#18292](https://github.com/vitejs/vite/issues/18292)
+* fix(deps): update all non-major dependencies (#18345) ([5552583](https://github.com/vitejs/vite/commit/5552583a2272cd4208b30ad60e99d984e34645f0)), closes [#18345](https://github.com/vitejs/vite/issues/18345)
+
+
+
+## <small>5.5.3 (2024-10-04)</small>
+
+* chore: enable some eslint rules (#18084) ([e9a2746](https://github.com/vitejs/vite/commit/e9a2746ca77473b1814fd05db3d299c074135fe5)), closes [#18084](https://github.com/vitejs/vite/issues/18084)
+* chore(deps): update all non-major dependencies (#17896) ([3dc23d9](https://github.com/vitejs/vite/commit/3dc23d9aa5deac4d5591ff94eeb978ec1d702072)), closes [#17896](https://github.com/vitejs/vite/issues/17896)
+* chore(deps): update all non-major dependencies (#17945) ([cfb621e](https://github.com/vitejs/vite/commit/cfb621e7a5a3e24d710a9af156e6855e73caf891)), closes [#17945](https://github.com/vitejs/vite/issues/17945)
+* chore(deps): update all non-major dependencies (#17991) ([0ca53cf](https://github.com/vitejs/vite/commit/0ca53cff9ff49108fcec75ff01d2445f9c2f2a4c)), closes [#17991](https://github.com/vitejs/vite/issues/17991)
+* chore(deps): update all non-major dependencies (#18050) ([7cac03f](https://github.com/vitejs/vite/commit/7cac03fa5197a72d2e2422bd0243a85a9a18abfc)), closes [#18050](https://github.com/vitejs/vite/issues/18050)
+* chore(deps): update all non-major dependencies (#18108) ([a73bbaa](https://github.com/vitejs/vite/commit/a73bbaadb512a884924cc884060e50ea6d809d74)), closes [#18108](https://github.com/vitejs/vite/issues/18108)
+* chore(deps): update all non-major dependencies (#18230) ([c0edd26](https://github.com/vitejs/vite/commit/c0edd26bbfeb9a8d80ebaa420e54fbb7f165bd9b)), closes [#18230](https://github.com/vitejs/vite/issues/18230)
+* chore(deps): update dependency svelte-check to v4 (#18051) ([ecabf89](https://github.com/vitejs/vite/commit/ecabf8954ff1db3f9f3e32861de765f028108d2e)), closes [#18051](https://github.com/vitejs/vite/issues/18051)
+* fix(deps): update all non-major dependencies (#18170) ([c8aea5a](https://github.com/vitejs/vite/commit/c8aea5ae0af90dc6796ef3bdd612d1eb819f157b)), closes [#18170](https://github.com/vitejs/vite/issues/18170)
+* refactor(create-vite): use picocolors (#18085) ([ba37df0](https://github.com/vitejs/vite/commit/ba37df0813ad3864fc4b8c6c0b289a1f2bc00c36)), closes [#18085](https://github.com/vitejs/vite/issues/18085)
+
+
+
+## <small>5.5.2 (2024-08-15)</small>
+
+* fix(create-vite): move ESLint "ignores" config to a separate object in React templates (#17885) ([1b3b702](https://github.com/vitejs/vite/commit/1b3b702a7ec04fecb81f2642ffdde0b13e38a921)), closes [#17885](https://github.com/vitejs/vite/issues/17885)
+* fix(deps): update all non-major dependencies (#17869) ([d11711c](https://github.com/vitejs/vite/commit/d11711c7e4c082fd0400245bfdc766006fd38ac8)), closes [#17869](https://github.com/vitejs/vite/issues/17869)
+
+
+
+## <small>5.5.1 (2024-08-07)</small>
+
+* fix(create-vite): remove eslint overrides (#17833) ([8bc122f](https://github.com/vitejs/vite/commit/8bc122feea8b840575796e1846871a2090525fc9)), closes [#17833](https://github.com/vitejs/vite/issues/17833)
+
+
+
+## 5.5.0 (2024-08-07)
+
+* chore: bump typescript-eslint to v8 (#17624) ([d1891fd](https://github.com/vitejs/vite/commit/d1891fda026d27f53409dec97e156a59da609196)), closes [#17624](https://github.com/vitejs/vite/issues/17624)
+* chore: extend commit hash (#17709) ([4fc9b64](https://github.com/vitejs/vite/commit/4fc9b6424c27aca8004c368b69991a56264e4fdb)), closes [#17709](https://github.com/vitejs/vite/issues/17709)
+* chore: remove fs-extra dev dependency (#17782) ([461d37b](https://github.com/vitejs/vite/commit/461d37b9472ab0f12f9da5bf9aa6f98ece1f1962)), closes [#17782](https://github.com/vitejs/vite/issues/17782)
+* chore(deps): update all non-major dependencies (#17734) ([9983731](https://github.com/vitejs/vite/commit/998373120c8306326469d4f342690c17774acdf9)), closes [#17734](https://github.com/vitejs/vite/issues/17734)
+* chore(deps): update all non-major dependencies (#17820) ([bb2f8bb](https://github.com/vitejs/vite/commit/bb2f8bb55fdd64e4f16831ff98921c221a5e734a)), closes [#17820](https://github.com/vitejs/vite/issues/17820)
+* chore(deps): update typescript (#17699) ([df5ceb3](https://github.com/vitejs/vite/commit/df5ceb35b7f744cfcdfe3a28834f890f35f2b18f)), closes [#17699](https://github.com/vitejs/vite/issues/17699)
+* fix(create-vite): avoid usage of composite in TS configs (#17774) ([efcd830](https://github.com/vitejs/vite/commit/efcd830e479092a0d3b95e0caf4a253d7835892c)), closes [#17774](https://github.com/vitejs/vite/issues/17774)
+* fix(deps): update all non-major dependencies (#17629) ([93281b0](https://github.com/vitejs/vite/commit/93281b0e09ff8b00e21c24b80ed796db89cbc1ef)), closes [#17629](https://github.com/vitejs/vite/issues/17629)
+* fix(deps): update all non-major dependencies (#17780) ([e408542](https://github.com/vitejs/vite/commit/e408542748edebd93dba07f21e3fd107725cadca)), closes [#17780](https://github.com/vitejs/vite/issues/17780)
+* refactor(create-vite): use named imports for react (#17773) ([6eab91e](https://github.com/vitejs/vite/commit/6eab91e5011ec443179af5e58aa7c6123b2d445e)), closes [#17773](https://github.com/vitejs/vite/issues/17773)
+* feat(create-vite): add eslint.config.js to React templates (#12860) ([dcfa75c](https://github.com/vitejs/vite/commit/dcfa75c6f5422d47cbe670798080d3f6d9dcdb6b)), closes [#12860](https://github.com/vitejs/vite/issues/12860)
+
+
+
 ## 5.4.0 (2024-07-16)
 
 * docs(create-vite): add missing tsconfig.app.json file at the project array for react-ts (#17645) ([6d31a1d](https://github.com/vitejs/vite/commit/6d31a1de593520ca0f6a323d4f2fde4e59770f4a)), closes [#17645](https://github.com/vitejs/vite/issues/17645)

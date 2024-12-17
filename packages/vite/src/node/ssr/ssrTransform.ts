@@ -1,9 +1,14 @@
 import path from 'node:path'
 import MagicString from 'magic-string'
-import type { SourceMap } from 'rollup'
+import type { RollupAstNode, SourceMap } from 'rollup'
 import type {
+  ExportAllDeclaration,
+  ExportDefaultDeclaration,
+  ExportNamedDeclaration,
   Function as FunctionNode,
   Identifier,
+  ImportDeclaration,
+  Literal,
   Pattern,
   Property,
   VariableDeclaration,
@@ -14,7 +19,12 @@ import { walk as eswalk } from 'estree-walker'
 import type { RawSourceMap } from '@ampproject/remapping'
 import { parseAstAsync as rollupParseAstAsync } from 'rollup/parseAst'
 import type { TransformResult } from '../server/transformRequest'
-import { combineSourcemaps, isDefined } from '../utils'
+import {
+  combineSourcemaps,
+  generateCodeFrame,
+  isDefined,
+  numberToPos,
+} from '../utils'
 import { isJSONRequest } from '../plugins/json'
 import type { DefineImportMetadata } from '../../shared/ssrTransform'
 
@@ -23,7 +33,7 @@ type Node = _Node & {
   end: number
 }
 
-interface TransformOptions {
+export interface ModuleRunnerTransformOptions {
   json?: {
     stringify?: boolean
   }
@@ -42,7 +52,7 @@ export async function ssrTransform(
   inMap: SourceMap | { mappings: '' } | null,
   url: string,
   originalCode: string,
-  options?: TransformOptions,
+  options?: ModuleRunnerTransformOptions,
 ): Promise<TransformResult | null> {
   if (options?.json?.stringify && isJSONRequest(url)) {
     return ssrTransformJSON(code, inMap)
@@ -59,6 +69,7 @@ async function ssrTransformJSON(
     map: inMap,
     deps: [],
     dynamicDeps: [],
+    ssr: true,
   }
 }
 
@@ -74,15 +85,21 @@ async function ssrTransformScript(
   try {
     ast = await rollupParseAstAsync(code)
   } catch (err) {
-    if (!err.loc || !err.loc.line) throw err
-    const line = err.loc.line
-    throw new Error(
-      `Parse failure: ${
-        err.message
-      }\nAt file: ${url}\nContents of line ${line}: ${
-        code.split('\n')[line - 1]
-      }`,
-    )
+    // enhance known rollup errors
+    // https://github.com/rollup/rollup/blob/42e587e0e37bc0661aa39fe7ad6f1d7fd33f825c/src/utils/bufferToAst.ts#L17-L22
+    if (err.code === 'PARSE_ERROR') {
+      err.message = `Parse failure: ${err.message}\n`
+      err.id = url
+      if (typeof err.pos === 'number') {
+        err.loc = numberToPos(code, err.pos)
+        err.loc.file = url
+        err.frame = generateCodeFrame(code, err.pos)
+        err.message += `At file: ${url}:${err.loc.line}:${err.loc.column}`
+      } else {
+        err.message += `At file: ${url}`
+      }
+    }
+    throw err
   }
 
   let uid = 0
@@ -92,13 +109,22 @@ async function ssrTransformScript(
   const declaredConst = new Set<string>()
 
   // hoist at the start of the file, after the hashbang
-  const hoistIndex = code.match(hashbangRE)?.[0].length ?? 0
+  const fileStartIndex = hashbangRE.exec(code)?.[0].length ?? 0
+  let hoistIndex = fileStartIndex
 
   function defineImport(
     index: number,
-    source: string,
+    importNode: (
+      | ImportDeclaration
+      | (ExportNamedDeclaration & { source: Literal })
+      | ExportAllDeclaration
+    ) & {
+      start: number
+      end: number
+    },
     metadata?: DefineImportMetadata,
   ) {
+    const source = importNode.source.value as string
     deps.add(source)
     const importId = `__vite_ssr_import_${uid++}__`
 
@@ -111,72 +137,91 @@ async function ssrTransformScript(
     }
     const metadataStr = metadata ? `, ${JSON.stringify(metadata)}` : ''
 
-    // There will be an error if the module is called before it is imported,
-    // so the module import statement is hoisted to the top
-    s.appendLeft(
-      index,
+    s.update(
+      importNode.start,
+      importNode.end,
       `const ${importId} = await ${ssrImportKey}(${JSON.stringify(
         source,
       )}${metadataStr});\n`,
     )
+
+    if (importNode.start === index) {
+      // no need to hoist, but update hoistIndex to keep the order
+      hoistIndex = importNode.end
+    } else {
+      // There will be an error if the module is called before it is imported,
+      // so the module import statement is hoisted to the top
+      s.move(importNode.start, importNode.end, index)
+    }
+
     return importId
   }
 
   function defineExport(position: number, name: string, local = name) {
     s.appendLeft(
       position,
-      `\nObject.defineProperty(${ssrModuleExportsKey}, "${name}", ` +
+      `\nObject.defineProperty(${ssrModuleExportsKey}, ${JSON.stringify(name)}, ` +
         `{ enumerable: true, configurable: true, get(){ return ${local} }});`,
     )
   }
 
-  // 1. check all import statements and record id -> importName map
+  const imports: RollupAstNode<ImportDeclaration>[] = []
+  const exports: (
+    | RollupAstNode<ExportNamedDeclaration>
+    | RollupAstNode<ExportDefaultDeclaration>
+    | RollupAstNode<ExportAllDeclaration>
+  )[] = []
+
   for (const node of ast.body as Node[]) {
+    if (node.type === 'ImportDeclaration') {
+      imports.push(node)
+    } else if (
+      node.type === 'ExportNamedDeclaration' ||
+      node.type === 'ExportDefaultDeclaration' ||
+      node.type === 'ExportAllDeclaration'
+    ) {
+      exports.push(node)
+    }
+  }
+
+  // 1. check all import statements and record id -> importName map
+  for (const node of imports) {
     // import foo from 'foo' --> foo -> __import_foo__.default
     // import { baz } from 'foo' --> baz -> __import_foo__.baz
     // import * as ok from 'foo' --> ok -> __import_foo__
-    if (node.type === 'ImportDeclaration') {
-      const importId = defineImport(hoistIndex, node.source.value as string, {
-        importedNames: node.specifiers
-          .map((s) => {
-            if (s.type === 'ImportSpecifier')
-              return s.imported.type === 'Identifier'
-                ? s.imported.name
-                : // @ts-expect-error TODO: Estree types don't consider arbitrary module namespace specifiers yet
-                  s.imported.value
-            else if (s.type === 'ImportDefaultSpecifier') return 'default'
-          })
-          .filter(isDefined),
-      })
-      s.remove(node.start, node.end)
-      for (const spec of node.specifiers) {
-        if (spec.type === 'ImportSpecifier') {
-          if (spec.imported.type === 'Identifier') {
-            idToImportMap.set(
-              spec.local.name,
-              `${importId}.${spec.imported.name}`,
-            )
-          } else {
-            idToImportMap.set(
-              spec.local.name,
-              `${importId}[${
-                // @ts-expect-error TODO: Estree types don't consider arbitrary module namespace specifiers yet
-                JSON.stringify(spec.imported.value)
-              }]`,
-            )
-          }
-        } else if (spec.type === 'ImportDefaultSpecifier') {
-          idToImportMap.set(spec.local.name, `${importId}.default`)
+    const importId = defineImport(hoistIndex, node, {
+      importedNames: node.specifiers
+        .map((s) => {
+          if (s.type === 'ImportSpecifier')
+            return getIdentifierNameOrLiteralValue(s.imported) as string
+          else if (s.type === 'ImportDefaultSpecifier') return 'default'
+        })
+        .filter(isDefined),
+    })
+    for (const spec of node.specifiers) {
+      if (spec.type === 'ImportSpecifier') {
+        if (spec.imported.type === 'Identifier') {
+          idToImportMap.set(
+            spec.local.name,
+            `${importId}.${spec.imported.name}`,
+          )
         } else {
-          // namespace specifier
-          idToImportMap.set(spec.local.name, importId)
+          idToImportMap.set(
+            spec.local.name,
+            `${importId}[${JSON.stringify(spec.imported.value as string)}]`,
+          )
         }
+      } else if (spec.type === 'ImportDefaultSpecifier') {
+        idToImportMap.set(spec.local.name, `${importId}.default`)
+      } else {
+        // namespace specifier
+        idToImportMap.set(spec.local.name, importId)
       }
     }
   }
 
   // 2. check all export statements and define exports
-  for (const node of ast.body as Node[]) {
+  for (const node of exports) {
     // named exports
     if (node.type === 'ExportNamedDeclaration') {
       if (node.declaration) {
@@ -202,35 +247,41 @@ async function ssrTransformScript(
           // export { foo, bar } from './foo'
           const importId = defineImport(
             node.start,
-            node.source.value as string,
+            node as RollupAstNode<ExportNamedDeclaration & { source: Literal }>,
             {
-              importedNames: node.specifiers.map((s) => s.local.name),
+              importedNames: node.specifiers.map(
+                (s) => getIdentifierNameOrLiteralValue(s.local) as string,
+              ),
             },
           )
           for (const spec of node.specifiers) {
-            const exportedAs =
-              spec.exported.type === 'Identifier'
-                ? spec.exported.name
-                : // @ts-expect-error TODO: Estree types don't consider arbitrary module namespace specifiers yet
-                  spec.exported.value
+            const exportedAs = getIdentifierNameOrLiteralValue(
+              spec.exported,
+            ) as string
 
-            defineExport(
-              node.start,
-              exportedAs,
-              `${importId}.${spec.local.name}`,
-            )
+            if (spec.local.type === 'Identifier') {
+              defineExport(
+                node.end,
+                exportedAs,
+                `${importId}.${spec.local.name}`,
+              )
+            } else {
+              defineExport(
+                node.end,
+                exportedAs,
+                `${importId}[${JSON.stringify(spec.local.value as string)}]`,
+              )
+            }
           }
         } else {
           // export { foo, bar }
           for (const spec of node.specifiers) {
-            const local = spec.local.name
+            // spec.local can be Literal only when it has "from 'something'"
+            const local = (spec.local as Identifier).name
             const binding = idToImportMap.get(local)
-
-            const exportedAs =
-              spec.exported.type === 'Identifier'
-                ? spec.exported.name
-                : // @ts-expect-error TODO: Estree types don't consider arbitrary module namespace specifiers yet
-                  spec.exported.value
+            const exportedAs = getIdentifierNameOrLiteralValue(
+              spec.exported,
+            ) as string
 
             defineExport(node.end, exportedAs, binding || local)
           }
@@ -267,18 +318,35 @@ async function ssrTransformScript(
 
     // export * from './foo'
     if (node.type === 'ExportAllDeclaration') {
-      s.remove(node.start, node.end)
-      const importId = defineImport(node.start, node.source.value as string)
+      const importId = defineImport(node.start, node)
       if (node.exported) {
-        defineExport(node.start, node.exported.name, `${importId}`)
+        const exportedAs = getIdentifierNameOrLiteralValue(
+          node.exported,
+        ) as string
+        defineExport(node.end, exportedAs, `${importId}`)
       } else {
-        s.appendLeft(node.start, `${ssrExportAllKey}(${importId});\n`)
+        s.appendLeft(node.end, `${ssrExportAllKey}(${importId});\n`)
       }
     }
   }
 
   // 3. convert references to import bindings & import.meta references
   walk(ast, {
+    onStatements(statements) {
+      // ensure ";" between statements
+      for (let i = 0; i < statements.length - 1; i++) {
+        const stmt = statements[i]
+        if (
+          code[stmt.end - 1] !== ';' &&
+          stmt.type !== 'FunctionDeclaration' &&
+          stmt.type !== 'ClassDeclaration' &&
+          stmt.type !== 'BlockStatement' &&
+          stmt.type !== 'ImportDeclaration'
+        ) {
+          s.appendRight(stmt.end, ';')
+        }
+      }
+    },
     onIdentifier(id, parent, parentStack) {
       const grandparent = parentStack[1]
       const binding = idToImportMap.get(id.name)
@@ -306,6 +374,12 @@ async function ssrTransformScript(
           const topNode = parentStack[parentStack.length - 2]
           s.prependRight(topNode.start, `const ${id.name} = ${binding};\n`)
         }
+      } else if (parent.type === 'CallExpression') {
+        s.update(id.start, id.end, binding)
+        // wrap with (0, ...) to avoid method binding `this`
+        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Property_accessors#method_binding
+        s.prependRight(id.start, `(0,`)
+        s.appendLeft(id.end, `)`)
       } else if (
         // don't transform class name identifier
         !(parent.type === 'ClassExpression' && id === parent.id)
@@ -325,6 +399,10 @@ async function ssrTransformScript(
   })
 
   let map = s.generateMap({ hires: 'boundary' })
+  map.sources = [path.basename(url)]
+  // needs to use originalCode instead of code
+  // because code might be already transformed even if map is null
+  map.sourcesContent = [originalCode]
   if (
     inMap &&
     inMap.mappings &&
@@ -332,26 +410,22 @@ async function ssrTransformScript(
     inMap.sources.length > 0
   ) {
     map = combineSourcemaps(url, [
-      {
-        ...map,
-        sources: inMap.sources,
-        sourcesContent: inMap.sourcesContent,
-      } as RawSourceMap,
+      map as RawSourceMap,
       inMap as RawSourceMap,
     ]) as SourceMap
-  } else {
-    map.sources = [path.basename(url)]
-    // needs to use originalCode instead of code
-    // because code might be already transformed even if map is null
-    map.sourcesContent = [originalCode]
   }
 
   return {
     code: s.toString(),
     map,
+    ssr: true,
     deps: [...deps],
     dynamicDeps: [...dynamicDeps],
   }
+}
+
+function getIdentifierNameOrLiteralValue(node: Identifier | Literal) {
+  return node.type === 'Identifier' ? node.name : node.value
 }
 
 interface Visitors {
@@ -365,6 +439,7 @@ interface Visitors {
   ) => void
   onImportMeta: (node: Node) => void
   onDynamicImport: (node: Node) => void
+  onStatements: (statements: Node[]) => void
 }
 
 const isNodeInPatternWeakSet = new WeakSet<_Node>()
@@ -378,7 +453,7 @@ const isNodeInPattern = (node: _Node): node is Property =>
  */
 function walk(
   root: Node,
-  { onIdentifier, onImportMeta, onDynamicImport }: Visitors,
+  { onIdentifier, onImportMeta, onDynamicImport, onStatements }: Visitors,
 ) {
   const parentStack: Node[] = []
   const varKindStack: VariableDeclaration['kind'][] = []
@@ -398,7 +473,7 @@ function walk(
   }
 
   function isInScope(name: string, parents: Node[]) {
-    return parents.some((node) => node && scopeMap.get(node)?.has(name))
+    return parents.some((node) => scopeMap.get(node)?.has(name))
   }
   function handlePattern(p: Pattern, parentScope: _Node) {
     if (p.type === 'Identifier') {
@@ -430,6 +505,17 @@ function walk(
     enter(node: Node, parent: Node | null) {
       if (node.type === 'ImportDeclaration') {
         return this.skip()
+      }
+
+      // for nodes that can contain multiple statements
+      if (
+        node.type === 'Program' ||
+        node.type === 'BlockStatement' ||
+        node.type === 'StaticBlock'
+      ) {
+        onStatements(node.body as Node[])
+      } else if (node.type === 'SwitchCase') {
+        onStatements(node.consequent as Node[])
       }
 
       // track parent stack, skip for "else-if"/"else" branches as acorn nests
@@ -482,11 +568,11 @@ function walk(
             return
           }
           ;(eswalk as any)(p.type === 'AssignmentPattern' ? p.left : p, {
-            enter(child: Node, parent: Node) {
+            enter(child: Node, parent: Node | undefined) {
               // skip params default value of destructure
               if (
                 parent?.type === 'AssignmentPattern' &&
-                parent?.right === child
+                parent.right === child
               ) {
                 return this.skip()
               }
@@ -497,8 +583,8 @@ function walk(
               // assignment of a destructuring variable
               if (
                 (parent?.type === 'TemplateLiteral' &&
-                  parent?.expressions.includes(child)) ||
-                (parent?.type === 'CallExpression' && parent?.callee === child)
+                  parent.expressions.includes(child)) ||
+                (parent?.type === 'CallExpression' && parent.callee === child)
               ) {
                 return
               }
@@ -620,10 +706,10 @@ function isRefIdentifier(id: Identifier, parent: _Node, parentStack: _Node[]) {
 }
 
 const isStaticProperty = (node: _Node): node is Property =>
-  node && node.type === 'Property' && !node.computed
+  node.type === 'Property' && !node.computed
 
-const isStaticPropertyKey = (node: _Node, parent: _Node) =>
-  isStaticProperty(parent) && parent.key === node
+const isStaticPropertyKey = (node: _Node, parent: _Node | undefined) =>
+  parent && isStaticProperty(parent) && parent.key === node
 
 const functionNodeTypeRE = /Function(?:Expression|Declaration)$|Method$/
 function isFunction(node: _Node): node is FunctionNode {
@@ -646,10 +732,7 @@ function isInDestructuringAssignment(
   parent: _Node,
   parentStack: _Node[],
 ): boolean {
-  if (
-    parent &&
-    (parent.type === 'Property' || parent.type === 'ArrayPattern')
-  ) {
+  if (parent.type === 'Property' || parent.type === 'ArrayPattern') {
     return parentStack.some((i) => i.type === 'AssignmentExpression')
   }
   return false

@@ -8,10 +8,9 @@ If you need a custom integration, you can follow the steps in this guide to conf
 
 1. In your Vite config, configure the entry and enable build manifest:
 
-   ```js twoslash
+   ```js twoslash [vite.config.js]
    import { defineConfig } from 'vite'
    // ---cut---
-   // vite.config.js
    export default defineConfig({
      build: {
        // generate .vite/manifest.json in outDir
@@ -60,16 +59,16 @@ If you need a custom integration, you can follow the steps in this guide to conf
 
 3. For production: after running `vite build`, a `.vite/manifest.json` file will be generated alongside other asset files. An example manifest file looks like this:
 
-   ```json
+   ```json [.vite/manifest.json]
    {
-     "_shared-!~{003}~.js": {
-       "file": "assets/shared-ChJ_j-JJ.css",
-       "src": "_shared-!~{003}~.js"
-     },
      "_shared-B7PI925R.js": {
        "file": "assets/shared-B7PI925R.js",
        "name": "shared",
        "css": ["assets/shared-ChJ_j-JJ.css"]
+     },
+     "_shared-ChJ_j-JJ.css": {
+       "file": "assets/shared-ChJ_j-JJ.css",
+       "src": "_shared-ChJ_j-JJ.css"
      },
      "baz.js": {
        "file": "assets/baz-B2H3sXNv.js",
@@ -99,6 +98,7 @@ If you need a custom integration, you can follow the steps in this guide to conf
    - The manifest has a `Record<name, chunk>` structure
    - For entry or dynamic entry chunks, the key is the relative src path from project root.
    - For non entry chunks, the key is the base name of the generated file prefixed with `_`.
+   - For the CSS file generated when [`build.cssCodeSplit`](/config/build-options.md#build-csscodesplit) is `false`, the key is `style.css`.
    - Chunks will contain information on its static and dynamic imports (both are keys that map to the corresponding chunk in the manifest), and also its corresponding CSS and asset files (if any).
 
 4. You can use this file to render links or preload directives with hashed filenames.
@@ -152,3 +152,38 @@ If you need a custom integration, you can follow the steps in this guide to conf
    <!-- optional -->
    <link rel="modulepreload" href="assets/shared-B7PI925R.js" />
    ```
+
+   ::: details Pseudo implementation of `importedChunks`
+   An example pseudo implementation of `importedChunks` in TypeScript (This will
+   need to be adapted for your programming language and templating language):
+
+   ```ts
+   import type { Manifest, ManifestChunk } from 'vite'
+
+   export default function importedChunks(
+     manifest: Manifest,
+     name: string,
+   ): ManifestChunk[] {
+     const seen = new Set<string>()
+
+     function getImportedChunks(chunk: ManifestChunk): ManifestChunk[] {
+       const chunks: ManifestChunk[] = []
+       for (const file of chunk.imports ?? []) {
+         const importee = manifest[file]
+         if (seen.has(file)) {
+           continue
+         }
+         seen.add(file)
+
+         chunks.push(...getImportedChunks(importee))
+         chunks.push(importee)
+       }
+
+       return chunks
+     }
+
+     return getImportedChunks(manifest[name])
+   }
+   ```
+
+   :::
