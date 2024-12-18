@@ -1,4 +1,4 @@
-# Releases
+# Релизы
 
 Vite releases follow [Semantic Versioning](https://semver.org/). You can see the latest stable version of Vite in the [Vite npm package page](https://www.npmjs.com/package/vite).
 

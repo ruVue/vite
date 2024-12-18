@@ -73,10 +73,11 @@
     "simple-git-hooks": "^2.11.1",
     "tslib": "^2.8.1",
     "tsx": "^4.19.2",
-    "typescript": "~5.6.2",
+    "typescript": "~5.7.2",
     "typescript-eslint": "^8.17.0",
     "vite": "workspace:*",
-    "vitest": "^2.1.8"
+    "vitest": "^2.1.8",
+    "vue": "3.2.47"
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm exec lint-staged --concurrent false"
@@ -130,5 +131,8 @@
   },
   "stackblitz": {
     "startCommand": "pnpm --filter='./packages/vite' run dev"
+  },
+  "dependencies": {
+    "chalk": "^5.4.0"
   }
 }

@@ -132,7 +132,7 @@ const { isCardActive, startAnimation } = useCardAnimation(
         </g>
 
         <!-- Client Transform Text -->
-        <text class="client-text" x="236" y="53">Client transform</text>
+        <text class="client-text" x="236" y="53">Преобразование клиента</text>
 
         <!-- Server Transform Box -->
         <g class="server" filter="url(#filter-server)">
@@ -171,7 +171,7 @@ const { isCardActive, startAnimation } = useCardAnimation(
         </g>
 
         <!-- Server Transform Text -->
-        <text class="server-text" x="236" y="122">Server transform</text>
+        <text class="server-text" x="236" y="122">Преобразование сервера</text>
 
         <!-- Definitions -->
         <defs>
@@ -417,10 +417,10 @@ const { isCardActive, startAnimation } = useCardAnimation(
       </svg>
     </div>
     <div class="feature__meta">
-      <div class="meta__title">First class SSR Support</div>
+      <div class="meta__title">Первоклассная поддержка SSR</div>
       <div class="meta__description">
-        It's never been easier to setup custom SSR (Server-Side Rendering), or
-        build your own SSR framework.
+        Никогда еще не было так просто настроить пользовательский SSR (серверный
+        рендеринг) или создать собственную структуру SSR.
       </div>
     </div>
   </div>

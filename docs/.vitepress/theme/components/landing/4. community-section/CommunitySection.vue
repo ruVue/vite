@@ -9,8 +9,7 @@ const testimonials: Testimonial[] = [
     avatar:
       'https://pbs.twimg.com/profile_images/1810837163447308292/8Piov0f6_400x400.jpg',
     comment: [
-      `I'm loving what Vite enables. We've found building SolidStart that it is less a metaframework but a system of symbiotic Vite plugins. While built with
-SolidJS in mind, they should scale from our simplest template to opinionated starter. We're building an ecosystem on Vite.`,
+      `Мне нравится то, что позволяет Vite. Мы обнаружили, что при создании SolidStart это не столько метафреймворк, сколько система симбиотических плагинов Vite. Хотя они и созданы с учетом SolidJS, они должны масштабироваться от нашего простейшего шаблона до самоуверенного стартера. Мы создаем экосистему на Vite.`,
     ],
   },
   {
@@ -19,7 +18,7 @@ SolidJS in mind, they should scale from our simplest template to opinionated sta
     avatar:
       'https://pbs.twimg.com/profile_images/557940120184041473/bFyXy8Pu_400x400.jpeg',
     comment: [
-      `Vite is basically the united nations of JavaScript at this point. I'll be there as a representative of Sveltelandia`,
+      `Vite — это, по сути, объединенные нации JavaScript на данный момент. Я буду там как представитель Sveltelandia`,
     ],
   },
   {
@@ -28,7 +27,7 @@ SolidJS in mind, they should scale from our simplest template to opinionated sta
     avatar:
       'https://pbs.twimg.com/profile_images/1691627325794725888/voQFcYjY_400x400.jpg',
     comment: [
-      'Each and every time I use Vite, I feel a true sense of pure and unbridled joy.',
+      'Каждый раз, когда я использую Vite, я испытываю настоящее чувство чистой и безудержной радости.',
     ],
   },
   {
@@ -37,8 +36,8 @@ SolidJS in mind, they should scale from our simplest template to opinionated sta
     avatar:
       'https://pbs.twimg.com/profile_images/754886061872979968/BzaOWhs1_400x400.jpg',
     comment: [
-      `It’s also a great platform to build a framework on since it provides a pluggable dev environment.`,
-      `Community is amazing too.`,
+      `Это также отличная платформа для создания фреймворка, поскольку она предоставляет подключаемую среду разработки.`,
+      `Сообщество тоже потрясающее.`,
     ],
   },
   {
@@ -47,7 +46,7 @@ SolidJS in mind, they should scale from our simplest template to opinionated sta
     avatar:
       'https://pbs.twimg.com/profile_images/1374778373239681025/Sc9ehtAr_400x400.jpg',
     comment: [
-      `Every time I suspect I've hit the bounds of what Vite can do, I end up being wrong.`,
+      `Каждый раз, когда я подозреваю, что достиг предела возможностей Vite, я оказываюсь неправ.`,
     ],
   },
   {
@@ -55,7 +54,7 @@ SolidJS in mind, they should scale from our simplest template to opinionated sta
     handle: '@zeeg',
     avatar:
       'https://pbs.twimg.com/profile_images/1706891973553168384/zdAPOznc_400x400.jpg',
-    comment: ['Vite has been a game changer for the industry.'],
+    comment: ['Vite изменил правила игры в отрасли.'],
   },
   {
     name: 'Dion Almaer',
@@ -63,7 +62,7 @@ SolidJS in mind, they should scale from our simplest template to opinionated sta
     avatar:
       'https://pbs.twimg.com/profile_images/3380865881/f73b3687ff39b795db05fcaf35972270_400x400.jpeg',
     comment: [
-      'I am so excited to see so many great frameworks teaming up on top of vite. So many will benefit. ❤️ to the vite team.',
+      'Я так рад видеть, как столько замечательных фреймворков объединяются на базе vite. Так много людей получат пользу. ❤️ команде vite.',
     ],
   },
   {
@@ -71,14 +70,14 @@ SolidJS in mind, they should scale from our simplest template to opinionated sta
     handle: '@cpojer',
     avatar:
       'https://pbs.twimg.com/profile_images/1854151427595407360/4GyUCgEH_400x400.jpg',
-    comment: ['Vite is gonna eat the (JavaScript) world.'],
+    comment: ['Vite собирается съесть мир (JavaScript).'],
   },
   {
     name: 'Nikolaj',
     handle: '@lopugit',
     avatar: 'https://avatars.githubusercontent.com/u/13629190?v=4',
     comment: [
-      'Wow, wow, wow, wow, wow, wow, Vite is..... Vite is.... Wow 🤤🤯🙏',
+      'Ух ты, ух ты, ух ты, ух ты, ух ты, ух ты, Vite это... Vite это.... Ух ты 🤤🤯🙏',
     ],
   },
 ]
@@ -86,10 +85,9 @@ SolidJS in mind, they should scale from our simplest template to opinionated sta
 
 <template>
   <section class="community-section">
-    <h2>Loved by the community</h2>
+    <h2>Любимец сообщества</h2>
     <h3>
-      Don't take our word for it - listen to what Vite community members have to
-      say.
+      Не верьте нам на слово — послушайте, что говорят члены сообщества Vite.
     </h3>
     <div class="community-grid-container">
       <div class="community-grid">

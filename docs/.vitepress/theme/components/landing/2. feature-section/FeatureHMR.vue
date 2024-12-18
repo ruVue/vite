@@ -247,9 +247,10 @@ const { startAnimation } = useCardAnimation(
       </div>
     </div>
     <div class="feature__meta meta--center">
-      <div class="meta__title">Lightning fast HMR</div>
+      <div class="meta__title">Молниеносно быстрый HMR</div>
       <div class="meta__description">
-        Hot Module Replacement (HMR) that stays fast regardless of app size.
+        Горячая замена модулей (HMR), которая работает быстро независимо от
+        размера приложения.
       </div>
     </div>
   </div>

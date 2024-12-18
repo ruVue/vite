@@ -50,10 +50,6 @@ const versionLinks = ((): DefaultTheme.NavItemWithLink[] => {
       text: 'Документация Vite 3',
       link: 'https://v3.vitejs.ru',
     },
-    {
-      text: 'Документация Vite 2',
-      link: 'https://v2.vite.dev',
-    },
   ]
 
   switch (deployType) {
@@ -139,7 +135,7 @@ export default defineConfig({
 
   locales: {
     root: { label: 'Русский' },
-    en: { label: 'English', link: 'https://vitejs.dev' },
+    en: { label: 'English', link: 'https://vite.dev' },
     zh: { label: '简体中文', link: 'https://cn.vite.dev' },
     ja: { label: '日本語', link: 'https://ja.vite.dev' },
     es: { label: 'Español', link: 'https://es.vite.dev' },
@@ -177,7 +173,8 @@ export default defineConfig({
 
     footer: {
       message: `Выпущено под лицензией MIT. (${commitRef})`,
-      copyright: 'Авторские права © 2019-настоящее время VoidZero Inc. и участники Vite',
+      copyright:
+        'Авторские права © 2019-настоящее время VoidZero Inc. и участники Vite',
     },
 
     nav: [
@@ -225,7 +222,7 @@ export default defineConfig({
                 link: 'https://github.com/vitejs/vite/blob/main/packages/vite/CHANGELOG.md',
               },
               {
-                text: 'Contributing',
+                text: 'Участие',
                 link: 'https://github.com/vitejs/vite/blob/main/CONTRIBUTING.md',
               },
             ],

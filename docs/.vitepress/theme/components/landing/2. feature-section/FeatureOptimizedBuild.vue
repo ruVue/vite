@@ -436,9 +436,10 @@ const { startAnimation } = useCardAnimation(
       </svg>
     </div>
     <div class="feature__meta meta--center">
-      <div class="meta__title">Optimized build</div>
+      <div class="meta__title">Оптимизированная сборка</div>
       <div class="meta__description">
-        Pre-configured Rollup build with multi-page and library mode support.
+        Предварительно настроенная сборка Rollup с поддержкой многостраничного и
+        библиотечного режима.
       </div>
     </div>
   </div>
@@ -559,30 +560,39 @@ const { startAnimation } = useCardAnimation(
   0% {
     opacity: 0;
   }
+
   2% {
     opacity: 0.6;
   }
+
   30% {
     opacity: 0.6;
   }
+
   31% {
     opacity: 0.01;
   }
+
   35% {
     opacity: 0.01;
   }
+
   36% {
     opacity: 0.8;
   }
+
   80% {
     opacity: 0.8;
   }
+
   80% {
     opacity: 0.3;
   }
+
   82% {
     opacity: 1;
   }
+
   100% {
     opacity: 1;
   }
@@ -592,30 +602,39 @@ const { startAnimation } = useCardAnimation(
   0% {
     opacity: 0.03;
   }
+
   2% {
     opacity: 0.4;
   }
+
   30% {
     opacity: 0.4;
   }
+
   31% {
     opacity: 0.01;
   }
+
   35% {
     opacity: 0.01;
   }
+
   36% {
     opacity: 0.45;
   }
+
   80% {
     opacity: 0.45;
   }
+
   80% {
     opacity: 0.3;
   }
+
   82% {
     opacity: 0.5;
   }
+
   100% {
     opacity: 0.9;
   }

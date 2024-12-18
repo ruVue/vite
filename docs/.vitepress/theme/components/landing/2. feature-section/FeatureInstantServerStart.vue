@@ -174,7 +174,7 @@ onUnmounted(() => {
         <div class="terminal__enter-pulse" v-show="highlightEnter" />
         <Transition name="ready-label-transition">
           <span class="terminal__ready-label" v-if="commandTriggered"
-            >Ready in 96ms</span
+            >Готово через 96мс</span
           >
         </Transition>
         <div class="terminal__glow" />
@@ -182,9 +182,10 @@ onUnmounted(() => {
       <div class="connection-line" :class="{ active: commandTriggered }" />
     </div>
     <div class="feature__meta">
-      <div class="meta__title">Instant server start</div>
+      <div class="meta__title">Мгновенный запуск сервера</div>
       <div class="meta__description">
-        On demand file serving over native ESM, no bundling required!
+        Обслуживание файлов по требованию через собственный ESM, объединение не
+        требуется!
       </div>
     </div>
   </div>
@@ -402,6 +403,7 @@ onUnmounted(() => {
     transform: scale(1) translate3d(0, 0, 0);
     opacity: 0.5;
   }
+
   100% {
     transform: scale(1.6) translate3d(0, 0, 0);
     opacity: 0;
@@ -412,12 +414,15 @@ onUnmounted(() => {
   0% {
     border-color: transparent;
   }
+
   49% {
     border-color: transparent;
   }
+
   50% {
     border-color: #ffffff;
   }
+
   100% {
     border-color: #ffffff;
   }

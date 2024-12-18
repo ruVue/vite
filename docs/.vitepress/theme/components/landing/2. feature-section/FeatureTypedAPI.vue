@@ -63,13 +63,13 @@ const { isCardActive, startAnimation } = useCardAnimation(
             class="code--blue"
             >&gt;</span
           ><br />
-          <span class="code--descriptor">Start the server.</span>
+          <span class="code--descriptor">Запустить сервер.</span>
         </span>
       </div>
     </div>
     <div class="feature__meta meta--center">
-      <div class="meta__title">Fully typed API</div>
-      <div class="meta__description">Designed to be built on top of.</div>
+      <div class="meta__title">Полностью типизированный API</div>
+      <div class="meta__description">Разработан для сборки поверх.</div>
     </div>
   </div>
 </template>
