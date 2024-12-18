@@ -8,10 +8,9 @@
 
 1. В конфигурации Vite настройте запись и включите манифест сборки:
 
-   ```js twoslash
+   ```js twoslash [vite.config.js]
    import { defineConfig } from 'vite'
    // ---cut---
-   // vite.config.js
    export default defineConfig({
      build: {
        // generate .vite/manifest.json in outDir
@@ -60,16 +59,16 @@
 
 3. Для производства: после запуска `vite build` файл `.vite/manifest.json` будет создан вместе с другими файлами ресурсов. Пример файла манифеста выглядит следующим образом:
 
-   ```json
+   ```json [.vite/manifest.json]
    {
-     "_shared-!~{003}~.js": {
-       "file": "assets/shared-ChJ_j-JJ.css",
-       "src": "_shared-!~{003}~.js"
-     },
      "_shared-B7PI925R.js": {
        "file": "assets/shared-B7PI925R.js",
        "name": "shared",
        "css": ["assets/shared-ChJ_j-JJ.css"]
+     },
+     "_shared-ChJ_j-JJ.css": {
+       "file": "assets/shared-ChJ_j-JJ.css",
+       "src": "_shared-ChJ_j-JJ.css"
      },
      "baz.js": {
        "file": "assets/baz-B2H3sXNv.js",
@@ -96,10 +95,11 @@
    }
    ```
 
-   - Манифест имеет структуру `Record<name, chunk>`.
-   - Для входных или динамических входных фрагментов ключом является относительный путь src от корня проекта.
-   - Для фрагментов, не являющихся входными, ключ представляет собой базовое имя сгенерированного файла с префиксом `_`.
-   - Чанки будут содержать информацию о его статическом и динамическом импорте (оба являются ключами, которые сопоставляются с соответствующим фрагментом в манифесте), а также о соответствующих файлах CSS и ресурсов (если они есть).
+  - Манифест имеет структуру `Record<name, chunk>`
+  - Для фрагментов записей или динамических фрагментов записей ключом является относительный путь src от корня проекта.
+  - Для фрагментов без записей ключом является базовое имя сгенерированного файла с префиксом `_`.
+  - Для файла CSS, сгенерированного, когда [`build.cssCodeSplit`](/config/build-options.md#build-csscodesplit) имеет значение `false`, ключом является `style.css`.
+  - Фрагменты будут содержать информацию о его статическом и динамическом импорте (оба являются ключами, которые сопоставляются с соответствующим фрагментом в манифесте), а также его соответствующие файлы CSS и ресурсов (если таковые имеются).
 
 4. Этот файл можно использовать для отображения ссылок или предварительной загрузки директив с хешированными именами файлов.
 
@@ -152,3 +152,38 @@
    <!-- optional -->
    <link rel="modulepreload" href="assets/shared-B7PI925R.js" />
    ```
+
+   ::: details Pseudo implementation of `importedChunks`
+   An example pseudo implementation of `importedChunks` in TypeScript (This will
+   need to be adapted for your programming language and templating language):
+
+   ```ts
+   import type { Manifest, ManifestChunk } from 'vite'
+
+   export default function importedChunks(
+     manifest: Manifest,
+     name: string,
+   ): ManifestChunk[] {
+     const seen = new Set<string>()
+
+     function getImportedChunks(chunk: ManifestChunk): ManifestChunk[] {
+       const chunks: ManifestChunk[] = []
+       for (const file of chunk.imports ?? []) {
+         const importee = manifest[file]
+         if (seen.has(file)) {
+           continue
+         }
+         seen.add(file)
+
+         chunks.push(...getImportedChunks(importee))
+         chunks.push(importee)
+       }
+
+       return chunks
+     }
+
+     return getImportedChunks(manifest[name])
+   }
+   ```
+
+   :::

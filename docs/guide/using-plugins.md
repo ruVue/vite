@@ -10,8 +10,7 @@ Vite можно расширить с помощью плагинов, кото�
 $ npm add -D @vitejs/plugin-legacy
 ```
 
-```js twoslash
-// vite.config.js
+```js twoslash [vite.config.js]
 import legacy from '@vitejs/plugin-legacy'
 import { defineConfig } from 'vite'
 
@@ -46,8 +45,7 @@ Vite стремится обеспечить готовую поддержку �
 - `default`: вызывать плагин после основных плагинов Vite
 - `post`: вызывать плагин после плагинов сборки Vite
 
-```js twoslash
-// vite.config.js
+```js twoslash [vite.config.js]
 import image from '@rollup/plugin-image'
 import { defineConfig } from 'vite'
 
@@ -67,8 +65,7 @@ export default defineConfig({
 
 По умолчанию плагины вызываются как для обслуживания, так и для сборки. В тех случаях, когда плагин необходимо условно применить только во время подачи или сборки, используйте свойство `apply`, чтобы вызывать их только во время `'build'` или `'serve'`:
 
-```js twoslash
-// vite.config.js
+```js twoslash [vite.config.js]
 import typescript2 from 'rollup-plugin-typescript2'
 import { defineConfig } from 'vite'
 

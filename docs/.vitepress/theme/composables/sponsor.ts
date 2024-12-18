@@ -25,6 +25,12 @@ const data = ref()
 const dataHost = 'https://sponsors.vuejs.org'
 const dataUrl = `${dataHost}/vite.json`
 
+export const voidZero = {
+  name: 'VoidZero',
+  url: 'https://voidzero.dev',
+  img: '/voidzero.svg',
+} satisfies Sponsor
+
 const viteSponsors: Pick<Sponsors, 'special' | 'gold'> = {
   special: [
     // sponsors patak-dev
@@ -47,33 +53,7 @@ const viteSponsors: Pick<Sponsors, 'special' | 'gold'> = {
     },
   ],
   gold: [
-    // through GitHub -> OpenCollective
-    {
-      name: 'Remix',
-      url: 'https://remix.run/',
-      img: '/remix.svg',
-    },
-    {
-      name: 'Nx',
-      url: 'https://nx.dev/',
-      img: '/nx.svg',
-    },
-    {
-      name: 'Transloadit',
-      url: 'https://transloadit.com/?utm_source=vite&utm_medium=referral&utm_campaign=sponsorship&utm_content=website',
-      img: '/transloadit.svg',
-      hasDark: true,
-    },
-    {
-      name: 'Huly',
-      url: 'https://huly.io/',
-      img: '/huly.svg',
-    },
-    {
-      name: 'Handsontable',
-      url: 'https://handsontable.com/docs/react-data-grid/?utm_source=vite_docs&utm_medium=sponsorship&utm_campaign=library_sponsorship_2024',
-      img: '/handsontable.svg',
-    },
+    // now automated via sponsors.vuejs.org too
   ],
 }
 
@@ -125,7 +105,7 @@ export function useSponsor() {
 function mapSponsors(sponsors: Sponsors) {
   return [
     {
-      tier: 'Специальные спонсоры',
+      tier: 'в партнерстве с',
       size: 'big',
       items: viteSponsors['special'],
     },

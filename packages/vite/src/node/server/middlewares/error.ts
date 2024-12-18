@@ -1,8 +1,8 @@
 import path from 'node:path'
+import { stripVTControlCharacters as strip } from 'node:util'
 import colors from 'picocolors'
 import type { RollupError } from 'rollup'
 import type { Connect } from 'dep-types/connect'
-import strip from 'strip-ansi'
 import type { ErrorPayload } from 'types/hmrPayload'
 import { pad } from '../../utils'
 import type { ViteDevServer } from '../..'
@@ -37,7 +37,7 @@ export function buildErrorMessage(
 
 function cleanStack(stack: string) {
   return stack
-    .split(/\n/g)
+    .split(/\n/)
     .filter((l) => /^\s*at/.test(l))
     .join('\n')
 }
@@ -53,7 +53,7 @@ export function logError(server: ViteDevServer, err: RollupError): void {
     error: err,
   })
 
-  server.hot.send({
+  server.environments.client.hot.send({
     type: 'error',
     err: prepareError(err),
   })

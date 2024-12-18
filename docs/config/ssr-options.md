@@ -1,5 +1,7 @@
 # Параметры SSR
 
+Unless noted, the options in this section are applied to both dev and build.
+
 ## ssr.external
 
 - **Тип:** `string[] | true`
@@ -31,15 +33,30 @@
 
 ## ssr.resolve.conditions
 
-По умолчанию используется корень [`resolve.conditions`](./shared-options.md#resolve-conditions).
-
-По умолчанию используется корень [`resolve.conditions`](./shared-options.md#resolve-conditions).
+- **Тип:** `string[]`
+- **По умолчанию:** `['module', 'node', 'development|production']` (`defaultServerConditions`) (`['module', 'browser', 'development|production']` (`defaultClientConditions`) for `ssr.target === 'webworker'`)
+- **Связанный:** [Условия разрешения](./shared-options.md#resolve-conditions)
 
 Эти условия используются в конвейере плагинов и влияют только на неэкстернализированные зависимости во время сборки SSR. Используйте `ssr.resolve.externalConditions`, чтобы повлиять на экстернализированные импорты.
 
 ## ssr.resolve.externalConditions
 
 - **Тип:** `string[]`
-- **По умолчанию:** `[]`
+- **По умолчанию:** `['node']`
 
-Условия, которые используются во время импорта ssr (включая `ssrLoadModule`) внешних зависимостей.
+Условия, которые используются во время импорта ssr (включая `ssrLoadModule`) внешних прямых зависимостей (внешних зависимостей, импортированных Vite).
+
+:::tip
+
+При использовании этой опции обязательно запустите Node с флагом [`--conditions` flag](https://nodejs.org/docs/latest/api/cli.html#-c-condition---conditionscondition) с одинаковыми значениями в dev и build, чтобы получить единообразное поведение.
+
+Например, при установке `['node', 'custom']` следует запустить `NODE_OPTIONS='--conditions custom' vite` в dev и `NODE_OPTIONS="--conditions custom" node ./dist/server.js` после build.
+
+:::
+
+### ssr.resolve.mainFields
+
+- **Тип:** `string[]`
+- **По умолчанию:** `['module', 'jsnext:main', 'jsnext']`
+
+Список полей в `package.json` для проверки при разрешении точки входа пакета. Обратите внимание, что это имеет меньший приоритет, чем условные экспорты, разрешенные из поля `exports`: если точка входа успешно разрешена из `exports`, основное поле будет проигнорировано. Эта настройка влияет только на неэкстернализированные зависимости.

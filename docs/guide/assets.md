@@ -14,7 +14,7 @@ import imgUrl from './img.png'
 document.getElementById('hero-img').src = imgUrl
 ```
 
-Например, `imgUrl` будет `/img.png` во время разработки и станет `/assets/img.2d8efhg.png` в производственной сборке.
+Например, `imgUrl` будет `/src/img.png` во время разработки и станет `/assets/img.2d8efhg.png` в производственной сборке.
 
 Поведение похоже на `file-loader` из webpack. Разница в том, что импорт может осуществляться как с использованием абсолютных общедоступных путей (на основе корня проекта во время разработки), так и относительных путей.
 
@@ -53,6 +53,17 @@ import 'vite/client'
 // ---cut---
 import workletURL from 'extra-scalloped-border/worklet.js?url'
 CSS.paintWorklet.addModule(workletURL)
+```
+
+### Явная встроенная обработка
+
+Активы можно явно импортировать со встраиванием или без встраивания, используя суффикс `?inline` или `?no-inline` соответственно.
+
+```js twoslash
+import 'vite/client'
+// ---cut---
+import imgUrl1 from './img.svg?no-inline'
+import imgUrl2 from './img.png?inline'
 ```
 
 ### Импорт ресурса в виде строки
@@ -106,10 +117,7 @@ import InlineWorker from './shader.js?worker&inline'
 
 По умолчанию используется каталог `<root>/public`, но его можно настроить с помощью [параметра `publicDir`](/config/shared-options.md#publicdir).
 
-Обратите внимание, что:
-
-- Вы всегда должны ссылаться на `public` ресурсы, используя абсолютный корневой путь – например, `public/icon.png` следует указывать в исходном коде как `/icon.png`.
-- Ресурсы в `public` нельзя импортировать из JavaScript.
+Обратите внимание, что вы всегда должны ссылаться на ресурсы `public`, используя абсолютный корневой путь — например, `public/icon.png` следует ссылаться в исходном коде как `/icon.png`.
 
 ## новый URL(url, import.meta.url)
 
@@ -127,6 +135,7 @@ document.getElementById('hero-img').src = imgUrl
 
 ```js
 function getImageUrl(name) {
+  // note that this does not include files in subdirectories
   return new URL(`./dir/${name}.png`, import.meta.url).href
 }
 ```
@@ -138,6 +147,25 @@ function getImageUrl(name) {
 const imgUrl = new URL(imagePath, import.meta.url).href
 ```
 
+::: details How it works
+
+Vite преобразует функцию `getImageUrl` в:
+
+```js
+import __img0png from './dir/img0.png'
+import __img1png from './dir/img1.png'
+
+function getImageUrl(name) {
+  const modules = {
+    './dir/img0.png': __img0png,
+    './dir/img1.png': __img1png,
+  }
+  return new URL(modules[`./dir/${name}.png`], import.meta.url).href
+}
+```
+
+:::
+
 ::: warning Не работает с SSR
-Этот шаблон не работает, если вы используете Vite для рендеринга на стороне сервера, поскольку семантика `import.meta.url` в браузерах отличается от семантики Node.js. Комплект сервера также не может заранее определить URL-адрес хоста клиента.
+Этот шаблон не работает, если вы используете Vite для рендеринга на стороне сервера, поскольку `import.meta.url` имеет различную семантику в браузерах по сравнению с Node.js. Пакет сервера также не может заранее определить URL-адрес хоста клиента.
 :::

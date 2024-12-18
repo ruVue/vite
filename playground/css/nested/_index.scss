@@ -1,4 +1,5 @@
 @use 'sass:string';
+@use '/nested/root-relative'; // root relative path
 
 @import './css-in-scss.css';
 
@@ -20,6 +21,6 @@ $var: '/ok.png';
 
 $var2: '/OK.PNG';
 .sass-url-starts-with-function-call {
-  background: url(to-lower-case($var2));
+  background: url(string.to-lower-case($var2));
   background-position: center;
 }

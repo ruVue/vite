@@ -2,7 +2,7 @@
 
 На самом базовом уровне разработка с использованием Vite не сильно отличается от использования статического файлового сервера. Тем не менее, Vite предоставляет множество улучшений по сравнению с собственным импортом ESM для поддержки различных функций, которые обычно встречаются в установках на основе сборщиков.
 
-## Разрешение зависимостей NPM и предварительное связывание
+## Разрешение зависимостей npm и предварительное объединение
 
 Собственный импорт ES не поддерживает импорт голых модулей, например:
 
@@ -88,12 +88,13 @@ export type { T }
 
 - [Документация TypeScript](https://www.typescriptlang.org/tsconfig#target)
 
-Vite не транспилирует TypeScript с настроенным значением `target` по умолчанию, следуя тому же поведению, что и `esbuild`.
+Vite игнорирует значение `target` в `tsconfig.json`, следуя тому же поведению, что и `esbuild`.
 
-Вместо этого можно использовать параметр [`esbuild.target`](/config/shared-options.html#esbuild), который по умолчанию имеет значение `esnext` для минимальной транспиляции. В сборках параметр [`build.target`](/config/build-options.html#build-target) имеет более высокий приоритет и также может быть установлен при необходимости.
+Чтобы указать цель в dev, можно использовать параметр [`esbuild.target`](/config/shared-options.html#esbuild), который по умолчанию равен `esnext` для минимальной транспиляции. В сборках параметр [`build.target`](/config/build-options.html#build-target) имеет более высокий приоритет по сравнению с `esbuild.target` и также может быть установлен при необходимости.
 
 ::: warning `useDefineForClassFields`
-Если `target` не `ESNext` или `ES2022` или новее, или если файл `tsconfig.json` отсутствует, для `useDefineForClassFields` по умолчанию будет установлено значение `false`, что может быть проблематичным со значением `esbuild.target` по умолчанию `esnext`. Он может передаваться в [статические блоки инициализации](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/Static_initialization_blocks#browser_compatibility), которые могут не поддерживаться вашим браузером.
+
+Если `target` в `tsconfig.json` не `ESNext` или `ES2022` или новее, или если нет файла `tsconfig.json`, `useDefineForClassFields` по умолчанию будет `false`, что может быть проблематично со значением `esbuild.target` по умолчанию для `esnext`. Это может транспилироваться в [статические блоки инициализации](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/Static_initialization_blocks#browser_compatibility), которые могут не поддерживаться в вашем браузере.
 
 Таким образом, рекомендуется установить для параметра `target` значением `ESNext` или `ES2022` или новее или явно установить для `useDefineForClassFields` значение `true` при настройке `tsconfig.json`.
 :::
@@ -125,7 +126,7 @@ Vite не транспилирует TypeScript с настроенным зна
 
 Альтернативно, вы можете добавить `vite/client` в `compilerOptions.types` внутри `tsconfig.json`:
 
-```json
+```json [tsconfig.json]
 {
   "compilerOptions": {
     "types": ["vite/client"]
@@ -159,6 +160,50 @@ Vite не транспилирует TypeScript с настроенным зна
 
 :::
 
+## HTML
+
+HTML files stand [front-and-center](/guide/#index-html-and-project-root) of a Vite project, serving as the entry points for your application, making it simple to build single-page and [multi-page applications](/guide/build.html#multi-page-app).
+
+Any HTML files in your project root can be directly accessed by its respective directory path:
+
+- `<root>/index.html` -> `http://localhost:5173/`
+- `<root>/about.html` -> `http://localhost:5173/about.html`
+- `<root>/blog/index.html` -> `http://localhost:5173/blog/index.html`
+
+Assets referenced by HTML elements such as `<script type="module" src>` and `<link href>` are processed and bundled as part of the app. The full list of supported elements are as below:
+
+- `<audio src>`
+- `<embed src>`
+- `<img src>` and `<img srcset>`
+- `<image src>`
+- `<input src>`
+- `<link href>` and `<link imagesrcset>`
+- `<object data>`
+- `<script type="module" src>`
+- `<source src>` and `<source srcset>`
+- `<track src>`
+- `<use href>` and `<use xlink:href>`
+- `<video src>` and `<video poster>`
+- `<meta content>`
+  - Only if `name` attribute matches `msapplication-tileimage`, `msapplication-square70x70logo`, `msapplication-square150x150logo`, `msapplication-wide310x150logo`, `msapplication-square310x310logo`, `msapplication-config`, or `twitter:image`
+  - Or only if `property` attribute matches `og:image`, `og:image:url`, `og:image:secure_url`, `og:audio`, `og:audio:secure_url`, `og:video`, or `og:video:secure_url`
+
+```html {4-5,8-9}
+<!doctype html>
+<html>
+  <head>
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body>
+    <img src="/src/images/logo.svg" alt="logo" />
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
+```
+
+To opt-out of HTML processing on certain elements, you can add the `vite-ignore` attribute on the element, which can be useful when referencing external assets or CDN.
+
 ## Vue
 
 Vite обеспечивает первоклассную поддержку Vue:
@@ -176,8 +221,7 @@ Vite обеспечивает первоклассную поддержку Vue:
 
 При использовании JSX без React или Vue пользовательские `jsxFactory` и `jsxFragment` можно настроить с помощью [параметра `esbuild`](/config/shared-options.md#esbuild). Например, для Preact:
 
-```js twoslash
-// vite.config.js
+```js twoslash [vite.config.js]
 import { defineConfig } from 'vite'
 
 export default defineConfig({
@@ -192,8 +236,7 @@ export default defineConfig({
 
 Вы можете внедрить помощники JSX с помощью `jsxInject` (это опция только для Vite), чтобы избежать ручного импорта:
 
-```js twoslash
-// vite.config.js
+```js twoslash [vite.config.js]
 import { defineConfig } from 'vite'
 
 export default defineConfig({
@@ -223,8 +266,7 @@ Vite предварительно настроен для поддержки в�
 
 Любой файл CSS, оканчивающийся на `.module.css`, считается [файлом модулей CSS](https://github.com/css-modules/css-modules). Импорт такого файла вернет соответствующий объект модуля:
 
-```css
-/* example.module.css */
+```css [example.module.css]
 .red {
   color: red;
 }
@@ -257,7 +299,7 @@ document.getElementById('foo').className = applyColor
 
 ```bash
 # .scss and .sass
-npm add -D sass
+npm add -D sass-embedded # or sass
 
 # .less
 npm add -D less
@@ -502,7 +544,7 @@ const modules = {
 
 #### Пользовательские запросы
 
-Вы также можете использовать опцию `query` для предоставления запросов к импортам, например, для импорта активов [как строки](https://vitejs.dev/guide/assets.html#importing-asset-as-string) или [как url](https://vitejs.dev/guide/assets.html#importing-asset-as-url):
+Вы также можете использовать опцию `query` для предоставления запросов к импортам, например, для импорта активов [как строки](https://vite.dev/guide/assets.html#importing-asset-as-string) или [как URL](https://vite.dev/guide/assets.html#importing-asset-as-url):
 
 ```ts twoslash
 import 'vite/client'
@@ -543,9 +585,9 @@ const modules = import.meta.glob('./dir/*.js', {
 
 Обратите внимание, что:
 
-- Это функция только для Vite и не является стандартом для Интернета или ES.
-- Шаблоны glob обрабатываются как спецификаторы импорта: они должны быть либо относительными (начинаться с `./`), либо абсолютными (начинаться с `/`, разрешаться относительно корня проекта), либо псевдонимом пути (смотрите [параметр `resolve.alias`](/config/shared-options.md#resolve-alias)).
-- Сопоставление универсальных объектов выполняется с помощью [`fast-glob`](https://github.com/mrmlnc/fast-glob) - ознакомьтесь с его документацией для [поддерживаемых глобальных шаблонов](https://github.com/mrmlnc/fast-glob#pattern-syntax).
+- Это функция только Vite, а не веб-стандарт или стандарт ES.
+- Шаблоны glob обрабатываются как спецификаторы импорта: они должны быть либо относительными (начинаться с `./`), либо абсолютными (начинаться с `/`, разрешаться относительно корня проекта) или псевдонимом пути (см. параметр [`resolve.alias`](/config/shared-options.md#resolve-alias)).
+- Сопоставление glob выполняется через [`tinyglobby`](https://github.com/SuperchupuDev/tinyglobby).
 - Вы также должны знать, что все аргументы в `import.meta.glob` должны быть **переданы как литералы**. Вы НЕ можете использовать в них переменные или выражения.
 
 ## Динамический импорт

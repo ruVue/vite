@@ -66,9 +66,10 @@ vite build [root]
 | `--clearScreen`                | Разрешить/отключить очистку экрана при входе в систему (`boolean`)                                                                 |
 | `--profile`                    | Запустить встроенный инспектор Node.js (проверить [Узкие места производительности](/guide/troubleshooting#performance-bottlenecks))  |
 | `-d, --debug [feat]`           | Показать журналы отладки (`string \| boolean`)                                                                               |
-| `-f, --filter <filter>`        | Фильтрация журналов отладки (`string`)                                                                                        |
+| `-f, --filter <filter>`        | Фильтр журналов отладки (`string`)                                                                                        |
 | `-m, --mode <mode>`            | Установить режим окружения (`string`)                                                                                             |
-| `-h, --help`                   | Показать доступные параметры CLI options                                                                                       |
+| `-h, --help`                   | Показать доступные параметры CLI                                                                                       |
+| `--app`                        | Построить все среды, как и `builder: {}` (`boolean`, экспериментальный)                                             |
 
 ## Другие
 

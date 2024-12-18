@@ -1,7 +1,11 @@
-import type { ErrorPayload, HMRPayload } from 'types/hmrPayload'
+import type { ErrorPayload, HotPayload } from 'types/hmrPayload'
 import type { ViteHotContext } from 'types/hot'
 import type { InferCustomEventPayload } from 'types/customEvent'
 import { HMRClient, HMRContext } from '../shared/hmr'
+import {
+  createWebSocketModuleRunnerTransport,
+  normalizeModuleRunnerTransport,
+} from '../shared/moduleRunnerTransport'
 import { ErrorOverlay, overlayId } from './overlay'
 import '@vite/env'
 
@@ -30,90 +34,79 @@ const socketHost = `${__HMR_HOSTNAME__ || importMetaUrl.hostname}:${
 }${__HMR_BASE__}`
 const directSocketHost = __HMR_DIRECT_TARGET__
 const base = __BASE__ || '/'
+const hmrTimeout = __HMR_TIMEOUT__
 
-let socket: WebSocket
-try {
-  let fallback: (() => void) | undefined
-  // only use fallback when port is inferred to prevent confusion
-  if (!hmrPort) {
-    fallback = () => {
-      // fallback to connecting directly to the hmr server
-      // for servers which does not support proxying websocket
-      socket = setupWebSocket(socketProtocol, directSocketHost, () => {
-        const currentScriptHostURL = new URL(import.meta.url)
-        const currentScriptHost =
-          currentScriptHostURL.host +
-          currentScriptHostURL.pathname.replace(/@vite\/client$/, '')
-        console.error(
-          '[vite] failed to connect to websocket.\n' +
-            'your current setup:\n' +
-            `  (browser) ${currentScriptHost} <--[HTTP]--> ${serverHost} (server)\n` +
-            `  (browser) ${socketHost} <--[WebSocket (failing)]--> ${directSocketHost} (server)\n` +
-            'Check out your Vite / network configuration and https://vitejs.dev/config/server-options.html#server-hmr .',
-        )
-      })
-      socket.addEventListener(
-        'open',
-        () => {
-          console.info(
-            '[vite] Direct websocket connection fallback. Check out https://vitejs.dev/config/server-options.html#server-hmr to remove the previous connection error.',
-          )
-        },
-        { once: true },
-      )
+const transport = normalizeModuleRunnerTransport(
+  (() => {
+    let wsTransport = createWebSocketModuleRunnerTransport({
+      createConnection: () =>
+        new WebSocket(`${socketProtocol}://${socketHost}`, 'vite-hmr'),
+      pingInterval: hmrTimeout,
+    })
+
+    return {
+      async connect(handlers) {
+        try {
+          await wsTransport.connect(handlers)
+        } catch (e) {
+          // only use fallback when port is inferred and was not connected before to prevent confusion
+          if (!hmrPort) {
+            wsTransport = createWebSocketModuleRunnerTransport({
+              createConnection: () =>
+                new WebSocket(
+                  `${socketProtocol}://${directSocketHost}`,
+                  'vite-hmr',
+                ),
+              pingInterval: hmrTimeout,
+            })
+            try {
+              await wsTransport.connect(handlers)
+              console.info(
+                '[vite] Direct websocket connection fallback. Check out https://vite.dev/config/server-options.html#server-hmr to remove the previous connection error.',
+              )
+            } catch (e) {
+              if (
+                e instanceof Error &&
+                e.message.includes('WebSocket closed without opened.')
+              ) {
+                const currentScriptHostURL = new URL(import.meta.url)
+                const currentScriptHost =
+                  currentScriptHostURL.host +
+                  currentScriptHostURL.pathname.replace(/@vite\/client$/, '')
+                console.error(
+                  '[vite] failed to connect to websocket.\n' +
+                    'your current setup:\n' +
+                    `  (browser) ${currentScriptHost} <--[HTTP]--> ${serverHost} (server)\n` +
+                    `  (browser) ${socketHost} <--[WebSocket (failing)]--> ${directSocketHost} (server)\n` +
+                    'Check out your Vite / network configuration and https://vite.dev/config/server-options.html#server-hmr .',
+                )
+              }
+            }
+            return
+          }
+          console.error(`[vite] failed to connect to websocket (${e}). `)
+          throw e
+        }
+      },
+      async disconnect() {
+        await wsTransport.disconnect()
+      },
+      send(data) {
+        wsTransport.send(data)
+      },
     }
-  }
+  })(),
+)
 
-  socket = setupWebSocket(socketProtocol, socketHost, fallback)
-} catch (error) {
-  console.error(`[vite] failed to connect to websocket (${error}). `)
-}
-
-function setupWebSocket(
-  protocol: string,
-  hostAndPath: string,
-  onCloseWithoutOpen?: () => void,
-) {
-  const socket = new WebSocket(`${protocol}://${hostAndPath}`, 'vite-hmr')
-  let isOpened = false
-
-  socket.addEventListener(
-    'open',
-    () => {
-      isOpened = true
-      notifyListeners('vite:ws:connect', { webSocket: socket })
-    },
-    { once: true },
-  )
-
-  // Listen for messages
-  socket.addEventListener('message', async ({ data }) => {
-    handleMessage(JSON.parse(data))
+let willUnload = false
+if (typeof window !== 'undefined') {
+  window.addEventListener('beforeunload', () => {
+    willUnload = true
   })
-
-  // ping server
-  socket.addEventListener('close', async ({ wasClean }) => {
-    if (wasClean) return
-
-    if (!isOpened && onCloseWithoutOpen) {
-      onCloseWithoutOpen()
-      return
-    }
-
-    notifyListeners('vite:ws:disconnect', { webSocket: socket })
-
-    if (hasDocument) {
-      console.log(`[vite] server connection lost. Polling for restart...`)
-      await waitForSuccessfulPing(protocol, hostAndPath)
-      location.reload()
-    }
-  })
-
-  return socket
 }
 
 function cleanUrl(pathname: string): string {
-  const url = new URL(pathname, 'http://vitejs.dev')
+  const url = new URL(pathname, 'http://vite.dev')
   url.searchParams.delete('direct')
   return url.pathname + url.search
 }
@@ -136,11 +129,11 @@ const debounceReload = (time: number) => {
 const pageReload = debounceReload(50)
 
 const hmrClient = new HMRClient(
-  console,
   {
-    isReady: () => socket && socket.readyState === 1,
-    send: (message) => socket.send(message),
+    error: (err) => console.error('[vite]', err),
+    debug: (...msg) => console.debug('[vite]', ...msg),
   },
+  transport,
   async function importUpdatedModule({
     acceptedPath,
     timestamp,
@@ -168,19 +161,12 @@ const hmrClient = new HMRClient(
     return await importPromise
   },
 )
+transport.connect!(handleMessage)
 
-async function handleMessage(payload: HMRPayload) {
+async function handleMessage(payload: HotPayload) {
   switch (payload.type) {
     case 'connected':
       console.debug(`[vite] connected.`)
-      hmrClient.messenger.flush()
-      // proxy(nginx, docker) hmr ws maybe caused timeout,
-      // so send ping package let ws keep alive.
-      setInterval(() => {
-        if (socket.readyState === socket.OPEN) {
-          socket.send('{"type":"ping"}')
-        }
-      }, __HMR_TIMEOUT__)
       break
     case 'update':
       notifyListeners('vite:beforeUpdate', payload)
@@ -251,6 +237,14 @@ async function handleMessage(payload: HMRPayload) {
       break
     case 'custom': {
       notifyListeners(payload.event, payload.data)
+      if (payload.event === 'vite:ws:disconnect') {
+        if (hasDocument && !willUnload) {
+          console.log(`[vite] server connection lost. Polling for restart...`)
+          const socket = payload.data.webSocket as WebSocket
+          await waitForSuccessfulPing(socket.url)
+          location.reload()
+        }
+      }
       break
     }
     case 'full-reload':
@@ -292,6 +286,8 @@ async function handleMessage(payload: HMRPayload) {
       }
       break
     }
+    case 'ping': // noop
+      break
     default: {
       const check: never = payload
       return check
@@ -312,7 +308,11 @@ const hasDocument = 'document' in globalThis
 
 function createErrorOverlay(err: ErrorPayload['err']) {
   clearErrorOverlay()
-  document.body.appendChild(new ErrorOverlay(err))
+  const { customElements } = globalThis
+  if (customElements) {
+    const ErrorOverlayConstructor = customElements.get(overlayId)!
+    document.body.appendChild(new ErrorOverlayConstructor(err))
+  }
 }
 
 function clearErrorOverlay() {
@@ -323,29 +323,26 @@ function hasErrorOverlay() {
   return document.querySelectorAll(overlayId).length
 }
 
-async function waitForSuccessfulPing(
-  socketProtocol: string,
-  hostAndPath: string,
-  ms = 1000,
-) {
-  const pingHostProtocol = socketProtocol === 'wss' ? 'https' : 'http'
-
-  const ping = async () => {
-    // A fetch on a websocket URL will return a successful promise with status 400,
-    // but will reject a networking error.
-    // When running on middleware mode, it returns status 426, and an cors error happens if mode is not no-cors
-    try {
-      await fetch(`${pingHostProtocol}://${hostAndPath}`, {
-        mode: 'no-cors',
-        headers: {
-          // Custom headers won't be included in a request with no-cors so (ab)use one of the
-          // safelisted headers to identify the ping request
-          Accept: 'text/x-vite-ping',
-        },
-      })
-      return true
-    } catch {}
-    return false
+async function waitForSuccessfulPing(socketUrl: string, ms = 1000) {
+  async function ping() {
+    const socket = new WebSocket(socketUrl, 'vite-ping')
+    return new Promise<boolean>((resolve) => {
+      function onOpen() {
+        resolve(true)
+        close()
+      }
+      function onError() {
+        resolve(false)
+        close()
+      }
+      function close() {
+        socket.removeEventListener('open', onOpen)
+        socket.removeEventListener('error', onError)
+        socket.close()
+      }
+      socket.addEventListener('open', onOpen)
+      socket.addEventListener('error', onError)
+    })
   }
 
   if (await ping()) {
@@ -454,7 +451,7 @@ export function injectQuery(url: string, queryToInject: string): string {
 
   // can't use pathname from URL since it may be relative like ../
   const pathname = url.replace(/[?#].*$/, '')
-  const { search, hash } = new URL(url, 'http://vitejs.dev')
+  const { search, hash } = new URL(url, 'http://vite.dev')
 
   return `${pathname}?${queryToInject}${search ? `&` + search.slice(1) : ''}${
     hash || ''

@@ -2,7 +2,7 @@
 
 Дополнительную информацию также можно найти в [Руководстве по устранению неполадок Rollup](https://rollupjs.org/troubleshooting/).
 
-Если приведенные здесь предложения не работают, попробуйте опубликовать вопросы в [Обсуждения GitHub](https://github.com/vitejs/vite/discussions) или на канале `#help` в [Vite Land Discord](https://chat.vitejs.dev).
+Если приведенные здесь предложения не сработали, попробуйте задать вопросы на [обсуждениях GitHub](https://github.com/vitejs/vite/discussions) или на канале `#help` в [Vite Land Discord](https://chat.vite.dev).
 
 ## CJS
 
@@ -54,11 +54,13 @@ Note that postcss config files do not support ESM + TypeScript (`.mts` or `.ts` 
 
 > Не удалось разрешить «foo». Этот пакет предназначен только для ESM, но его попыталась загрузить с помощью `require`.
 
-> «foo» преобразован в файл ESM. Файл ESM не может быть загружен с помощью `require`.
+> Ошибка [ERR_REQUIRE_ESM]: require() модуля ES /path/to/dependency.js из /path/to/vite.config.js не поддерживается.
 
-Файлы ESM не могут быть загружены с помощью [`require`](<https://nodejs.org/docs/latest-v18.x/api/esm.html#require:~:text=Using%20require%20to%20load%20an%20ES%20module%20is%20not%20supported%20because%20ES%20modules%20have%20asynchronous%20execution.%20Instead%2C%20use%20import()%20to%20load%20an%20ES%20module%20from%20a%20CommonJS%20module.>).
+Вместо этого измените require index.js в /path/to/vite.config.js на динамический import(), который доступен во всех модулях CommonJS.
 
-Мы рекомендуем преобразовать вашу конфигурацию в ESM одним из следующих способов:
+В Node.js <=22 файлы ESM не могут быть загружены с помощью [`require`](https://nodejs.org/docs/latest-v22.x/api/esm.html#require) по умолчанию.
+
+Хотя это может работать с использованием [`--experimental-require-module`](https://nodejs.org/docs/latest-v22.x/api/modules.html#loading-ecmascript-modules-using-require) или Node.js >22 или в других средах выполнения, мы все равно рекомендуем преобразовать вашу конфигурацию в ESM одним из следующих способов:
 
 - добавление `"type": "module"` к ближайшему `package.json`
 - переименование `vite.config.js`/`vite.config.ts` в `vite.config.mjs`/`vite.config.mts`
@@ -123,7 +125,7 @@ security add-trusted-cert -d -r trustRoot -k ~/Library/Keychains/login.keychain-
 
 Когда сервер / сервер WebSocket получает большой HTTP-заголовок, запрос будет отброшен, и будет показано следующее предупреждение.
 
-> Server responded with status code 431. See https://vitejs.ru/guide/troubleshooting.html#_431-request-header-fields-too-large.
+> Сервер ответил кодом статуса 431. Смотрите https://vite.dev/guide/troubleshooting.html#_431-request-header-fields-too-large.
 
 Это связано с тем, что Node.js ограничивает размер заголовка запроса для смягчения последствий [CVE-2018-12121](https://www.cve.org/CVERecord?id=CVE-2018-12121).
 

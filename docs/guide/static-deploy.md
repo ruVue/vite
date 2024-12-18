@@ -6,7 +6,7 @@
 - Вы используете npm. Вы можете использовать эквивалентные команды для запуска скриптов, если используете Yarn или другие менеджеры пакетов.
 - Vite установлен как локальная зависимость разработчика в вашем проекте, и вы настроили следующие сценарии npm:
 
-```json
+```json [package.json]
 {
   "scripts": {
     "build": "vite build",
@@ -43,7 +43,7 @@ $ npm run preview
 
 Вы можете настроить порт сервера, передав флаг `--port` в качестве аргумента.
 
-```json
+```json [package.json]
 {
   "scripts": {
     "preview": "vite preview --port 8080"
@@ -127,7 +127,7 @@ $ npm run preview
 
 2. Создайте файл с именем `.gitlab-ci.yml` в корне вашего проекта с содержимым, указанным ниже. Это будет создавать и развертывать ваш сайт всякий раз, когда вы вносите изменения в свой контент:
 
-   ```yaml
+   ```yaml [.gitlab-ci.yml]
    image: node:16.5.0
    pages:
      stage: deploy
@@ -257,9 +257,7 @@ $ npx wrangler pages deploy dist
 
 2. Создайте `firebase.json` и `.firebaserc` в корне вашего проекта со следующим содержимым:
 
-   `firebase.json`:
-
-   ```json
+   ```json [firebase.json]
    {
      "hosting": {
        "public": "dist",
@@ -274,9 +272,7 @@ $ npx wrangler pages deploy dist
    }
    ```
 
-   `.firebaserc`:
-
-   ```js
+   ```js [.firebaserc]
    {
      "projects": {
        "default": "<YOUR_FIREBASE_ID>"
@@ -322,7 +318,7 @@ $ npx wrangler pages deploy dist
 
 4. Укажите имя проекта и ветку.
 
-   - **Команда сборки**: `npm run build`
+   - **Команда сборки**: `npm install && npm run build`
    - **Каталог публикации**: `dist`
 
 5. Нажмите **Создать статический сайт**.

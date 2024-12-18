@@ -1,10 +1,14 @@
 import type { DefaultTheme } from 'vitepress'
 import { defineConfig } from 'vitepress'
 import { transformerTwoslash } from '@shikijs/vitepress-twoslash'
+import {
+  groupIconMdPlugin,
+  groupIconVitePlugin,
+} from 'vitepress-plugin-group-icons'
 import { buildEnd } from './buildEnd.config'
 
 const ogDescription = 'Интерфейсные инструменты нового поколения'
-const ogImage = 'https://vitejs.ru/og-image.png'
+const ogImage = 'https://vitejs.ru/og-image.jpg'
 const ogTitle = 'Vite'
 const ogUrl = 'https://vitejs.ru'
 
@@ -35,12 +39,20 @@ const additionalTitle = ((): string => {
 const versionLinks = ((): DefaultTheme.NavItemWithLink[] => {
   const oldVersions: DefaultTheme.NavItemWithLink[] = [
     {
+      text: 'Документация Vite 5',
+      link: 'https://v5.vitejs.ru',
+    },
+    {
       text: 'Документация Vite 4',
       link: 'https://v4.vitejs.ru',
     },
     {
       text: 'Документация Vite 3',
       link: 'https://v3.vitejs.ru',
+    },
+    {
+      text: 'Документация Vite 2',
+      link: 'https://v2.vite.dev',
     },
   ]
 
@@ -49,7 +61,7 @@ const versionLinks = ((): DefaultTheme.NavItemWithLink[] => {
     case 'local':
       return [
         {
-          text: 'Документация Vite 5 (релиз)',
+          text: 'Документация Vite 6 (релиз)',
           link: 'https://vitejs.ru',
         },
         ...oldVersions,
@@ -69,6 +81,30 @@ export default defineConfig({
     [
       'link',
       { rel: 'alternate', type: 'application/rss+xml', href: '/blog.rss' },
+    ],
+    ['link', { rel: 'preconnect', href: 'https://fonts.googleapis.com' }],
+    [
+      'link',
+      {
+        rel: 'preconnect',
+        href: 'https://fonts.gstatic.com',
+        crossorigin: 'true',
+      },
+    ],
+    [
+      'link',
+      {
+        rel: 'preload',
+        href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600&family=IBM+Plex+Mono:wght@400&display=swap',
+        as: 'style',
+      },
+    ],
+    [
+      'link',
+      {
+        rel: 'stylesheet',
+        href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600&family=IBM+Plex+Mono:wght@400&display=swap',
+      },
     ],
     ['link', { rel: 'me', href: 'https://m.webtoo.ls/@vite' }],
     ['meta', { property: 'og:type', content: 'website' }],
@@ -104,6 +140,12 @@ export default defineConfig({
   locales: {
     root: { label: 'Русский' },
     en: { label: 'English', link: 'https://vitejs.dev' },
+    zh: { label: '简体中文', link: 'https://cn.vite.dev' },
+    ja: { label: '日本語', link: 'https://ja.vite.dev' },
+    es: { label: 'Español', link: 'https://es.vite.dev' },
+    pt: { label: 'Português', link: 'https://pt.vite.dev' },
+    ko: { label: '한국어', link: 'https://ko.vite.dev' },
+    de: { label: 'Deutsch', link: 'https://de.vite.dev' },
   },
 
   themeConfig: {
@@ -117,15 +159,16 @@ export default defineConfig({
     },
 
     socialLinks: [
+      { icon: 'bluesky', link: 'https://bsky.app/profile/vite.dev' },
       { icon: 'mastodon', link: 'https://elk.zone/m.webtoo.ls/@vite' },
-      { icon: 'twitter', link: 'https://twitter.com/vite_js' },
-      { icon: 'discord', link: 'https://chat.vitejs.dev' },
+      { icon: 'x', link: 'https://x.com/vite_js' },
+      { icon: 'discord', link: 'https://chat.vite.dev' },
       { icon: 'github', link: 'https://github.com/vitejs/vite' },
     ],
 
     algolia: {
       appId: '7H67QR5P0A',
-      apiKey: 'deaab78bcdfe96b599497d25acc6460e',
+      apiKey: '208bb9c14574939326032b937431014b',
       indexName: 'vitejs',
       searchParameters: {
         facetFilters: ['tags:ru'],
@@ -134,8 +177,7 @@ export default defineConfig({
 
     footer: {
       message: `Выпущено под лицензией MIT. (${commitRef})`,
-      copyright:
-        'Все права © 2019-настоящее время Evan You и Vite контрибьюторам',
+      copyright: 'Авторские права © 2019-настоящее время VoidZero Inc. и участники Vite',
     },
 
     nav: [
@@ -151,16 +193,20 @@ export default defineConfig({
           {
             items: [
               {
+                text: 'Bluesky',
+                link: 'https://bsky.app/profile/vite.dev',
+              },
+              {
                 text: 'Mastodon',
                 link: 'https://elk.zone/m.webtoo.ls/@vite',
               },
               {
-                text: 'Twitter',
-                link: 'https://twitter.com/vite_js',
+                text: 'X',
+                link: 'https://x.com/vite_js',
               },
               {
                 text: 'Чат в Discord',
-                link: 'https://chat.vitejs.dev',
+                link: 'https://chat.vite.dev',
               },
               {
                 text: 'Awesome Vite',
@@ -262,8 +308,12 @@ export default defineConfig({
               link: '/guide/philosophy',
             },
             {
-              text: 'Миграция с v4',
+              text: 'Миграция с v5',
               link: '/guide/migration',
+            },
+            {
+              text: 'Breaking Changes',
+              link: '/changes/',
             },
           ],
         },
@@ -283,12 +333,33 @@ export default defineConfig({
               link: '/guide/api-javascript',
             },
             {
-              text: 'API среды выполнения Vite',
-              link: '/guide/api-vite-runtime',
-            },
-            {
               text: 'Справочник по конфигурации',
               link: '/config/',
+            },
+          ],
+        },
+        {
+          text: 'Environment API',
+          items: [
+            {
+              text: 'Introduction',
+              link: '/guide/api-environment',
+            },
+            {
+              text: 'Environment instances',
+              link: '/guide/api-environment-instances',
+            },
+            {
+              text: 'Plugins',
+              link: '/guide/api-environment-plugins',
+            },
+            {
+              text: 'Frameworks',
+              link: '/guide/api-environment-frameworks',
+            },
+            {
+              text: 'Runtimes',
+              link: '/guide/api-environment-runtimes',
             },
           ],
         },
@@ -332,6 +403,45 @@ export default defineConfig({
           ],
         },
       ],
+      '/changes/': [
+        {
+          text: 'Breaking Changes',
+          link: '/changes/',
+        },
+        {
+          text: 'Current',
+          items: [],
+        },
+        {
+          text: 'Future',
+          items: [
+            {
+              text: 'this.environment in Hooks',
+              link: '/changes/this-environment-in-hooks',
+            },
+            {
+              text: 'HMR hotUpdate Plugin Hook',
+              link: '/changes/hotupdate-hook',
+            },
+            {
+              text: 'Move to per-environment APIs',
+              link: '/changes/per-environment-apis',
+            },
+            {
+              text: 'SSR using ModuleRunner API',
+              link: '/changes/ssr-using-modulerunner',
+            },
+            {
+              text: 'Shared plugins during build',
+              link: '/changes/shared-plugins-during-build',
+            },
+          ],
+        },
+        {
+          text: 'Past',
+          items: [],
+        },
+      ],
     },
 
     outline: {
@@ -351,6 +461,27 @@ export default defineConfig({
   },
   markdown: {
     codeTransformers: [transformerTwoslash()],
+    config(md) {
+      md.use(groupIconMdPlugin)
+    },
+  },
+  vite: {
+    plugins: [
+      groupIconVitePlugin({
+        customIcon: {
+          firebase: 'vscode-icons:file-type-firebase',
+          '.gitlab-ci.yml': 'vscode-icons:file-type-gitlab',
+        },
+      }),
+    ],
+    optimizeDeps: {
+      include: [
+        '@shikijs/vitepress-twoslash/client',
+        'gsap',
+        'gsap/dist/ScrollTrigger',
+        'gsap/dist/MotionPathPlugin',
+      ],
+    },
   },
   buildEnd,
 })

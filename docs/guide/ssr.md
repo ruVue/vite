@@ -44,7 +44,7 @@ You can also scaffold these projects locally by [running `create-vite`](./index.
 
 `index.html` должен будет ссылаться на `entry-client.js` и включать заполнитель, где должна быть введена разметка, отображаемая сервером:
 
-```html
+```html [index.html]
 <div id="app"><!--ssr-outlet--></div>
 <script type="module" src="/src/entry-client.js"></script>
 ```
@@ -67,11 +67,9 @@ if (import.meta.env.SSR) {
 
 ## Настройка сервера разработки
 
-При создании приложения SSR вы, вероятно, захотите иметь полный контроль над своим основным сервером и отделить Vite от производственной среды. Поэтому рекомендуется использовать Vite в режиме мидлвара. Вот пример с [express](https://expressjs.com/):
+При создании приложения SSR вы, вероятно, захотите иметь полный контроль над своим основным сервером и отделить Vite от производственной среды. Поэтому рекомендуется использовать Vite в режиме промежуточного ПО. Вот пример с [express](https://expressjs.com/) (v4):
 
-**server.js**
-
-```js{15-18} twoslash
+```js{15-18} twoslash [server.js]
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -113,7 +111,7 @@ createServer()
 
 Следующим шагом является реализация обработчика `*` для обслуживания отображаемого сервером HTML:
 
-```js twoslash
+```js twoslash [server.js]
 // @noErrors
 import fs from 'node:fs'
 import path from 'node:path'
@@ -151,7 +149,7 @@ app.use('*', async (req, res, next) => {
     const appHtml = await render(url)
 
     // 5. Inject the app-rendered HTML into the template.
-    const html = template.replace(`<!--ssr-outlet-->`, appHtml)
+    const html = template.replace(`<!--ssr-outlet-->`, () => appHtml)
 
     // 6. Send the rendered HTML back.
     res.status(200).set({ 'Content-Type': 'text/html' }).end(html)
@@ -166,7 +164,7 @@ app.use('*', async (req, res, next) => {
 
 Сценарий `dev` в `package.json` также следует изменить, чтобы вместо него использовался сценарий сервера:
 
-```diff
+```diff [package.json]
   "scripts": {
 -   "dev": "vite"
 +   "dev": "node server"
@@ -182,7 +180,7 @@ app.use('*', async (req, res, next) => {
 
 Наши скрипты в `package.json` будут выглядеть так:
 
-```json
+```json [package.json]
 {
   "scripts": {
     "dev": "node server",
@@ -219,8 +217,7 @@ app.use('*', async (req, res, next) => {
 
 `@vitejs/plugin-vue` поддерживает это из коробки и автоматически регистрирует используемые идентификаторы модулей компонентов в связанном контексте Vue SSR:
 
-```js
-// src/entry-server.js
+```js [src/entry-server.js]
 const ctx = {}
 const html = await vueServerRenderer.renderToString(app, ctx)
 // ctx.modules is now a Set of module IDs that were used during the render

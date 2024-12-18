@@ -1,5 +1,7 @@
 # Параметры предварительного просмотра
 
+Unless noted, the options in this section are only applied to preview.
+
 ## preview.host
 
 - **Тип:** `string | boolean`

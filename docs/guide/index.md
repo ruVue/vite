@@ -49,7 +49,7 @@ Vite требует [Node.js](https://nodejs.org/en/) версии 18+ или 20
 
 ::: code-group
 
-```bash [NPM]
+```bash [npm]
 $ npm create vite@latest
 ```
 
@@ -57,7 +57,7 @@ $ npm create vite@latest
 $ yarn create vite
 ```
 
-```bash [PNPM]
+```bash [pnpm]
 $ pnpm create vite
 ```
 
@@ -73,7 +73,7 @@ $ bun create vite
 
 ::: code-group
 
-```bash [NPM]
+```bash [npm]
 # npm 7+, extra double-dash is needed:
 $ npm create vite@latest my-vue-app -- --template vue
 ```
@@ -82,7 +82,7 @@ $ npm create vite@latest my-vue-app -- --template vue
 $ yarn create vite my-vue-app --template vue
 ```
 
-```bash [PNPM]
+```bash [pnpm]
 $ pnpm create vite my-vue-app --template vue
 ```
 
@@ -118,7 +118,7 @@ npm run dev
 
 ::: code-group
 
-```bash [NPM]
+```bash [npm]
 $ npm install -D vite
 ```
 
@@ -126,7 +126,7 @@ $ npm install -D vite
 $ yarn add -D vite
 ```
 
-```bash [PNPM]
+```bash [pnpm]
 $ pnpm add -D vite
 ```
 
@@ -142,11 +142,27 @@ $ bun add -D vite
 <p>Hello Vite!</p>
 ```
 
-Затем запустите CLI `vite` в терминале:
+Затем выполните соответствующую команду CLI в терминале:
 
-```bash
-vite
+::: code-group
+
+```bash [npm]
+$ npx vite
 ```
+
+```bash [Yarn]
+$ yarn vite
+```
+
+```bash [pnpm]
+$ pnpm vite
+```
+
+```bash [Bun]
+$ bunx vite
+```
+
+:::
 
 `index.html` будет обслуживаться по адресу `http://localhost:5173`.
 
@@ -170,7 +186,7 @@ Vite также поддерживает [многостраничные при�
 В проекте, где установлен Vite, вы можете использовать двоичный файл `vite` в своих сценариях npm или запускать его напрямую с `npx vite`. Вот сценарии npm по умолчанию в созданном проекте Vite:
 
 <!-- prettier-ignore -->
-```json
+```json [package.json]
 {
   "scripts": {
     "dev": "vite", // start dev server, aliases: `vite dev`, `vite serve`
@@ -201,4 +217,4 @@ pnpm link --global # use your preferred package manager for this step
 
 ## Сообщество
 
-Если у вас есть вопросы или вам нужна помощь, обратитесь к сообществу в [Discord](https://chat.vitejs.dev) и [Обсуждения GitHub](https://github.com/vitejs/vite/discussions).
+Если у вас есть вопросы или вам нужна помощь, свяжитесь с сообществом в [Discord](https://chat.vite.dev) и [GitHub Discussions](https://github.com/vitejs/vite/discussions).

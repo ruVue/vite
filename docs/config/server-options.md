@@ -1,5 +1,7 @@
 # Параметры сервера
 
+Unless noted, the options in this section are only applied to dev.
+
 ## server.host
 
 - **Тип:** `string | boolean`
@@ -18,8 +20,7 @@
 
 Вы можете установить [`dns.setDefaultResultOrder('verbatim')`](https://nodejs.org/api/dns.html#dns_dns_setdefaultresultorder_order), чтобы отключить поведение переупорядочения. Затем Vite напечатает адрес как `localhost`.
 
-```js twoslash
-// vite.config.js
+```js twoslash [vite.config.js]
 import { defineConfig } from 'vite'
 import dns from 'node:dns'
 
@@ -86,7 +87,7 @@ export default defineConfig({
 
 - **Тип:** `Record<string, string | ProxyOptions>`
 
-Настройте пользовательские правила прокси для сервера разработки. Ожидает объект пар `{ key: options }`. Любые запросы, путь запроса которых начинается с этого ключа, будут проксированы на указанную цель. Если ключ начинается с `^`, он будет интерпретирован как `RegExp`. Параметр `configure` можно использовать для доступа к экземпляру прокси.
+Настройте пользовательские правила прокси для сервера разработки. Ожидается объект пар `{ key: options }`. Любые запросы, путь запроса которых начинается с этого ключа, будут проксироваться на указанную цель. Если ключ начинается с `^`, он будет интерпретироваться как `RegExp`. Параметр `configure` можно использовать для доступа к экземпляру прокси. Если запрос соответствует любому из настроенных правил прокси, запрос не будет преобразован Vite.
 
 Обратите внимание, что если вы используете не относительную [`base`](/config/shared-options.md#base), вы должны добавлять префикс на каждый ключ это `base`.
 
@@ -100,15 +101,21 @@ export default defineConfig({
 export default defineConfig({
   server: {
     proxy: {
-      // string shorthand: http://localhost:5173/foo -> http://localhost:4567/foo
+      // string shorthand:
+      // http://localhost:5173/foo
+      //   -> http://localhost:4567/foo
       '/foo': 'http://localhost:4567',
-      // with options: http://localhost:5173/api/bar-> http://jsonplaceholder.typicode.com/bar
+      // with options:
+      // http://localhost:5173/api/bar
+      //   -> http://jsonplaceholder.typicode.com/bar
       '/api': {
         target: 'http://jsonplaceholder.typicode.com',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },
-      // with RegEx: http://localhost:5173/fallback/ -> http://jsonplaceholder.typicode.com/
+      // with RegExp:
+      // http://localhost:5173/fallback/
+      //   -> http://jsonplaceholder.typicode.com/
       '^/fallback/.*': {
         target: 'http://jsonplaceholder.typicode.com',
         changeOrigin: true,
@@ -122,8 +129,11 @@ export default defineConfig({
           // proxy will be an instance of 'http-proxy'
         },
       },
-      // Proxying websockets or socket.io: ws://localhost:5173/socket.io -> ws://localhost:5174/socket.io
-      // Exercise caution using `rewriteWsOrigin` as it can leave the proxying open to CSRF attacks.
+      // Proxying websockets or socket.io:
+      // ws://localhost:5173/socket.io
+      //   -> ws://localhost:5174/socket.io
+      // Exercise caution using `rewriteWsOrigin` as it can leave the
+      // proxying open to CSRF attacks.
       '/socket.io': {
         target: 'ws://localhost:5174',
         ws: true,
@@ -167,7 +177,7 @@ export default defineConfig({
 Ожидается, что в конфигурации по умолчанию обратные прокси-серверы перед Vite будут поддерживать проксирование WebSocket. Если клиенту Vite HMR не удается подключиться к WebSocket, клиент вернется к подключению WebSocket напрямую к серверу Vite HMR, минуя обратные прокси:
 
 ```
-Отказ от прямого подключения к веб-сокету. Проверьте https://vitejs.ru/config/server-options.html#server-hmr , чтобы удалить предыдущую ошибку подключения.
+Откат прямого соединения websocket. Проверьте https://vite.dev/config/server-options.html#server-hmr, чтобы устранить предыдущую ошибку соединения.
 ```
 
 Ошибку, которая появляется в браузере, когда происходит откат, можно игнорировать. Чтобы избежать ошибки путем прямого обхода обратных прокси-серверов, вы можете:
@@ -185,7 +195,7 @@ export default defineConfig({
 
 Предварительно прогрейте файлы для преобразования и кэширования результатов. Это улучшает начальную загрузку страницы во время запуска сервера и предотвращает водопады преобразований.
 
-`clientFiles` — это файлы, которые используются только в клиенте, а `ssrFiles` — это файлы, которые используются только в SSR. Они принимают массив путей к файлам или шаблоны [`fast-glob`](https://github.com/mrmlnc/fast-glob) относительно `root`.
+`clientFiles` — это файлы, которые используются только в клиенте, а `ssrFiles` — это файлы, которые используются только в SSR. Они принимают массив путей к файлам или шаблоны [`tinyglobby`](https://github.com/SuperchupuDev/tinyglobby) относительно `root`.
 
 Обязательно добавляйте только те файлы, которые часто используются, чтобы не перегружать сервер разработки Vite при запуске.
 
@@ -204,7 +214,7 @@ export default defineConfig({
 
 - **Тип:** `object | null`
 
-Параметры средства наблюдения за файловой системой необходимо передать [chokidar](https://github.com/paulmillr/chokidar#api).
+Параметры наблюдателя файловой системы для передачи в [chokidar](https://github.com/paulmillr/chokidar/tree/3.6.0#api).
 
 Наблюдатель сервера Vite по умолчанию наблюдает за `root` и пропускает `.git/`, `node_modules/`, а также каталоги `cacheDir` и `build.outDir` Vite. При обновлении наблюдаемого файла Vite применит HMR и обновит страницу только при необходимости.
 
@@ -222,10 +232,10 @@ export default defineConfig({
 
 Чтобы исправить это, вы можете:
 
-- **Рекомендуется**: используйте приложения WSL2 для редактирования файлов.
-  - Также рекомендуется переместить папку проекта за пределы файловой системы Windows. Доступ к файловой системе Windows из WSL2 медленный. Удаление этих накладных расходов повысит производительность.
+- **Рекомендуется**: Используйте приложения WSL2 для редактирования файлов.
+  - Также рекомендуется переместить папку проекта за пределы файловой системы Windows. Доступ к файловой системе Windows из WSL2 медленный. Устранение этой нагрузки улучшит производительность.
 - Установите `{ usePolling: true }`.
-  - Обратите внимание, что [`usePolling` приводит к высокой загрузке ЦП](https://github.com/paulmillr/chokidar#performance).
+  - Обратите внимание, что [`usePolling` приводит к высокой загрузке ЦП](https://github.com/paulmillr/chokidar/tree/3.6.0#performance).
 
 :::
 
@@ -250,15 +260,16 @@ async function createServer() {
   // Create Vite server in middleware mode
   const vite = await createViteServer({
     server: { middlewareMode: true },
-    appType: 'custom', // don't include Vite's default HTML handling middlewares
+    // don't include Vite's default HTML handling middlewares
+    appType: 'custom',
   })
   // Use vite's connect instance as middleware
   app.use(vite.middlewares)
 
   app.use('*', async (req, res) => {
     // Since `appType` is `'custom'`, should serve response here.
-    // Note: if `appType` is `'spa'` or `'mpa'`, Vite includes middlewares to handle
-    // HTML requests and 404s so user middlewares should be added
+    // Note: if `appType` is `'spa'` or `'mpa'`, Vite includes middlewares
+    // to handle HTML requests and 404s so user middlewares should be added
     // before Vite's middlewares to take effect instead
   })
 }
@@ -324,7 +335,7 @@ export default defineConfig({
 ## server.fs.deny
 
 - **Тип:** `string[]`
-- **По умолчанию:** `['.env', '.env.*', '*.{crt,pem}']`
+- **По умолчанию:** `['.env', '.env.*', '*.{crt,pem}', '**/.git/**']`
 
 Черный список для конфиденциальных файлов, обслуживание которых ограничено сервером Vite dev. Это будет иметь более высокий приоритет, чем [`server.fs.allow`](#server-fs-allow). Поддерживаются [шаблоны picomatch](https://github.com/micromatch/picomatch#globbing-features).
 

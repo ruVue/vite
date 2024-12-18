@@ -1,5 +1,7 @@
 # Параметры сборки
 
+Unless noted, the options in this section are only applied to build.
+
 ## build.target
 
 - **Тип:** `string | string[]`
@@ -8,10 +10,7 @@
 
 Целевая совместимость браузера для финального пакета. Значением по умолчанию является специальное значение Vite, `'modules'`, предназначенное для браузеров с [нативными модулями ES](https://caniuse.com/es6-module), [нативным динамическим импортом ESM](https://caniuse.com/es6-module-dynamic-import) и поддержку [`import.meta`](https://caniuse.com/mdn-javascript_operators_import_meta). Vite заменит `'modules'` на `['es2020', 'edge88', 'firefox78', 'chrome87', 'safari14']`
 
-Другое специальное значение — `'esnext'` — предполагает встроенную поддержку динамического импорта и будет транспилировать как можно меньше:
-
-- Если опция [`build.minify`](#build-minify) равна `'terser'`и установленная версия Terser ниже 5.16.0, `'esnext'` будет принудительно понижен до `'es2021'`.
-- В других случаях транспиляция вообще не будет выполняться.
+Еще одно специальное значение — `'esnext'`, которое предполагает собственную поддержку динамического импорта и будет выполнять только минимальную транспиляцию.
 
 Преобразование выполняется с помощью esbuild, и значение должно быть допустимым [опция цели esbuild](https://esbuild.github.io/api/#target). Настраиваемыми целями могут быть версия ES (например, `es2015`), браузер с версией (например, `chrome58`) или массив из нескольких целевых строк.
 
@@ -45,12 +44,13 @@ type ResolveModulePreloadDependenciesFn = (
   url: string,
   deps: string[],
   context: {
-    importer: string
+    hostId: string
+    hostType: 'html' | 'js'
   },
 ) => string[]
 ```
 
-Функция `resolveDependencies` будет вызываться для каждого динамического импорта со списком фрагментов, от которых он зависит, а также будет вызываться для каждого фрагмента, импортируемого в входных HTML-файлах. Новый массив зависимостей может быть возвращен с этими отфильтрованными или несколькими введенными зависимостями и измененными путями к ним. Пути `deps` относятся к `build.outDir`. Возврат относительного пути к `hostId` для `hostType === 'js'` разрешен, и в этом случае `new URL(dep, import.meta.url)` используется для получения абсолютного пути при внедрении предварительной загрузки этого модуля. в заголовке HTML.
+Функция `resolveDependencies` будет вызываться для каждого динамического импорта со списком фрагментов, от которых он зависит, а также она будет вызываться для каждого фрагмента, импортированного в HTML-файлах входа. Новый массив зависимостей может быть возвращен с этими отфильтрованными или более внедренными зависимостями и их измененными путями. Пути `deps` являются относительными к `build.outDir`. Возвращаемое значение должно быть относительным путем к `build.outDir`.
 
 ```js twoslash
 /** @type {import('vite').UserConfig} */
@@ -133,7 +133,7 @@ modulePreload: {
 ## build.cssMinify
 
 - **Тип:** `boolean | 'esbuild' | 'lightningcss'`
-- **По умолчанию:** the same as [`build.minify`](#build-minify)
+- **По умолчанию:** то же, что и [`build.minify`](#build-minify) для клиента, `'esbuild'` для SSR
 
 This option allows users to override CSS minification specifically instead of defaulting to `build.minify`, so you can configure minification for JS and CSS separately. Vite uses `esbuild` by default to minify CSS. Set the option to `'lightningcss'` to use [Lightning CSS](https://lightningcss.dev/minification.html) instead. If selected, it can be configured using [`css.lightningcss`](./shared-options.md#css-lightningcss).
 
@@ -165,10 +165,28 @@ This option allows users to override CSS minification specifically instead of de
 
 ## build.lib
 
-- **Тип:** `{ entry: string | string[] | { [entryAlias: string]: string }, name?: string, formats?: ('es' | 'cjs' | 'umd' | 'iife')[], fileName?: string | ((format: ModuleFormat, entryName: string) => string) }`
-- **Связанный:** [Library Mode](/guide/build#library-mode)
+- **Тип:** `{ entry: string | string[] | { [entryAlias: string]: string }, name?: string, formats?: ('es' | 'cjs' | 'umd' | 'iife')[], fileName?: string | ((format: ModuleFormat, entryName: string) => string), cssFileName?: string }`
+- **Связанный:** [Режим библиотеки](/guide/build#library-mode)
 
-Построить как библиотеку. `entry` необходима, так как библиотека не может использовать HTML в качестве записи. `name` является открытой глобальной переменной и требуется, когда `formats` включает `'umd'` или `'iife'`. Форматы `formats` по умолчанию: `['es', 'umd']` , или `['es', 'cjs']`, если используется несколько записей. `fileName` — это имя выходного файла пакета, по умолчанию `fileName` — это параметр имени package.json, его также можно определить как функцию, принимающую `format` в качестве аргумента и `entryAlias` в качестве аргументов.
+Сборка как библиотеки. `entry` требуется, так как библиотека не может использовать HTML в качестве записи. `name` является открытой глобальной переменной и требуется, когда `formats` включает `'umd'` или `'iife'`. По умолчанию `formats` являются `['es', 'umd']` или `['es', 'cjs']`, если используется несколько записей.
+
+`fileName` — это имя выходного файла пакета, которое по умолчанию равно `"name"` в `package.json`. Его также можно определить как функцию, принимающую `format` и `entryName` в качестве аргументов и возвращающую имя файла.
+
+Если ваш пакет импортирует CSS, `cssFileName` можно использовать для указания имени выходного файла CSS. По умолчанию оно равно тому же значению, что и `fileName`, если оно задано как строка, в противном случае оно также возвращается к `"name"` в `package.json`.
+
+```js twoslash [vite.config.js]
+import { defineConfig } from 'vite'
+
+export default defineConfig({
+  build: {
+    lib: {
+      entry: ['src/main.js'],
+      fileName: (format, entryName) => `my-lib-${entryName}.${format}.js`,
+      cssFileName: 'my-lib-style',
+    },
+  },
+})
+```
 
 ## build.manifest
 
@@ -196,12 +214,19 @@ This option allows users to override CSS minification specifically instead of de
 
 Создание сборки, ориентированной на SSR. Значение может быть строкой для прямого указания записи SSR или `true`, что требует указания записи SSR через `rollupOptions.input`.
 
+## build.emitAssets
+
+- **Type:** `boolean`
+- **Default:** `false`
+
+During non-client builds, static assets aren't emitted as it is assumed they would be emitted as part of the client build. This option allows frameworks to force emitting them in other environments build. It is responsibility of the framework to merge the assets with a post build step.
+
 ## build.ssrEmitAssets
 
 - **Тип:** `boolean`
 - **По умолчанию:** `false`
 
-Во время сборки SSR статические ресурсы не создаются, поскольку предполагается, что они будут созданы как часть сборки клиента. Эта опция позволяет платформам принудительно выдавать их как в клиенте, так и в сборке SSR. Платформа несет ответственность за объединение ресурсов на этапе после сборки.
+Во время сборки SSR статические ресурсы не выдаются, поскольку предполагается, что они будут выдаваться как часть сборки клиента. Эта опция позволяет фреймворкам принудительно выдавать их как в сборке клиента, так и в сборке SSR. Фреймворк отвечает за объединение ресурсов с шагом после сборки. Эта опция будет заменена на `build.emitAssets`, как только API среды станет стабильным.
 
 ## build.minify
 

@@ -1,5 +1,7 @@
 # Общие параметры
 
+Unless noted, the options in this section are applied to all dev, build, and preview.
+
 ## root
 
 - **Тип:** `string`
@@ -115,6 +117,7 @@ declare const __APP_VERSION__: string
 ## resolve.conditions
 
 - **Тип:** `string[]`
+- **По умолчанию:** `['module', 'browser', 'development|production']` (`defaultClientConditions`)
 
 Дополнительные разрешенные условия при разрешении [условного экспорта](https://nodejs.org/api/packages.html#packages_conditional_exports) из пакета.
 
@@ -133,7 +136,9 @@ declare const __APP_VERSION__: string
 
 Здесь `import` и `require` — это «условия». Условия могут быть вложенными и должны указываться от наиболее конкретных к наименее конкретным.
 
-Vite имеет список «разрешенных условий» и будет соответствовать первому условию в списке разрешенных. Допустимые условия по умолчанию: `import`, `module`, `browser`, `default` и `production/development` в зависимости от текущего режима. Параметр конфигурации `resolve.conditions` позволяет указать дополнительные допустимые условия.
+`development|production` — это особое значение, которое заменяется на `production` или `development` в зависимости от значения `process.env.NODE_ENV`. Оно заменяется на `production`, когда `process.env.NODE_ENV === 'production'` и `development` в противном случае.
+
+Обратите внимание, что условия `import`, `require`, `default` всегда применяются, если требования выполнены.
 
 :::warning Разрешение экспорта подпути
 Ключи экспорта, оканчивающиеся на "/", устарели в Node и могут работать некорректно. Обратитесь к автору пакета, чтобы вместо этого использовать [`*` шаблоны подпути](https://nodejs.org/api/packages.html#package-entry-points).
@@ -142,7 +147,7 @@ Vite имеет список «разрешенных условий» и буд
 ## resolve.mainFields
 
 - **Type:** `string[]`
-- **По умолчанию:** `['browser', 'module', 'jsnext:main', 'jsnext']`
+- **По умолчанию:** `['browser', 'module', 'jsnext:main', 'jsnext']` (`defaultClientMainFields`)
 
 Список полей в `package.json`, которые нужно попробовать при разрешении точки входа пакета. Обратите внимание, что это имеет более низкий приоритет, чем условный экспорт, разрешенный из поля `exports`: если точка входа успешно разрешена из `exports`, основное поле будет проигнорировано.
 
@@ -215,7 +220,7 @@ A nonce value placeholder that will be used when generating script / style tags.
 
 Для встроенной конфигурации PostCSS ожидается тот же формат, что и `postcss.config.js`. Но для свойства `plugins` можно использовать только [формат массива](https://github.com/postcss/postcss-load-config/blob/main/README.md#array).
 
-Поиск выполняется с помощью [postcss-load-config](https://github.com/postcss/postcss-load-config), и загружаются только поддерживаемые имена файлов конфигурации.
+Поиск выполняется с использованием [postcss-load-config](https://github.com/postcss/postcss-load-config), и загружаются только поддерживаемые имена файлов конфигурации. Файлы конфигурации за пределами корня рабочей области (или [корня проекта](/guide/#index-html-and-project-root), если рабочая область не найдена) по умолчанию не ищутся. Вы можете указать пользовательский путь за пределами корня, чтобы загрузить определенный файл конфигурации, если это необходимо.
 
 Обратите внимание, что если указана встроенная конфигурация, Vite не будет искать другие источники конфигурации PostCSS.
 
@@ -223,11 +228,14 @@ A nonce value placeholder that will be used when generating script / style tags.
 
 - **Тип:** `Record<string, object>`
 
-Укажите параметры для передачи препроцессорам CSS. Расширения файлов используются в качестве ключей для параметров. Поддерживаемые параметры для каждого препроцессора можно найти в соответствующей документации:
+Укажите параметры для передачи в препроцессоры CSS. Расширения файлов используются в качестве ключей для параметров. Поддерживаемые параметры для каждого препроцессора можно найти в соответствующей документации:
 
-- `sass`/`scss` - [Параметры](https://sass-lang.com/documentation/js-api/interfaces/LegacyStringOptions).
-- `less` - [Параметры](https://lesscss.org/usage/#less-options).
-- `styl`/`stylus` - Only [`define`](https://stylus-lang.com/docs/js.html#define-name-node), который можно передать как объект.
+- `sass`/`scss`:
+  - Выберите API sass для использования с `api: "modern-compiler" | "modern" | "legacy"` (по умолчанию `"modern-compiler"`, если установлен `sass-embedded`, в противном случае `"modern"`). Для лучшей производительности рекомендуется использовать `api: "modern-compiler"` с пакетом `sass-embedded`. API `"legacy"` устарело и будет удалено в Vite 7.
+  - [Параметры (современные)](https://sass-lang.com/documentation/js-api/interfaces/stringoptions/)
+  - [Параметры (устаревшие)](https://sass-lang.com/documentation/js-api/interfaces/LegacyStringOptions).
+- `less`: [Параметры](https://lesscss.org/usage/#less-options).
+- `styl`/`stylus`: Поддерживается только [`define`](https://stylus-lang.com/docs/js.html#define-name-node), который можно передать как объект.
 
 **Пример:**
 
@@ -242,6 +250,12 @@ export default defineConfig({
         define: {
           $specialColor: new stylus.nodes.RGBA(51, 197, 255, 1),
         },
+      },
+      scss: {
+        api: 'modern-compiler', // or "modern", "legacy"
+        importers: [
+          // ...
+        ],
       },
     },
   },
@@ -337,12 +351,12 @@ import type {
 
 ## json.stringify
 
-- **Тип:** `boolean`
-- **По умолчанию:** `false`
+- **Тип:** `boolean | 'auto'`
+- **По умолчанию:** `'auto'`
 
 Если установлено значение `true`, импортированный JSON будет преобразован в `export default JSON.parse("...")`, который значительно более эффективен, чем литералы Object, особенно когда файл JSON большой.
 
-Включение этого параметра отключает именованный импорт.
+Если установлено значение `'auto'`, данные будут преобразованы в строку, только если [данные больше 10 КБ](https://v8.dev/blog/cost-of-javascript-2019#json:~:text=A%20good%20rule%20of%20thumb%20is%20to%20apply%20this%20technique%20for%20objects%20of%2010%20kB%20or%20larger).
 
 ## esbuild
 
@@ -483,4 +497,13 @@ define: {
 - `'mpa'`: включить HTML-мидлвары
 - `'custom'`: не включать HTML-мидлвары
 
-Узнайте больше в [Руководстве по Vite](/guide/ssr#vite-cli). Связанный: [`server.middlewareMode`](./server-options#server-middlewaremode).
+Узнайте больше в [руководстве по SSR](/guide/ssr#vite-cli) Vite. Связано: [`server.middlewareMode`](./server-options#server-middlewaremode).
+
+## future
+
+- **Тип:** `Record<string, 'warn' | undefined>`
+- **Связанный:** [Критические изменения](/changes/)
+
+Включите будущие критические изменения, чтобы подготовиться к плавному переходу на следующую основную версию Vite. Список может быть обновлен, дополнен или удален в любое время по мере разработки новых функций.
+
+Подробности о возможных вариантах см. на странице [Критические изменения](/changes/).

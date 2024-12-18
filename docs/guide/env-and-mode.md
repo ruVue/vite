@@ -29,6 +29,8 @@ Vite использует [dotenv](https://github.com/motdotla/dotenv) для з
 
 Файл env для определенного режима (например, `.env.production`) будет иметь более высокий приоритет, чем общий файл (например, `.env`).
 
+Vite всегда будет загружать `.env` и `.env.local` в дополнение к файлу `.env.[mode]`, специфичному для режима. Переменные, объявленные в файлах, специфичных для режима, будут иметь приоритет над переменными в общих файлах, но переменные, определенные только в `.env` или `.env.local`, по-прежнему будут доступны в среде.
+
 Кроме того, переменные среды, которые уже существуют при запуске Vite, имеют наивысший приоритет и не будут перезаписаны файлами `.env`. Например, при запуске `VITE_SOME_KEY=123 vite build`.
 
 Файлы `.env` загружаются при запуске Vite. Перезапустите сервер после внесения изменений.
@@ -38,7 +40,7 @@ Vite использует [dotenv](https://github.com/motdotla/dotenv) для з
 
 Чтобы предотвратить случайную утечку переменных env клиенту, только переменные с префиксом `VITE_` доступны вашему коду, обработанному Vite. например для следующих переменных env:
 
-```
+```[.env]
 VITE_SOME_KEY=123
 DB_PASSWORD=foobar
 ```
@@ -55,11 +57,11 @@ console.log(import.meta.env.DB_PASSWORD) // undefined
 Как показано выше, `VITE_SOME_KEY` — это число, но при анализе оно возвращает строку. То же самое произойдет и с логическими переменными env. Обязательно преобразуйте его в нужный тип при использовании его в своем коде.
 :::
 
-Кроме того, Vite использует [dotenv-expand](https://github.com/motdotla/dotenv-expand) для расширения переменных прямо из коробки. Чтобы узнать больше о синтаксисе, ознакомьтесь с [их документацией](https://github.com/motdotla/dotenv-expand#what-rules-does-the-expansion-engine-follow).
+Также Vite использует [dotenv-expand](https://github.com/motdotla/dotenv-expand) для расширения переменных, записанных в env-файлах из коробки. Чтобы узнать больше о синтаксисе, ознакомьтесь с [их документацией](https://github.com/motdotla/dotenv-expand#what-rules-does-the-expansion-engine-follow).
 
 Обратите внимание, что если вы хотите использовать `$` внутри значения вашей среды, вы должны экранировать его с помощью `\`.
 
-```
+```[.env]
 KEY=123
 NEW_KEY1=test$foo   # test
 NEW_KEY2=test\$foo  # test$foo
@@ -81,7 +83,7 @@ If you want to customize the env variables prefix, see the [envPrefix](/config/s
 
 Чтобы добиться этого, вы можете создать `vite-env.d.ts` в каталоге `src`, а затем дополнить `ImportMetaEnv` следующим образом:
 
-```typescript
+```typescript [vite-env.d.ts]
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
@@ -96,7 +98,7 @@ interface ImportMeta {
 
 Если ваш код использует типы из сред браузера, таких как [DOM](https://github.com/microsoft/TypeScript/blob/main/src/lib/dom.generated.d.ts) и [WebWorker](https://github.com/microsoft/TypeScript/blob/main/src/lib/webworker.generated.d.ts), вы можете обновить поле [lib](https://www.typescriptlang.org/tsconfig#lib) в `tsconfig.json`.
 
-```json
+```json [tsconfig.json]
 {
   "lib": ["WebWorker"]
 }

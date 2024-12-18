@@ -2,13 +2,15 @@
 
 - **Связанный:** [Dependency Pre-Bundling](/guide/dep-pre-bundling)
 
+Unless noted, the options in this section are only applied to the dependency optimizer, which is only used in dev.
+
 ## optimizeDeps.entries
 
 - **Тип:** `string | string[]`
 
 По умолчанию Vite будет сканировать все ваши файлы `.html`, чтобы обнаружить зависимости, которые необходимо предварительно связать (игнорируя `node_modules`, `build.outDir`, `__tests__` и `coverage`). Если указан `build.rollupOptions.input`, Vite вместо этого будет сканировать эти точки входа.
 
-Если ни один из этих вариантов вам не подходит, вы можете указать пользовательские записи с помощью этой опции — значение должно быть [шаблоном fast-glob](https://github.com/mrmlnc/fast-glob#basic-syntax) или массивом шаблонов, которые являются относительными от корня проекта Vite. Это перезапишет вывод записей по умолчанию. Только папки `node_modules` и `build.outDir` будут игнорироваться по умолчанию, если `optimizeDeps.entries` явно определен. Если необходимо игнорировать другие папки, вы можете использовать шаблон игнорирования как часть списка записей, помеченный начальным `!`. Если вы не хотите игнорировать `node_modules` и `build.outDir`, вы можете указать, используя литеральные строковые пути (без шаблонов fast-glob).
+Если ни один из этих вариантов вам не подходит, вы можете указать пользовательские записи с помощью этой опции — значение должно быть шаблоном [`tinyglobby`](https://github.com/SuperchupuDev/tinyglobby) или массивом шаблонов, которые являются относительными от корня проекта Vite. Это перезапишет вывод записей по умолчанию. Только папки `node_modules` и `build.outDir` будут игнорироваться по умолчанию, если `optimizeDeps.entries` явно определен. Если необходимо игнорировать другие папки, вы можете использовать шаблон игнорирования как часть списка записей, помеченный начальным `!`. Если вы не хотите игнорировать `node_modules` и `build.outDir`, вы можете указать их с помощью буквенных строковых путей (без шаблонов `tinyglobby`).
 
 ## optimizeDeps.exclude
 
@@ -51,7 +53,7 @@ export default defineConfig({
 
 ## optimizeDeps.esbuildOptions
 
-- **Тип:** [`Omit`](https://www.typescriptlang.org/docs/handbook/utility-types.html#omittype-keys)`<`[`EsbuildBuildOptions`](https://esbuild.github.io/api/#simple-options)`,
+- **Тип:** [`Omit`](https://www.typescriptlang.org/docs/handbook/utility-types.html#omittype-keys)`<`[`EsbuildBuildOptions`](https://esbuild.github.io/api/#general-options)`,
 | 'bundle'
 | 'entryPoints'
 | 'external'

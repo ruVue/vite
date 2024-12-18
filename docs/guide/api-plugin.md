@@ -6,9 +6,9 @@
 
 ## Создание плагина
 
-Vite стремится предлагать установленные шаблоны из коробки, поэтому перед созданием нового плагина убедитесь, что вы проверили [Руководство по функциям](https://vitejs.ru/guide/features), чтобы убедиться, что ваши потребности удовлетворены. Также просмотрите доступные плагины сообщества, как в виде [совместимого плагина Rollup](https://github.com/rollup/awesome), так и [специальных плагинов Vite](https://github.com/vitejs/awesome-vite#plugins)
+Vite стремится предлагать устоявшиеся шаблоны из коробки, поэтому перед созданием нового плагина обязательно проверьте [Руководство по функциям](https://vite.dev/guide/features), чтобы узнать, покрывает ли оно ваши потребности. Также ознакомьтесь с доступными плагинами сообщества, как в виде [совместимого плагина Rollup](https://github.com/rollup/awesome), так и [специфичных для Vite плагинов](https://github.com/vitejs/awesome-vite#plugins)
 
-При создании плагина вы можете встроить его в свой `vite.config.js`. Для него не нужно создавать новый пакет. Как только вы увидите, что плагин был полезен в ваших проектах, рассмотрите возможность поделиться им, чтобы помочь другим [в экосистеме](https://chat.vitejs.dev).
+При создании плагина вы можете встроить его в свой `vite.config.js`. Нет необходимости создавать для него новый пакет. Как только вы увидите, что плагин оказался полезен в ваших проектах, рассмотрите возможность поделиться им, чтобы помочь другим [в экосистеме](https://chat.vite.dev).
 
 ::: tip
 При изучении, отладке или создании плагинов мы рекомендуем включать [vite-plugin-inspect](https://github.com/antfu/vite-plugin-inspect) в ваш проект. Это позволяет вам проверять промежуточное состояние плагинов Vite. После установки вы можете посетить `localhost:5173/__inspect/`, чтобы проверить модули и стек преобразований вашего проекта. Ознакомьтесь с инструкциями по установке в [документации vite-plugin-inspect](https://github.com/antfu/vite-plugin-inspect).
@@ -42,8 +42,7 @@ Vite стремится предлагать установленные шабл
 
 Пользователи будут добавлять плагины в проект `devDependencies` и настраивать их с помощью опции массива `plugins`.
 
-```js
-// vite.config.js
+```js [vite.config.js]
 import vitePlugin from 'vite-plugin-feature'
 import rollupPlugin from 'rollup-plugin-feature'
 
@@ -66,8 +65,7 @@ export default function framework(config) {
 }
 ```
 
-```js
-// vite.config.js
+```js [vite.config.js]
 import { defineConfig } from 'vite'
 import framework from 'vite-plugin-framework'
 
@@ -432,7 +430,6 @@ console.log(msg)
 
     ```js
     handleHotUpdate({ server, modules, timestamp }) {
-      server.ws.send({ type: 'full-reload' })
       // Invalidate modules manually
       const invalidatedModules = new Set()
       for (const mod of modules) {
@@ -443,6 +440,7 @@ console.log(msg)
           true
         )
       }
+      server.ws.send({ type: 'full-reload' })
       return []
     }
     ```
@@ -519,8 +517,7 @@ apply(config, { command }) {
 
 Вы также можете дополнить существующий плагин Rollup свойствами только для Vite:
 
-```js
-// vite.config.js
+```js [vite.config.js]
 import example from 'rollup-plugin-example'
 import { defineConfig } from 'vite'
 
@@ -560,8 +557,7 @@ Vite предоставляет функцию `createFilter` [`@rollup/pluginut
 
 Со стороны плагина мы могли бы использовать `server.ws.send` для трансляции событий клиенту:
 
-```js
-// vite.config.js
+```js [vite.config.js]
 export default defineConfig({
   plugins: [
     {
@@ -606,8 +602,7 @@ if (import.meta.hot) {
 
 Затем используйте `server.ws.on` и слушайте события на стороне сервера:
 
-```js
-// vite.config.js
+```js [vite.config.js]
 export default defineConfig({
   plugins: [
     {
@@ -632,8 +627,7 @@ export default defineConfig({
 Обязательно включите расширение `.d.ts` при указании файлов объявлений TypeScript. В противном случае TypeScript может не знать, какой файл модуль пытается расширить.
 :::
 
-```ts
-// events.d.ts
+```ts [events.d.ts]
 import 'vite/types/customEvent.d.ts'
 
 declare module 'vite/types/customEvent.d.ts' {
