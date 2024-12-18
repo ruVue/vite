@@ -42,10 +42,6 @@ const versionLinks = ((): DefaultTheme.NavItemWithLink[] => {
       text: 'Документация Vite 3',
       link: 'https://v3.vitejs.ru',
     },
-    {
-      text: 'Документация Vite (актуальный)',
-      link: 'https://vitejs.ru',
-    },
   ]
 
   switch (deployType) {
