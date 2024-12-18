@@ -16,6 +16,7 @@ import {
   isSameFileUri,
   normalizePath,
   removeLeadingSlash,
+  urlRE,
 } from '../../utils'
 import {
   cleanUrl,
@@ -86,7 +87,9 @@ export function servePublicMiddleware(
     if (
       (publicFiles && !publicFiles.has(toFilePath(req.url!))) ||
       isImportRequest(req.url!) ||
-      isInternalRequest(req.url!)
+      isInternalRequest(req.url!) ||
+      // for `/public-file.js?url` to be transformed
+      urlRE.test(req.url!)
     ) {
       return next()
     }
@@ -243,7 +246,7 @@ export function ensureServingAccess(
     const hintMessage = `
 ${server.config.server.fs.allow.map((i) => `- ${i}`).join('\n')}
 
-Refer to docs https://vitejs.dev/config/server-options.html#server-fs-allow for configurations and more details.`
+Refer to docs https://vite.dev/config/server-options.html#server-fs-allow for configurations and more details.`
 
     server.config.logger.error(urlMessage)
     server.config.logger.warnOnce(hintMessage + '\n')

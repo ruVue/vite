@@ -257,7 +257,7 @@ document.getElementById('foo').className = applyColor
 
 ```bash
 # .scss and .sass
-npm add -D sass
+npm add -D sass-embedded # or sass
 
 # .less
 npm add -D less
@@ -502,7 +502,7 @@ const modules = {
 
 #### Пользовательские запросы
 
-Вы также можете использовать опцию `query` для предоставления запросов к импортам, например, для импорта активов [как строки](https://vitejs.dev/guide/assets.html#importing-asset-as-string) или [как url](https://vitejs.dev/guide/assets.html#importing-asset-as-url):
+Вы также можете использовать опцию `query` для предоставления запросов к импортам, например, для импорта активов [как строки](https://vitejs.ru/guide/assets.html#importing-asset-as-string) или [как URL](https://vitejs.ru/guide/assets.html#importing-asset-as-url):
 
 ```ts twoslash
 import 'vite/client'

@@ -108,7 +108,7 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },
-      // with RegEx: http://localhost:5173/fallback/ -> http://jsonplaceholder.typicode.com/
+      // with RegExp: http://localhost:5173/fallback/ -> http://jsonplaceholder.typicode.com/
       '^/fallback/.*': {
         target: 'http://jsonplaceholder.typicode.com',
         changeOrigin: true,
@@ -167,7 +167,7 @@ export default defineConfig({
 Ожидается, что в конфигурации по умолчанию обратные прокси-серверы перед Vite будут поддерживать проксирование WebSocket. Если клиенту Vite HMR не удается подключиться к WebSocket, клиент вернется к подключению WebSocket напрямую к серверу Vite HMR, минуя обратные прокси:
 
 ```
-Отказ от прямого подключения к веб-сокету. Проверьте https://vitejs.ru/config/server-options.html#server-hmr , чтобы удалить предыдущую ошибку подключения.
+Откат прямого соединения websocket. Проверьте https://vitejs.ru/config/server-options.html#server-hmr, чтобы устранить предыдущую ошибку соединения.
 ```
 
 Ошибку, которая появляется в браузере, когда происходит откат, можно игнорировать. Чтобы избежать ошибки путем прямого обхода обратных прокси-серверов, вы можете:
@@ -327,6 +327,14 @@ export default defineConfig({
 - **По умолчанию:** `['.env', '.env.*', '*.{crt,pem}']`
 
 Черный список для конфиденциальных файлов, обслуживание которых ограничено сервером Vite dev. Это будет иметь более высокий приоритет, чем [`server.fs.allow`](#server-fs-allow). Поддерживаются [шаблоны picomatch](https://github.com/micromatch/picomatch#globbing-features).
+
+## server.fs.cachedChecks
+
+- **Type:** `boolean`
+- **Default:** `false`
+- **Experimental**
+
+Caches filenames of accessed directories to avoid repeated filesystem operations. Particularly in Windows, this could result in a performance boost. It is disabled by default due to edge cases when writing a file in a cached folder and immediately importing it.
 
 ## server.origin
 

@@ -201,4 +201,4 @@ pnpm link --global # use your preferred package manager for this step
 
 ## Сообщество
 
-Если у вас есть вопросы или вам нужна помощь, обратитесь к сообществу в [Discord](https://chat.vitejs.dev) и [Обсуждения GitHub](https://github.com/vitejs/vite/discussions).
+Если у вас есть вопросы или вам нужна помощь, свяжитесь с сообществом в [Discord](https://chat.vite.dev) и [GitHub Discussions](https://github.com/vitejs/vite/discussions).

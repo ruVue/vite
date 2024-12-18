@@ -451,13 +451,13 @@ export async function _createServer(
     resolvedOutDirs,
   )
   const resolvedWatchOptions = resolveChokidarOptions(
-    config,
     {
       disableGlobbing: true,
       ...serverConfig.watch,
     },
     resolvedOutDirs,
     emptyOutDir,
+    config.cacheDir,
   )
 
   const middlewares = connect() as Connect.Server
@@ -563,7 +563,7 @@ export async function _createServer(
       return devHtmlTransformFn(server, url, html, originalUrl)
     },
     async ssrLoadModule(url, opts?: { fixStacktrace?: boolean }) {
-      return ssrLoadModule(url, server, undefined, opts?.fixStacktrace)
+      return ssrLoadModule(url, server, opts?.fixStacktrace)
     },
     async ssrFetchModule(url: string, importer?: string) {
       return ssrFetchModule(server, url, importer)
@@ -1251,15 +1251,15 @@ function setupOnCrawlEnd(onCrawlEnd: () => void): CrawlEndFinder {
     if (ignoredId) {
       seenIds.add(ignoredId)
       markIdAsDone(ignoredId)
+    } else {
+      checkIfCrawlEndAfterTimeout()
     }
     return onCrawlEndPromiseWithResolvers.promise
   }
 
   function markIdAsDone(id: string): void {
-    if (registeredIds.has(id)) {
-      registeredIds.delete(id)
-      checkIfCrawlEndAfterTimeout()
-    }
+    registeredIds.delete(id)
+    checkIfCrawlEndAfterTimeout()
   }
 
   function checkIfCrawlEndAfterTimeout() {

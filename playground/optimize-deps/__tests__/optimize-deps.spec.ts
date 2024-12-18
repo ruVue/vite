@@ -140,7 +140,7 @@ test('dep with optional peer dep', async () => {
 })
 
 test('dep with optional peer dep submodule', async () => {
-  expectWithRetry(() =>
+  await expectWithRetry(() =>
     page.textContent('.dep-with-optional-peer-dep-submodule'),
   ).toMatch(`[success]`)
   if (isServe) {
@@ -189,7 +189,7 @@ test('import optimize-excluded package that imports optimized-included package',
 })
 
 test('import aliased package with colon', async () => {
-  await expectWithRetry(() => page.textContent('.url')).toBe('vitejs.dev')
+  await expectWithRetry(() => page.textContent('.url')).toBe('vite.dev')
 })
 
 test('import aliased package using absolute path', async () => {

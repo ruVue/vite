@@ -1,7 +1,7 @@
 ---
-title: Vite 3.0 is out!
+title: Вышел Vite 3.0!
 author:
-  name: The Vite Team
+  name: Команда Vite
 date: 2022-07-23
 sidebar: false
 head:
@@ -55,9 +55,9 @@ _23 июля 2022 г._ - Ознакомьтесь с [объявлением о 
 
 Также теперь есть официальный испанский перевод, который был добавлен к предыдущим китайским и японским переводам:
 
-- [简体中文](https://cn.vitejs.dev/)
-- [日本語](https://ja.vitejs.dev/)
-- [Español](https://es.vitejs.dev/)
+- [简体中文](https://cn.vitejs.ru/)
+- [日本語](https://ja.vitejs.ru/)
+- [Español](https://es.vitejs.ru/)
 
 ## Создание стартовых шаблонов Vite
 

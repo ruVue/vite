@@ -2,7 +2,7 @@
 
 Дополнительную информацию также можно найти в [Руководстве по устранению неполадок Rollup](https://rollupjs.org/troubleshooting/).
 
-Если приведенные здесь предложения не работают, попробуйте опубликовать вопросы в [Обсуждения GitHub](https://github.com/vitejs/vite/discussions) или на канале `#help` в [Vite Land Discord](https://chat.vitejs.dev).
+Если приведенные здесь предложения не сработали, попробуйте задать вопросы на [обсуждениях GitHub](https://github.com/vitejs/vite/discussions) или на канале `#help` в [Vite Land Discord](https://chat.vite.dev).
 
 ## CJS
 
@@ -123,7 +123,7 @@ security add-trusted-cert -d -r trustRoot -k ~/Library/Keychains/login.keychain-
 
 Когда сервер / сервер WebSocket получает большой HTTP-заголовок, запрос будет отброшен, и будет показано следующее предупреждение.
 
-> Server responded with status code 431. See https://vitejs.ru/guide/troubleshooting.html#_431-request-header-fields-too-large.
+> Сервер ответил кодом состояния 431. Смотрите https://vitejs.ru/guide/troubleshooting.html#_431-request-header-fields-too-large.
 
 Это связано с тем, что Node.js ограничивает размер заголовка запроса для смягчения последствий [CVE-2018-12121](https://www.cve.org/CVERecord?id=CVE-2018-12121).
 

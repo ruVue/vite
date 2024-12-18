@@ -225,9 +225,9 @@ A nonce value placeholder that will be used when generating script / style tags.
 
 Укажите параметры для передачи препроцессорам CSS. Расширения файлов используются в качестве ключей для параметров. Поддерживаемые параметры для каждого препроцессора можно найти в соответствующей документации:
 
-- `sass`/`scss` - [Параметры](https://sass-lang.com/documentation/js-api/interfaces/LegacyStringOptions).
-- `less` - [Параметры](https://lesscss.org/usage/#less-options).
-- `styl`/`stylus` - Only [`define`](https://stylus-lang.com/docs/js.html#define-name-node), который можно передать как объект.
+- `sass`/`scss` - опция верхнего уровня `api: "legacy" | "modern" | "modern-compiler"` (по умолчанию `"legacy"`) позволяет переключать используемый API sass. Для лучшей производительности рекомендуется использовать `api: "modern-compiler"` с пакетом `sass-embedded`. [Опции (legacy)](https://sass-lang.com/documentation/js-api/interfaces/LegacyStringOptions), [Опции (modern)](https://sass-lang.com/documentation/js-api/interfaces/stringoptions/).
+- `less` - [Опции](https://lesscss.org/usage/#less-options).
+- `styl`/`stylus` - Поддерживается только [`define`](https://stylus-lang.com/docs/js.html#define-name-node), который можно передать как объект.
 
 **Пример:**
 
@@ -242,6 +242,12 @@ export default defineConfig({
         define: {
           $specialColor: new stylus.nodes.RGBA(51, 197, 255, 1),
         },
+      },
+      scss: {
+        api: 'modern-compiler', // or "modern", "legacy"
+        importers: [
+          // ...
+        ],
       },
     },
   },

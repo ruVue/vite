@@ -365,6 +365,8 @@ export type ResolvedConfig = Readonly<
     root: string
     base: string
     /** @internal */
+    decodedBase: string
+    /** @internal */
     rawBase: string
     publicDir: string
     cacheDir: string
@@ -763,6 +765,8 @@ export async function resolveConfig(
     rollupOptions: config.worker?.rollupOptions || {},
   }
 
+  const base = withTrailingSlash(resolvedBase)
+
   resolved = {
     configFile: configFile ? normalizePath(configFile) : undefined,
     configFileDependencies: configFileDependencies.map((name) =>
@@ -770,7 +774,8 @@ export async function resolveConfig(
     ),
     inlineConfig,
     root: resolvedRoot,
-    base: withTrailingSlash(resolvedBase),
+    base,
+    decodedBase: decodeURI(base),
     rawBase: resolvedBase,
     resolve: resolveOptions,
     publicDir: resolvedPublicDir,
@@ -966,7 +971,7 @@ export function resolveBaseUrl(
 
   // parse base when command is serve or base is not External URL
   if (!isBuild || !isExternal) {
-    base = new URL(base, 'http://vitejs.dev').pathname
+    base = new URL(base, 'http://vite.dev').pathname
     // ensure leading slash
     if (base[0] !== '/') {
       base = '/' + base
@@ -1030,7 +1035,8 @@ export async function loadConfigFromFile(
     return null
   }
 
-  const isESM = isFilePathESM(resolvedPath)
+  const isESM =
+    typeof process.versions.deno === 'string' || isFilePathESM(resolvedPath)
 
   try {
     const bundled = await bundleConfigFile(resolvedPath, isESM)
@@ -1074,7 +1080,7 @@ async function bundleConfigFile(
     absWorkingDir: process.cwd(),
     entryPoints: [fileName],
     write: false,
-    target: ['node18'],
+    target: [`node${process.versions.node}`],
     platform: 'node',
     bundle: true,
     format: isESM ? 'esm' : 'cjs',
@@ -1157,7 +1163,7 @@ async function bundleConfigFile(
                     throw new Error(
                       `Failed to resolve ${JSON.stringify(
                         id,
-                      )}. This package is ESM only but it was tried to load by \`require\`. See https://vitejs.dev/guide/troubleshooting.html#this-package-is-esm-only for more details.`,
+                      )}. This package is ESM only but it was tried to load by \`require\`. See https://vite.dev/guide/troubleshooting.html#this-package-is-esm-only for more details.`,
                     )
                   }
                 }
@@ -1174,7 +1180,7 @@ async function bundleConfigFile(
                 throw new Error(
                   `${JSON.stringify(
                     id,
-                  )} resolved to an ESM file. ESM file cannot be loaded by \`require\`. See https://vitejs.dev/guide/troubleshooting.html#this-package-is-esm-only for more details.`,
+                  )} resolved to an ESM file. ESM file cannot be loaded by \`require\`. See https://vite.dev/guide/troubleshooting.html#this-package-is-esm-only for more details.`,
                 )
               }
               return {

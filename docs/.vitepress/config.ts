@@ -4,7 +4,7 @@ import { transformerTwoslash } from '@shikijs/vitepress-twoslash'
 import { buildEnd } from './buildEnd.config'
 
 const ogDescription = 'Интерфейсные инструменты нового поколения'
-const ogImage = 'https://vitejs.ru/og-image.png'
+const ogImage = 'https://vitejs.ru/og-image.jpg'
 const ogTitle = 'Vite'
 const ogUrl = 'https://vitejs.ru'
 
@@ -42,6 +42,10 @@ const versionLinks = ((): DefaultTheme.NavItemWithLink[] => {
       text: 'Документация Vite 3',
       link: 'https://v3.vitejs.ru',
     },
+    {
+      text: 'Документация Vite (актуальный)',
+      link: 'https://vitejs.ru',
+    },
   ]
 
   switch (deployType) {
@@ -69,6 +73,30 @@ export default defineConfig({
     [
       'link',
       { rel: 'alternate', type: 'application/rss+xml', href: '/blog.rss' },
+    ],
+    ['link', { rel: 'preconnect', href: 'https://fonts.googleapis.com' }],
+    [
+      'link',
+      {
+        rel: 'preconnect',
+        href: 'https://fonts.gstatic.com',
+        crossorigin: 'true',
+      },
+    ],
+    [
+      'link',
+      {
+        rel: 'preload',
+        href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600&family=IBM+Plex+Mono:wght@400&display=swap',
+        as: 'style',
+      },
+    ],
+    [
+      'link',
+      {
+        rel: 'stylesheet',
+        href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600&family=IBM+Plex+Mono:wght@400&display=swap',
+      },
     ],
     ['link', { rel: 'me', href: 'https://m.webtoo.ls/@vite' }],
     ['meta', { property: 'og:type', content: 'website' }],
@@ -103,7 +131,13 @@ export default defineConfig({
 
   locales: {
     root: { label: 'Русский' },
-    en: { label: 'English', link: 'https://vitejs.dev' },
+    en: { label: 'English', link: 'https://vite.dev' },
+    zh: { label: '简体中文', link: 'https://cn.vite.dev' },
+    ja: { label: '日本語', link: 'https://ja.vite.dev' },
+    es: { label: 'Español', link: 'https://es.vite.dev' },
+    pt: { label: 'Português', link: 'https://pt.vite.dev' },
+    ko: { label: '한국어', link: 'https://ko.vite.dev' },
+    de: { label: 'Deutsch', link: 'https://de.vite.dev' },
   },
 
   themeConfig: {
@@ -117,15 +151,16 @@ export default defineConfig({
     },
 
     socialLinks: [
+      { icon: 'bluesky', link: 'https://bsky.app/profile/vite.dev' },
       { icon: 'mastodon', link: 'https://elk.zone/m.webtoo.ls/@vite' },
-      { icon: 'twitter', link: 'https://twitter.com/vite_js' },
-      { icon: 'discord', link: 'https://chat.vitejs.dev' },
+      { icon: 'x', link: 'https://x.com/vite_js' },
+      { icon: 'discord', link: 'https://chat.vite.dev' },
       { icon: 'github', link: 'https://github.com/vitejs/vite' },
     ],
 
     algolia: {
       appId: '7H67QR5P0A',
-      apiKey: 'deaab78bcdfe96b599497d25acc6460e',
+      apiKey: '208bb9c14574939326032b937431014b',
       indexName: 'vitejs',
       searchParameters: {
         facetFilters: ['tags:ru'],
@@ -135,7 +170,7 @@ export default defineConfig({
     footer: {
       message: `Выпущено под лицензией MIT. (${commitRef})`,
       copyright:
-        'Все права © 2019-настоящее время Evan You и Vite контрибьюторам',
+        'Авторские права © 2019-настоящее время VoidZero Inc. и участники Vite',
     },
 
     nav: [
@@ -151,16 +186,20 @@ export default defineConfig({
           {
             items: [
               {
+                text: 'Bluesky',
+                link: 'https://bsky.app/profile/vite.dev',
+              },
+              {
                 text: 'Mastodon',
                 link: 'https://elk.zone/m.webtoo.ls/@vite',
               },
               {
-                text: 'Twitter',
-                link: 'https://twitter.com/vite_js',
+                text: 'X',
+                link: 'https://x.com/vite_js',
               },
               {
-                text: 'Чат в Discord',
-                link: 'https://chat.vitejs.dev',
+                text: 'Discord Chat',
+                link: 'https://chat.vite.dev',
               },
               {
                 text: 'Awesome Vite',

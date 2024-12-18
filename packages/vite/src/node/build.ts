@@ -474,10 +474,11 @@ export async function build(
     'production',
   )
   const options = config.build
+  const { root, logger, packageCache } = config
   const ssr = !!options.ssr
   const libOptions = options.lib
 
-  config.logger.info(
+  logger.info(
     colors.cyan(
       `vite v${VERSION} ${colors.green(
         `building ${ssr ? `SSR bundle ` : ``}for ${config.mode}...`,
@@ -485,7 +486,7 @@ export async function build(
     ),
   )
 
-  const resolve = (p: string) => path.resolve(config.root, p)
+  const resolve = (p: string) => path.resolve(root, p)
   const input = libOptions
     ? options.rollupOptions?.input ||
       (typeof libOptions.entry === 'string'
@@ -602,7 +603,7 @@ export async function build(
   const outputBuildError = (e: RollupError) => {
     enhanceRollupError(e)
     clearLine()
-    config.logger.error(e.message, { error: e })
+    logger.error(e.message, { error: e })
   }
 
   let bundle: RollupBuild | undefined
@@ -611,7 +612,7 @@ export async function build(
     const buildOutputOptions = (output: OutputOptions = {}): OutputOptions => {
       // @ts-expect-error See https://github.com/vitejs/vite/issues/5812#issuecomment-984345618
       if (output.output) {
-        config.logger.warn(
+        logger.warn(
           `You've set "rollupOptions.output.output" in your config. ` +
             `This is deprecated and will override all Vite.js default output options. ` +
             `Please use "rollupOptions.output" instead.`,
@@ -624,7 +625,7 @@ export async function build(
         )
       }
       if (output.sourcemap) {
-        config.logger.warnOnce(
+        logger.warnOnce(
           colors.yellow(
             `Vite does not support "rollupOptions.output.sourcemap". ` +
               `Please use "build.sourcemap" instead.`,
@@ -640,8 +641,7 @@ export async function build(
         ssrNodeBuild || libOptions
           ? resolveOutputJsExtension(
               format,
-              findNearestPackageData(config.root, config.packageCache)?.data
-                .type,
+              findNearestPackageData(root, packageCache)?.data.type,
             )
           : 'js'
       return {
@@ -664,9 +664,9 @@ export async function build(
                   libOptions,
                   format,
                   name,
-                  config.root,
+                  root,
                   jsExt,
-                  config.packageCache,
+                  packageCache,
                 )
             : path.posix.join(options.assetsDir, `[name]-[hash].${jsExt}`),
         chunkFileNames: libOptions
@@ -688,7 +688,7 @@ export async function build(
     const outputs = resolveBuildOutputs(
       options.rollupOptions?.output,
       libOptions,
-      config.logger,
+      logger,
     )
     const normalizedOutputs: OutputOptions[] = []
 
@@ -701,26 +701,26 @@ export async function build(
     }
 
     const resolvedOutDirs = getResolvedOutDirs(
-      config.root,
+      root,
       options.outDir,
       options.rollupOptions?.output,
     )
     const emptyOutDir = resolveEmptyOutDir(
       options.emptyOutDir,
-      config.root,
+      root,
       resolvedOutDirs,
-      config.logger,
+      logger,
     )
 
     // watch file changes with rollup
     if (config.build.watch) {
-      config.logger.info(colors.cyan(`\nwatching for file changes...`))
+      logger.info(colors.cyan(`\nwatching for file changes...`))
 
       const resolvedChokidarOptions = resolveChokidarOptions(
-        config,
         config.build.watch.chokidar,
         resolvedOutDirs,
         emptyOutDir,
+        config.cacheDir,
       )
 
       const { watch } = await import('rollup')
@@ -735,13 +735,13 @@ export async function build(
 
       watcher.on('event', (event) => {
         if (event.code === 'BUNDLE_START') {
-          config.logger.info(colors.cyan(`\nbuild started...`))
+          logger.info(colors.cyan(`\nbuild started...`))
           if (options.write) {
             prepareOutDir(resolvedOutDirs, emptyOutDir, config)
           }
         } else if (event.code === 'BUNDLE_END') {
           event.result.close()
-          config.logger.info(colors.cyan(`built in ${event.duration}ms.`))
+          logger.info(colors.cyan(`built in ${event.duration}ms.`))
         } else if (event.code === 'ERROR') {
           outputBuildError(event.error)
         }
@@ -763,7 +763,7 @@ export async function build(
     for (const output of normalizedOutputs) {
       res.push(await bundle[options.write ? 'write' : 'generate'](output))
     }
-    config.logger.info(
+    logger.info(
       `${colors.green(`✓ built in ${displayTime(Date.now() - startTime)}`)}`,
     )
     return Array.isArray(outputs) ? res : res[0]
@@ -771,7 +771,7 @@ export async function build(
     enhanceRollupError(e)
     clearLine()
     if (startTime) {
-      config.logger.error(
+      logger.error(
         `${colors.red('x')} Build failed in ${displayTime(Date.now() - startTime)}`,
       )
       startTime = undefined
@@ -1225,7 +1225,7 @@ export function toOutputFilePathInJS(
   if (relative && !config.build.ssr) {
     return toRelative(filename, hostId)
   }
-  return joinUrlSegments(config.base, filename)
+  return joinUrlSegments(config.decodedBase, filename)
 }
 
 export function createToImportMetaURLBasedRelativeRuntime(
@@ -1274,7 +1274,7 @@ export function toOutputFilePathWithoutRuntime(
   if (relative && !config.build.ssr) {
     return toRelative(filename, hostId)
   } else {
-    return joinUrlSegments(config.base, filename)
+    return joinUrlSegments(config.decodedBase, filename)
   }
 }
 
