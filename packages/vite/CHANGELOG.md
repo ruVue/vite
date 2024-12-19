@@ -1,4 +1,28 @@
-## <small>4.4.12 (2023-12-04)</small>
+## <small>4.5.5 (2024-09-16)</small>
+
+
+
+
+## <small>4.5.4 (2024-09-16)</small>
+
+* fix: avoid DOM Clobbering gadget in `getRelativeUrlFromDocument` (#18115) ([e812716](https://github.com/vitejs/vite/commit/e812716)), closes [#18115](https://github.com/vitejs/vite/issues/18115)
+* fix: backport #18112, fs raw query ([b901438](https://github.com/vitejs/vite/commit/b901438)), closes [#18112](https://github.com/vitejs/vite/issues/18112)
+
+
+
+## <small>4.5.3 (2024-03-24)</small>
+
+* fix: `fs.deny` with globs with directories (#16250) ([96a7f3a](https://github.com/vitejs/vite/commit/96a7f3a)), closes [#16250](https://github.com/vitejs/vite/issues/16250)
+
+
+
+## <small>4.5.2 (2024-01-19)</small>
+
+* fix: fs deny for case insensitive systems (#15653) ([eeec23b](https://github.com/vitejs/vite/commit/eeec23b)), closes [#15653](https://github.com/vitejs/vite/issues/15653)
+
+
+
+## <small>4.5.1 (2023-12-04)</small>
 
 * fix: backport #15223, proxy html path should be encoded (#15226) (#15227) ([fe8b209](https://github.com/vitejs/vite/commit/fe8b209)), closes [#15223](https://github.com/vitejs/vite/issues/15223) [#15226](https://github.com/vitejs/vite/issues/15226) [#15227](https://github.com/vitejs/vite/issues/15227)
 
@@ -926,7 +950,7 @@ Vite is now using [Rollup 3](https://github.com/vitejs/vite/issues/9870), which 
 
 The modern browser build now targets `safari14` by default for wider ES2020 compatibility (https://github.com/vitejs/vite/issues/9063). This means that modern builds can now use [`BigInt`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt) and that the [nullish coallessing operator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Nullish_coalescing) isn't transpiled anymore. If you need to support older browsers, you can add [`@vitejs/plugin-legacy`](https://github.com/vitejs/vite/tree/main/packages/plugin-legacy) as usual.
 
-#### Importing CSS as a string 
+#### Importing CSS as a string
 
 In Vite 3, importing the default export of a `.css` file could introduce a double loading of CSS.
 
@@ -1120,7 +1144,7 @@ See [4.0.0-alpha.0 changelog](https://github.com/vitejs/vite/blob/v4.0.0-alpha.0
  * fix: escape msg in render restricted error html, backport (#12889) (#12892) ([b48ac2a](https://github.com/vitejs/vite/commit/b48ac2a)), closes [#12889](https://github.com/vitejs/vite/issues/12889) [#12892](https://github.com/vitejs/vite/issues/12892)
 
 
- 
+
 ## <small>3.2.5 (2022-12-05)</small>
 
 * chore: cherry pick more v4 bug fixes to v3 (#11189) ([eba9b42](https://github.com/vitejs/vite/commit/eba9b42)), closes [#11189](https://github.com/vitejs/vite/issues/11189) [#10949](https://github.com/vitejs/vite/issues/10949) [#11056](https://github.com/vitejs/vite/issues/11056) [#8663](https://github.com/vitejs/vite/issues/8663) [#10958](https://github.com/vitejs/vite/issues/10958) [#11120](https://github.com/vitejs/vite/issues/11120) [#11122](https://github.com/vitejs/vite/issues/11122) [#11123](https://github.com/vitejs/vite/issues/11123) [#11132](https://github.com/vitejs/vite/issues/11132)
@@ -1203,7 +1227,7 @@ Laravel and other backends integrations will now get entries for every asset fil
 #### Customizable ErrorOverlay
 
 You can now customize the ErrorOverlay by using [css parts](https://developer.mozilla.org/en-US/docs/Web/CSS/::part). Check out the PR for more details: [#10234](https://github.com/vitejs/vite/issues/10234).
-  
+
 ### Features
 
 * feat(build): experimental copyPublicDir option (#10550) ([4f4a39f](https://github.com/vitejs/vite/commit/4f4a39f)), closes [#10550](https://github.com/vitejs/vite/issues/10550)
